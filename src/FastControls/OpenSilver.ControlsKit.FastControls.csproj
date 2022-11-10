@@ -5,4 +5,8 @@
     <RootNamespace>OpenSilver.ControlsKit</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OpenSilver" Version="1.1.0" />
+  </ItemGroup>
+
 </Project>
