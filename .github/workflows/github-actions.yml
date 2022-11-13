@@ -54,3 +54,6 @@ jobs:
         with:
           name: FastControls
           path: src\FastControls\bin\Release\*.nupkg
+      - name: Upload packages to MyGet
+        run: |
+           dotnet nuget push "src\FastControls\bin\Release\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s ${{ secrets.MYGET_PUBLIC_FEED }}
