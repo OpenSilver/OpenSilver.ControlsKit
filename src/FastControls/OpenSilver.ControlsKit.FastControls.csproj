@@ -5,7 +5,7 @@
     <RootNamespace>OpenSilver.ControlsKit</RootNamespace>
     <Authors>Userware</Authors>
     <ProjectUrl>https://www.opensilver.net</ProjectUrl>
-    <Description>The ControlsKit is a collection of additional libraries, controls, and helpers that developers can use directly in their OpenSilver projects, to complement the built-in controls.</Description>
+    <Description>The ControlsKit.FastControls is a collection of fast controls that developers can use directly in their OpenSilver projects, to complement the built-in controls.</Description>
     <Copyright>Copyright (c) 2022, Userware. All rights reserved.</Copyright>
     <Title>OpenSilver FastControls</Title>
     <PackageProjectUrl>https://github.com/OpenSilver/OpenSilver.ControlsKit</PackageProjectUrl>

@@ -13,12 +13,11 @@
 using System;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using CSHTML5.Internal;
 
 namespace OpenSilver.ControlsKit
 {
-    public class FastCheckBox : Control
+    public class FastCheckBox : FrameworkElement
     {
         public static readonly DependencyProperty IsCheckedProperty =
             DependencyProperty.Register(
