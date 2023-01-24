@@ -19,4 +19,10 @@
     <PackageReference Include="OpenSilver" Version="$(OpenSilverPackageVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+	<Page Include="FastGrid\FastGridView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</Page>
+  </ItemGroup>
+
 </Project>

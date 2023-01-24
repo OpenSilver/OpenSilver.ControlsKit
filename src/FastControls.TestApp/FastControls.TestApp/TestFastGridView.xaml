@@ -1,0 +1,111 @@
+﻿<Page
+    x:Class="FastGrid.FastGrid.TestFastGridView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:FastGrid.FastGrid" 
+    xmlns:conv="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    Loaded="Page_Loaded">
+    
+    <Canvas x:Name="canvas">
+        <Canvas.Resources>
+            <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        </Canvas.Resources>
+
+        
+        <local:FastGridView x:Name="ctrl" Width="900" Height="800" Padding="0" RowHeight="30" FontSize="14">
+            <local:FastGridView.ContextMenu>
+                <ContextMenu x:Name="menu">
+                    <MenuItem Header="Inspect Visual Tree" Cursor="Hand" Click="ButtonViewXamlTree_Click"/>
+                    <MenuItem Header="View HTML/JS compilation log..." x:Name="MenuButtonViewCompilationLog" Cursor="Hand" Click="ButtonViewCompilationLog_Click"/>
+                    <MenuItem Header="Execute custom JavaScript code..." Cursor="Hand" Click="ButtonExecuteJS_Click"/>
+                    
+                </ContextMenu>
+            </local:FastGridView.ContextMenu>
+            
+            <local:FastGridView.Columns>
+
+                <local:FastGridViewColumn HeaderText="-" Width="40" MinWidth="40" IsFilterable="False" IsSortable="False">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Visibility="{Binding IsActive,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Path HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 0,0 L 10,6 L 0,12 Z"
+                                      Fill="Red" Width="10" Height="12"/>
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+                
+                <local:FastGridViewColumn HeaderText="Operator" Width="100" MinWidth="80" MaxWidth="200" DataBindingPropertyName="OperatorReportLabel">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Rectangle Fill="Blue" Opacity="0.3" />
+                                <TextBlock Text="{Binding OperatorReportLabel}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+
+                <local:FastGridViewColumn HeaderText="Rec Id" Width="120"  DataBindingPropertyName="OperatorRecordId">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Red" Opacity="0.3" />
+                                <TextBlock Text="{Binding OperatorRecordId}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+                
+                <local:FastGridViewColumn HeaderText="User" Width="150" DataBindingPropertyName="Username">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Green" Opacity="0.3" />
+                                <TextBlock Text="{Binding Username}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+                
+                <local:FastGridViewColumn HeaderText="Pass" Width="120" IsFilterable="False" IsSortable="False">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Blue" Opacity="0.3" />
+                                <TextBlock Text="{Binding Password}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+
+                <local:FastGridViewColumn HeaderText="Department" Width="150" IsFilterable="False" IsSortable="False">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Red" Opacity="0.3" />
+                                <TextBlock Text="{Binding Department}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+
+                <local:FastGridViewColumn HeaderText="City" Width="120" IsFilterable="False" IsSortable="False">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Green" Opacity="0.3" />
+                                <TextBlock Text="{Binding City}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+                
+            </local:FastGridView.Columns>
+        </local:FastGridView>
+        
+
+    </Canvas>
+</Page>
