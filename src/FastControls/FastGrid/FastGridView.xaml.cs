@@ -15,21 +15,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using FastGrid.FastGrid.Filter;
 using OpenSilver;
+using OpenSilver.ControlsKit.Annotations;
 
 namespace FastGrid.FastGrid
 {
     /* 
-
-     * filtering
-     * - basically monitor for changes (based on sort, etc.)
-     *
-     * + text wrapping
-     *
-     *
-     *
-     * 
-     *
      *
      * IMPORTANT:
      * Filtering
@@ -58,7 +50,13 @@ namespace FastGrid.FastGrid
 
         // these are the rows - not all of them need to be visible, since we'll always make sure we have enough rows to accomodate the whole height of the control
         private List<FastGridViewRow> _rows = new List<FastGridViewRow>();
+
         private IReadOnlyList<object> _items;
+        private IReadOnlyList<object> _filteredItems;
+        // this is non-null ONLY when editing a filter
+        // the idea: when I'm editing a filter -> I will compute how many unique values I have available, based on the OTHER filters
+        private IReadOnlyList<object> _temporaryFilteredItems = null;
+        
         private bool _suspendRender = false;
 
         // this is the first visible row - based on this, I re-compute the _topRowIndex, on each update of the UI
@@ -90,6 +88,11 @@ namespace FastGrid.FastGrid
         private int _successfullyDrawnTopRowIdx = -1;//_topRowIndexWhenNotScrolling
 
         private bool _needsRefilter = false, _needsFullReSort = false, _needsReSort = false;
+        private bool _needsRebuildHeader = false;
+
+        public enum RightClickAutoSelectType {
+            None, Select, SelectAdd,
+        }
 
         public FastGridView() {
             this.InitializeComponent();
@@ -151,9 +154,26 @@ namespace FastGrid.FastGrid
         }
 
         private int TopRowIndex => _scrollingTopRowIndex >= 0 ? _scrollingTopRowIndex : _topRowIndexWhenNotScrolling;
-        private bool IsEmpty => SortedItems == null || SortedItems.Count < 1;
-        internal IReadOnlyList<object> FilteredItems => _items;
+        private bool IsEmpty => _items == null || _items.Count < 1;
+
+        internal IReadOnlyList<object> FilteredItems {
+            get {
+                if (IsEditingFilter)
+                    return _temporaryFilteredItems ?? _items;
+                else
+                    return _filteredItems ?? _items;
+            }
+        }
         internal IReadOnlyList<object> SortedItems => _sort.SortedItems;
+        internal bool IsEditingFilter => Columns.Any(col => col.IsEditingFilter);
+        internal FastGridViewFilterItem EditFilterItem {
+            get {
+                var column = editFilterCtrl.ViewModel.EditColumn;
+                Debug.Assert(column != null);
+                var filterItem = Filter.GetOrAddFilterForProperty(column);
+                return filterItem;
+            }
+        }
 
         public FastGridViewColumnCollection Columns => _columns;
         public FastGridViewSortDescriptors SortDescriptors => _sortDescriptors;
@@ -190,6 +210,8 @@ namespace FastGrid.FastGrid
         // if true -> on column resize + horizontal scrolling, the effect is instant
         // if false -> we dim the cells and then do the resize once the user finishes (much faster)
         public bool InstantColumnResize { get; set; } = false;
+
+        internal FastGridViewFilter Filter { get; } = new FastGridViewFilter();
 
         // optimization: you can set this to true when we're offscreen -- in this case, we'll unbind all rows (so that no unnecessary updates take place)
         //
@@ -242,6 +264,8 @@ namespace FastGrid.FastGrid
         // note: not bindable at this time
         public bool IsFilteringAllowed { get; set; } = false;
 
+        internal Point EditFilterMousePos { get; set; } = new Point();
+
         public IEnumerable<object> VisibleRows() => _rows.Where(r => r.IsRowVisible).Select(r => r.RowObject);
 
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(FastGridView), 
@@ -268,7 +292,7 @@ namespace FastGrid.FastGrid
         }
 
         public static readonly DependencyProperty HeaderHeightProperty = DependencyProperty.Register(
-                                                        "HeaderHeight", typeof(double), typeof(FastGridView), new PropertyMetadata(30d, HeaderHeightChanged));
+                                                        "HeaderHeight", typeof(double), typeof(FastGridView), new PropertyMetadata(36d, HeaderHeightChanged));
 
         public double HeaderHeight {
             get { return (double)GetValue(HeaderHeightProperty); }
@@ -365,6 +389,24 @@ namespace FastGrid.FastGrid
             get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
             set { SetValue(HeaderTemplateProperty, value); }
         }
+
+        public static readonly DependencyProperty RightClickAutoSelectProperty = DependencyProperty.Register(
+                                                        "RightClickAutoSelect", typeof(RightClickAutoSelectType), typeof(FastGridView), new PropertyMetadata(RightClickAutoSelectType.None));
+
+        public RightClickAutoSelectType RightClickAutoSelect {
+            get { return (RightClickAutoSelectType)GetValue(RightClickAutoSelectProperty); }
+            set { SetValue(RightClickAutoSelectProperty, value); }
+        }
+
+        public object RightClickSelectedObject {
+            get => rightClickSelectedObject_;
+            private set {
+                if (Equals(value, rightClickSelectedObject_)) return;
+                rightClickSelectedObject_ = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private static void SingleSelectedIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -590,6 +632,19 @@ namespace FastGrid.FastGrid
             return -1;
         }
 
+        // extra optimization - if this is towards the end, and we could actually see more object, return an index that will show as many objects as possbible
+        //
+        // example: we set the top row index to zero, then reverse the sorting order -- in this case, our Top object would become the last
+        //          without this optimization, we'd end up seeing only one object
+        private int ObjectTo_Top_RowIndex(object obj, int suggestedFindIndex) {
+            var foundIdx = ObjectToRowIndex(obj, suggestedFindIndex);
+            var maxRowIdx = MaxRowIdx();
+            if (foundIdx > maxRowIdx)
+                return maxRowIdx;
+            else
+                return foundIdx;
+        }
+
         private void ComputeTopRowIndex()
         {
             if (SortedItems == null || SortedItems.Count < 1) {
@@ -599,7 +654,7 @@ namespace FastGrid.FastGrid
                 return; 
             }
 
-            var foundIdx = ObjectToRowIndex(_topRow, _topRowIndexWhenNotScrolling);
+            var foundIdx = ObjectTo_Top_RowIndex(_topRow, _topRowIndexWhenNotScrolling);
             if (foundIdx == _topRowIndexWhenNotScrolling)
                 return; // same
 
@@ -620,7 +675,7 @@ namespace FastGrid.FastGrid
                 return false; // we're hidden
             if (_suspendRender)
                 return false;
-            if (SortedItems == null)
+            if (_items == null)
                 return false;
             if (RowHeight < 1)
                 return false;
@@ -686,8 +741,16 @@ namespace FastGrid.FastGrid
 
             _isUpdatingUI = true;
             try {
-                if (_needsRefilter)
+                if (_needsRebuildHeader) {
+                    _needsRebuildHeader = false;
+                    RebuildHeaderCollection();
+                }
+
+                if (_needsRefilter) {
+                    _needsRefilter = false;
                     FullReFilter();
+                }
+
                 if (_needsFullReSort) {
                     _needsFullReSort = false;
                     _needsReSort = false;
@@ -695,7 +758,7 @@ namespace FastGrid.FastGrid
                 }
                 if (_needsReSort) {
                     _needsReSort = false;
-                    _sort.Resort();
+                    _sort.FastResort();
                 }
 
                 ComputeTopRowIndex();
@@ -1030,11 +1093,21 @@ namespace FastGrid.FastGrid
             };
             _rows.Add(row);
             canvas.Children.Add(row);
+            row.MouseRightButtonDown += Row_MouseRightButtonDown;
             Console.WriteLine($"row created({Name}), rows={_rows.Count}");
             return row;
         }
 
+        private void Row_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            RightClickSelectedObject = (sender as FastGridViewRow)?.RowObject;
+            OnRightClick(sender as FastGridViewRow);
+        }
+
         private void FastGridView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (IsEditingFilter)
+                // the idea -- once the user stops filtering, we'll do a full refilter + resort anyway
+                return;
+
             if (CanUserSortColumns || IsFilteringAllowed) {
                 switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
@@ -1053,6 +1126,7 @@ namespace FastGrid.FastGrid
                         _needsRefilter = true;
                     if (CanUserSortColumns)
                         _needsFullReSort = true;
+                    Console.WriteLine($"Fastgrid {Name} - needs refilter/resort");
                     break;
                 }
             }
@@ -1063,9 +1137,7 @@ namespace FastGrid.FastGrid
         private bool MatchesFilter(object item) {
             if (!IsFilteringAllowed)
                 return true; // no filtering
-
-            // FIXME
-            return true;
+            return Filter.Matches(item);
         }
 
         private void OnAddedItem(object item) {
@@ -1104,7 +1176,20 @@ namespace FastGrid.FastGrid
 
         private void CreateHeader() {
             headerCtrl.ItemTemplate = HeaderTemplate;
-            headerCtrl.ItemsSource = _columns;
+            RebuildHeaderCollection();
+        }
+
+        private void RebuildHeaderCollection() {
+            for (var index = 0; index < Columns.Count; index++) {
+                var column = Columns[index];
+                if (column.DisplayIndex < 0)
+                    column.DisplayIndex = index;
+            }
+            // once column order changes -> make sure we reflect that instantly
+            foreach (var row in _rows)
+                row.UpdateUI();
+
+            headerCtrl.ItemsSource = Columns.OrderBy(c => c.DisplayIndex).ToList();
         }
 
         public override void OnApplyTemplate()
@@ -1176,12 +1261,29 @@ namespace FastGrid.FastGrid
                 _checkOffscreenUiTimer.Start();
 
             HandleFilterSortColumns();
+            CreateFilter();
             CreateHeader();
             HandleContextMenu();
 
             HeaderHeightChanged();
             RowHeightChanged();
             PostponeUpdateUI();
+        }
+
+        private void CreateFilter() {
+            if (!CanUserSortColumns && !IsFilteringAllowed)
+                return;
+
+            // rationale: allow the user to customize the filter for a column
+            //
+            // usually, I want to allow customizing the Filter equivalence, for instance, on a Date/time column, I can specify the date/time format
+            // By default, that's "yyyy/MM/dd HH:mm:ss", but I may want to specify "HH:mm" (in this case, when user would filter by that column,
+            // he'd see the unique values formatted as HH:mm)
+            foreach (var col in Columns)
+                if (col.IsFilterable) {
+                    col.Filter.PropertyName = col.DataBindingPropertyName;
+                    Filter.AddFilter(col.Filter);
+                }
         }
 
         private void HandleFilterSortColumns() {
@@ -1200,8 +1302,13 @@ namespace FastGrid.FastGrid
         // after this, you need to re-sort
         private void FullReFilter() {
             _needsRefilter = false;
-            // FIXME to implement
-            // also - if no filter, reuse _items
+            if (!Filter.IsEmpty) {
+                var watch = Stopwatch.StartNew();
+                _filteredItems = _items.Where(i => Filter.Matches(i)).ToList();
+                Console.WriteLine($"Fastgrid {Name} - refilter complete, took {watch.ElapsedMilliseconds} ms");
+            } else
+                // no filter
+                _filteredItems = null;
             _needsFullReSort = true;
         }
 
@@ -1238,12 +1345,11 @@ namespace FastGrid.FastGrid
         private double horizontalOffset_ = 0;
         private bool isScrollingHorizontally_ = false;
         private bool isOffscreen_ = false;
+        private object rightClickSelectedObject_ = null;
 
         internal void OnColumnPropertyChanged(FastGridViewColumn col, string propertyName) {
             switch (propertyName) {
             case "IsVisible": 
-                foreach (var row in _rows)
-                    row.SetCellVisible(col, col.IsVisible);
                 PostponeUpdateUI();
                 break;
 
@@ -1253,9 +1359,11 @@ namespace FastGrid.FastGrid
                         SetRowOpacity(0.4);
                 } else {
                     if (!InstantColumnResize) {
-                        SetRowOpacity(1);
+                        // first, make sure all cells have the correct size, after row resize
                         foreach (var row in _rows)
-                            row.SetCellWidth(col, col.Width);
+                            row.UpdateUI();
+
+                        SetRowOpacity(1);
                         PostponeUpdateUI();
                     }
 
@@ -1269,26 +1377,21 @@ namespace FastGrid.FastGrid
                 var updateCellWidthNow = InstantColumnResize || !col.IsResizingColumn;
                 if (updateCellWidthNow) {
                     foreach (var row in _rows)
-                        row.SetCellWidth(col, col.Width);
+                        row.UpdateUI();
                     PostponeUpdateUI();
                 }
                 break;
             
             case "MinWidth": 
-                foreach (var row in _rows)
-                    row.SetCellMinWidth(col, col.MinWidth);
                 PostponeUpdateUI();
                 break;
             
             case "MaxWidth": 
-                foreach (var row in _rows)
-                    row.SetCellMaxWidth(col, col.MaxWidth);
                 PostponeUpdateUI();
                 break;
             
-            case "ColumnIndex": 
-                foreach (var row in _rows)
-                    row.SetCellIndex(col, col.ColumnIndex);
+            case "DisplayIndex": 
+                _needsRebuildHeader = true;
                 PostponeUpdateUI();
                 break;
 
@@ -1310,6 +1413,18 @@ namespace FastGrid.FastGrid
                         _sortDescriptors.Remove(new FastGridSortDescriptor { Column = col});
                     _ignoreSort = false;
                 }
+                break;
+
+            case "IsEditingFilter":
+                if (col.IsEditingFilter) {
+                    foreach (var other in Columns.Where(c => !ReferenceEquals(c, col)))
+                        other.IsEditingFilter = false;
+                    OpenEditFilter(col, EditFilterMousePos);
+                } else {
+                    if (Columns.All(c => !c.IsEditingFilter))
+                        CloseEditFilter(col);
+                }
+
                 break;
 
             case "HeaderText": break;
@@ -1341,6 +1456,21 @@ namespace FastGrid.FastGrid
             }
         }
 
+        private void OnRightClick(FastGridViewRow row) {
+            switch (RightClickAutoSelect) {
+            case RightClickAutoSelectType.None:
+                break;
+            case RightClickAutoSelectType.Select:
+                SelectSet(row);
+                break;
+            case RightClickAutoSelectType.SelectAdd:
+                SelectAdd(row);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void vm_PropertyChanged(string name) {
             switch (name) {
             case "HorizontalOffset":
@@ -1357,9 +1487,107 @@ namespace FastGrid.FastGrid
             }
         }
 
+        private void filter_ValueItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            UpdateEditFilterValues();
+            _needsReSort = true;
+            PostponeUpdateUI();
+        }
+        private void UpdateEditFilterValues() {
+            var column = editFilterCtrl.ViewModel.EditColumn;
+            var filterItem = Filter.GetOrAddFilterForProperty(column);
+            var filterValueItems = editFilterCtrl.ViewModel.FilterValueItems;
+            // if everything is selected -> no filter
+            var selectedItems =  filterValueItems.All(vi => vi.IsSelected) ? new List<(string AsString, object OriginalValue)>() : filterValueItems.Where(vi => vi.IsSelected).Select(vi => (vi.Text,vi.OriginalValue)).ToList();
+            filterItem.PropertyValues = selectedItems;
+        }
+
+        private void CloseEditFilter(FastGridViewColumn column) {
+            editFilterCtrl.ViewModel.EditColumn = null;
+            editFilterPopup.IsOpen = false;
+            editFilterCtrl.ViewModel.FilterItem.PropertyChanged -= FilterItem_PropertyChanged;
+            editFilterCtrl.ViewModel.FilterItem = null;
+
+            _temporaryFilteredItems = null;
+            _needsRefilter = true;
+            PostponeUpdateUI();
+        }
+
+        private void FilterItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName) {
+            case "ForceRefreshFilter":
+                _needsRefilter = true;
+                PostponeUpdateUI();
+                break;
+            }
+        }
+
+        private void ComputeTemporaryFilterItems(FastGridViewColumn column) {
+            Debug.Assert(IsEditingFilter);
+
+            var TempFilter = Filter.Copy();
+            TempFilter.RemoveFilter(column.DataBindingPropertyName);
+
+            if (!TempFilter.IsEmpty) 
+                _temporaryFilteredItems = _items.Where(i => TempFilter.Matches(i)).ToList();
+            else
+                // optimization - in this case, there's a single filter
+                _temporaryFilteredItems = null;
+
+            // resort, based on temporary filtered items
+            _needsFullReSort = true;
+            PostponeUpdateUI();
+        }
+
+        private void OpenEditFilter(FastGridViewColumn column, Point mouse) {
+            if (editFilterCtrl.ViewModel.FilterItem != null)
+                editFilterCtrl.ViewModel.FilterItem.PropertyChanged -= FilterItem_PropertyChanged;
+
+            ComputeTemporaryFilterItems(column);
+            editFilterCtrl.ViewModel.EditColumn = column;
+            var filterItem = Filter.GetOrAddFilterForProperty(column);
+            var uniqueValues = FastGridViewFilterUtil.ToUniqueValues(FilteredItems, column.DataBindingPropertyName, filterItem.CompareEquivalent);
+            editFilterCtrl.ViewModel.FilterItem = filterItem;
+            var selectedValues = new HashSet<string>(filterItem.PropertyValues.Select(v => v.AsString));
+            var list = uniqueValues.Select(v => new FastGridViewFilterValueItem {
+                Text = v.AsString, 
+                OriginalValue = v.OriginalValue, 
+                IsSelected = selectedValues.Contains(v.AsString)
+            }).ToList();
+            editFilterCtrl.ViewModel.FilterValueItems = list;
+            foreach (var item in list)
+                item.PropertyChanged += filter_ValueItem_PropertyChanged;
+
+            const double PAD = 20;
+            var x = mouse.X + PAD + editFilterCtrl.Width > canvas.Width ? canvas.Width - editFilterCtrl.Width : mouse.X + PAD;
+            var y = mouse.Y + PAD;
+
+            if (y + editFilterCtrl.Height > canvas.Height) {
+                // in this case, if we're shown at the bottom, it's possible that the filter is not fully visible
+                y = mouse.Y;
+                var point = canvas.TransformToVisual(null).TransformPoint(new Point(0, 0));
+                var maxUp = point.Y;
+                var goUp = -(canvas.Height - editFilterCtrl.Height - PAD) + PAD;
+                if (goUp > maxUp)
+                    goUp = maxUp; // go only as much as possible
+                y -= goUp;
+            }
+
+            editFilterCtrl.grid.Background = this.Background;
+            editFilterPopup.HorizontalOffset = x;
+            editFilterPopup.VerticalOffset = y;
+            editFilterPopup.IsOpen = true;
+            editFilterCtrl.Visibility = Visibility.Visible;
+
+            // monitor for manual filter changes
+            editFilterCtrl.ViewModel.FilterItem.PropertyChanged += FilterItem_PropertyChanged;
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             vm_PropertyChanged(propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -6,17 +6,20 @@
     xmlns:conv="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
     Loaded="Page_Loaded">
     
-    <Canvas x:Name="canvas">
+    <Canvas x:Name="canvas" >
         <Canvas.Resources>
             <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </Canvas.Resources>
 
         
-        <local:FastGridView x:Name="ctrl" Width="900" Height="800" Padding="0" RowHeight="30" FontSize="14">
+        <local:FastGridView x:Name="ctrl" Width="900" Padding="0" RowHeight="30" FontSize="14" Background="Gray"                            
+                            Height="800" 
+                            RightClickAutoSelect="Select"
+                            >
             <local:FastGridView.ContextMenu>
                 <ContextMenu x:Name="menu">
                     <MenuItem Header="Inspect Visual Tree" Cursor="Hand" Click="ButtonViewXamlTree_Click"/>
-                    <MenuItem Header="View HTML/JS compilation log..." x:Name="MenuButtonViewCompilationLog" Cursor="Hand" Click="ButtonViewCompilationLog_Click"/>
+                    <MenuItem Header="View HTML/JS compilation log..." x:Name="MenuButtonViewCompilationLog" Cursor="Hand" Click="ButtonViewCompilationLog_Click" />
                     <MenuItem Header="Execute custom JavaScript code..." Cursor="Hand" Click="ButtonExecuteJS_Click"/>
                     
                 </ContextMenu>
@@ -54,6 +57,17 @@
                             <Grid >
                                 <Rectangle Fill="Red" Opacity="0.3" />
                                 <TextBlock Text="{Binding OperatorRecordId}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </local:FastGridViewColumn.CellTemplate>
+                </local:FastGridViewColumn>
+                
+                <local:FastGridViewColumn HeaderText="Time" Width="80" DataBindingPropertyName="Time">
+                    <local:FastGridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <Rectangle Fill="Green" Opacity="0.3" />
+                                <TextBlock Text="{Binding TimeString}" VerticalAlignment="Center" />
                             </Grid>
                         </DataTemplate>
                     </local:FastGridViewColumn.CellTemplate>

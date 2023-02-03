@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Shapes;
+using DotNetForHtml5.Core;
 
 namespace FastGrid.FastGrid
 {
@@ -42,7 +43,7 @@ namespace FastGrid.FastGrid
             return dt;
         }
 
-        private static Geometry SortPath() {
+        private static Geometry SortGeometry() {
             var pf = new PathFigure {
                 StartPoint = new Point(3,0),
                 Segments = new PathSegmentCollection(new PathSegment[] {
@@ -53,7 +54,47 @@ namespace FastGrid.FastGrid
             var g = new PathGeometry(new PathFigure[] { pf });
             return g;
         }
+
+        public static Path SortPath() {
+            var path = new Path {
+                Data = SortGeometry(), 
+                Fill = new SolidColorBrush(Colors.Gray), 
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                Opacity = 0,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0, 6, 0, 0),
+                Stretch = Stretch.Fill, 
+                Width = 6, Height = 4,
+                RenderTransform = new RotateTransform { Angle = 180 },
+            };
+            return path;
+        }
+
+        public static Grid FilterPath() {
+            var geometry = TypeFromStringConverters.ConvertFromInvariantString(typeof(Geometry),
+                                                                                  "M0.93340254,0 L4.934082,0 L6.934082,0 L10.93358,0 C11.996876,0 12.199773,0.75 11.668063,1.359375 L8.4335356,5.5 C8.100522,5.8975558 7.983531,6.062263 7.9429321,6.2736206 L7.934082,6.3298788 L7.934082,10.332101 C7.934082,10.332101 3.9340818,14.997499 3.9340818,14.997499 L3.9340818,6.3293748 L3.9286206,6.3012671 C3.8825667,6.1045012 3.751812,5.9296875 3.3865709,5.5 L0.24589038,1.40625 C-0.2067349,0.84375 -0.066181421,1.2241071E-16 0.93340254,0 z") as Geometry;
+            var path = new Path {
+                Data = geometry, 
+                //Fill = new SolidColorBrush(Colors.Gray), 
+                Margin = new Thickness(0),
+                Stretch = Stretch.Fill, 
+                Width = 8, Height = 12,
+            };
+            path.SetBinding(Path.FillProperty, new Binding("Filter.Color"));
+            var grid = new Grid {
+                Width = 8, 
+                Background = new SolidColorBrush(Colors.Transparent),
+                Cursor = Cursors.Hand,
+            };
+            grid.Children.Add(path);
+
+            return grid;
+        }
         public static DataTemplate DefaultHeaderTemplate() {
+            return DefaultHeaderTemplate(new Thickness(5, 0, 5, 0));
+        }
+        public static DataTemplate DefaultHeaderTemplate(Thickness headerMargin) {
             var dt = FastGridUtil.CreateDataTemplate(() => {
                 const double MIN_WIDTH = 20;
                 /*
@@ -62,12 +103,12 @@ namespace FastGrid.FastGrid
                     </Grid>                
                  */
                 var grid = new Grid {
-                    Background = new SolidColorBrush(Colors.Transparent)
+                    Background = new SolidColorBrush(Colors.Transparent),
                 };
                 var tb = new TextBlock {
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(10, 0, 10, 0),
+                    Margin = headerMargin,
                     FontSize = 14,
                 };
                 grid.SetBinding(Grid.WidthProperty, new Binding("Width"));
@@ -77,17 +118,14 @@ namespace FastGrid.FastGrid
 
                 tb.SetBinding(TextBlock.TextProperty, new Binding("HeaderText"));
 
-                var path = new Path {
-                    Data = SortPath(), 
-                    Fill = new SolidColorBrush(Colors.Gray), 
-                    RenderTransformOrigin = new Point(0.5, 0.5),
-                    Opacity = 0,
+                var path = SortPath();
+                var filterButton = new ContentControl {
                     HorizontalAlignment = HorizontalAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(10, 0, 10, 0),
-                    Stretch = Stretch.Fill, 
-                    Width = 6, Height = 4,
-                    RenderTransform = new RotateTransform { Angle = 180 },
+                    Margin = new Thickness(0, 0, 10, 0),
+                    Padding = new Thickness(2),
+                    Content = FilterPath(),
+                    Cursor = Cursors.Hand,
                 };
 
                 var canvas = new Canvas {
@@ -107,6 +145,7 @@ namespace FastGrid.FastGrid
                 canvas.Children.Add(transparentRect);
                 grid.Children.Add(tb);
                 grid.Children.Add(path);
+                grid.Children.Add(filterButton);
                 grid.Children.Add(canvas);
                 grid.DataContextChanged += (s, a) => {
                     var column = (s as FrameworkElement).DataContext as FastGridViewColumn;
@@ -138,6 +177,14 @@ namespace FastGrid.FastGrid
                     Canvas.SetLeft(transparentRect, a.NewSize.Width - TRANSPARENT_WIDTH / 2);
                 };
 
+                grid.Loaded += (s, a) => {
+                    var column = ((s as FrameworkElement).DataContext as FastGridViewColumn);
+                    if (column.DataBindingPropertyName == "" || !column.IsFilterable)
+                        filterButton.Visibility = Visibility.Collapsed;
+                    if (!column.IsSortable)
+                        path.Visibility = Visibility.Collapsed;
+                };
+
                 bool mouseDown = false;
                 Point initialPos = new Point(0,0);
                 double initialWidth = 0;
@@ -165,6 +212,17 @@ namespace FastGrid.FastGrid
                             newWidth = Math.Min(newWidth, column.MaxWidth);
                         newWidth = Math.Max(newWidth, MIN_WIDTH);
                         column.Width = newWidth;
+                    }
+                    a.Handled = true;
+                };
+
+                filterButton.MouseLeftButtonUp += (s, a) => {
+                    var self = s as FrameworkElement;
+                    var view = FastGridUtil.TryGetAscendant<FastGridView>(self);
+                    if (view != null) {
+                        var column = ((s as FrameworkElement).DataContext as FastGridViewColumn);
+                        view.EditFilterMousePos = a.GetPosition(view);
+                        column.IsEditingFilter = !column.IsEditingFilter;
                     }
                     a.Handled = true;
                 };

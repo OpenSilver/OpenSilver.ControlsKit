@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using FastGrid.FastGrid;
+using OpenSilver.ControlsKit.Annotations;
 
 namespace FastControls.TestApp
 {
-
-    public class Pullout : INotifyPropertyChanged{
+    public class DummyDate : INotifyPropertyChanged{
         private int operatorRecordId;
         private string operatorReportLabel = "";
         private string password = "";
@@ -17,6 +18,7 @@ namespace FastControls.TestApp
         private string city;
         private int vehicleId;
         private int pulloutId;
+        private DateTime time_ = DateTime.Now;
 
         public int PulloutId {
             get => pulloutId;
@@ -92,6 +94,17 @@ namespace FastControls.TestApp
             }
         }
 
+        public DateTime Time {
+            get => time_;
+            set {
+                if (value.Equals(time_)) return;
+                time_ = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string TimeString => Time.ToString("HH:mm");
+
         public Brush BgColor {
             get {
                 switch (OperatorRecordId % 4) {
@@ -119,6 +132,7 @@ namespace FastControls.TestApp
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -131,9 +145,11 @@ namespace FastControls.TestApp
         public MockViewModel() {
         }
 
-        public IEnumerable<Pullout> GetPulloutsByCount(int count, int offset = 0) {
-            for (int i = offset; i < count + offset; ++i)
-                yield return new Pullout {
+        public IEnumerable<DummyDate> GetPulloutsByCount(int count, int offset = 0) {
+            var time = DateTime.Now;
+            var incrementTimeSecs = 60;
+            for (int i = offset; i < count + offset; ++i) {
+                yield return new DummyDate {
                     OperatorReportLabel = $"Operator {i}" , 
                     OperatorRecordId = i,
                     VehicleId = i ,
@@ -141,15 +157,34 @@ namespace FastControls.TestApp
                     Password = $"Pass {i}",
                     Department = $"Dep {i}",
                     City = $"City {i}",
+                    Time = time,
                 };
+                time = time.AddSeconds(incrementTimeSecs);
+            }
+
+        }
+
+        public IEnumerable<DummyDate> GetPulloutsByCountForTestingFilter(int count, int offset = 0) {
+            var time = DateTime.Now;
+            var incrementTimeSecs = 10;
+            for (int i = offset; i < count + offset; ++i) {
+                yield return new DummyDate {
+                    OperatorReportLabel = $"Operator {i % 250}" , 
+                    OperatorRecordId = i % 97,
+                    VehicleId = i ,
+                    Username = $"User {i % 29}",
+                    Password = $"Pass {i % 37}",
+                    Department = $"Dep {i % 61}",
+                    City = $"City {i % 23}",
+                    Time = time,
+                };
+                time = time.AddSeconds(incrementTimeSecs);
+            }
+
 
         }
 
     }
-
-
-
-
 
 
 

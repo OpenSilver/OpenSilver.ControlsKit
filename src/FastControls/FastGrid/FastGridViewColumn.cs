@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using FastGrid.FastGrid.Filter;
+using OpenSilver.ControlsKit.Annotations;
 
 namespace FastGrid.FastGrid
 {
@@ -69,12 +71,12 @@ namespace FastGrid.FastGrid
 
         // future:
         // this is how we're ordering the columns -> at this time, doesn't fully work 
-        public static readonly DependencyProperty ColumnIndexProperty = DependencyProperty.Register(
-                                                        "ColumnIndex", typeof(int), typeof(FastGridViewColumn), new PropertyMetadata(-1));
+        public static readonly DependencyProperty DisplayIndexProperty = DependencyProperty.Register(
+                                                        "DisplayIndex", typeof(int), typeof(FastGridViewColumn), new PropertyMetadata(-1, (d,_) => OnPropertyChanged(d,"DisplayIndex")));
 
-        public int ColumnIndex {
-            get { return (int)GetValue(ColumnIndexProperty); }
-            set { SetValue(ColumnIndexProperty, value); }
+        public int DisplayIndex {
+            get { return (int)GetValue(DisplayIndexProperty); }
+            set { SetValue(DisplayIndexProperty, value); }
         }
 
         internal bool IsResizingColumn {
@@ -100,6 +102,15 @@ namespace FastGrid.FastGrid
             }
         }
 
+        public bool IsEditingFilter {
+            get => isEditingFilter_;
+            set {
+                if (value == isEditingFilter_) return;
+                isEditingFilter_ = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool IsSortAscending => Sort == true;
         public bool IsSortDescending => Sort == false;
         public bool IsSortNone => Sort == null;
@@ -110,15 +121,17 @@ namespace FastGrid.FastGrid
         // note: not bindable at this time
         public bool IsSortable { get; set; } = true;
 
+        public FastGridViewFilterItem Filter { get; } = new FastGridViewFilterItem();
+        // allow setting equivalence for this column
+        public PropertyValueCompareEquivalent FilterCompareEquivalent => Filter.CompareEquivalent;
+
         // the idea: this is the name of the underlying property for this column. You only need to set this
         // if you want sorting and/or filtering
         //
         // note: not bindable at this time
         public string DataBindingPropertyName { get; set; } = "";
-        public IComparable DataBindingSort { get; set; } = null;
-        public FastGridViewFilter DataBindingFilter { get; set; } = null;
 
-        public string FriendlyName() => UniqueName != "" ? UniqueName : ColumnIndex.ToString();
+        public string FriendlyName() => UniqueName != "" ? UniqueName : DisplayIndex.ToString();
 
         private static DataTemplate DefaultDataTemplate() {
             var dt = FastGridUtil.CreateDataTemplate(() => new Canvas());
@@ -160,6 +173,7 @@ namespace FastGrid.FastGrid
 
         private bool? sort_ = null;
         private bool isResizingColumn_ = false;
+        private bool isEditingFilter_ = false;
 
         /// <summary>
         /// Gets or sets the data template for the cell in view mode.
@@ -183,6 +197,7 @@ namespace FastGrid.FastGrid
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

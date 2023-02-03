@@ -13,9 +13,23 @@ namespace FastGrid.FastGrid
         private FastGridView _self;
         private SortComparer _sort;
         private List<object> _sortedList;
+
+        // only used for optimization, while the user is editing the filter
+        // the idea: in this case, we sort once -- when the user starts editing the filter
+        // when the user toggles items in the filter, we'll only re-filter this list -- since the sorting itself doesn't change
+        private List<object> _filteredSortedListWhileEditingFilter;
+        
         private HashSet<string> _propertyNames = new HashSet<string>();
 
-        public IReadOnlyList<object> SortedItems => _sortedList ?? _self.FilteredItems;
+        public IReadOnlyList<object> SortedItems {
+            get {
+                if (_self.IsEditingFilter) {
+                    Debug.Assert(_filteredSortedListWhileEditingFilter != null);
+                    return _filteredSortedListWhileEditingFilter;
+                } else
+                    return _sortedList ?? _self.FilteredItems;
+            }
+        }
 
         private class SortComparer : IComparer<object> {
             private FastGridViewSort _self;
@@ -77,6 +91,8 @@ namespace FastGrid.FastGrid
 
                 if (a is double)
                     return (double)a < (double)b ? -1 : ( (double)a > (double)b ? 1 : 0 );
+                if (a is decimal)
+                    return (decimal)a < (decimal)b ? -1 : ( (decimal)a > (decimal)b ? 1 : 0 );
                 if (a is float)
                     return (float)a < (float)b ? -1 : ( (float)a > (float)b ? 1 : 0 );
                 if (a is string) {
@@ -99,6 +115,7 @@ namespace FastGrid.FastGrid
 
         // does a complete resort, ignoring anything we previously cached
         public void FullResort() {
+            var watch = Stopwatch.StartNew();
             if (_sortedList != null)
                 foreach (var item in _sortedList.OfType<INotifyPropertyChanged>())
                     item.PropertyChanged -= Item_PropertyChanged;
@@ -107,6 +124,10 @@ namespace FastGrid.FastGrid
             if (!needsSort) {
                 // optimization - we don't have any sort, and no filtering
                 _sortedList = null;
+                if (_self.IsEditingFilter) {
+                    _sortedList = _self.FilteredItems.ToList();
+                    FastResort(); // compute current edited filter
+                }
                 return;
             }
             _sortedList = _self.FilteredItems.ToList();
@@ -117,9 +138,16 @@ namespace FastGrid.FastGrid
                 item.PropertyChanged += Item_PropertyChanged;
 
             _sortedList.Sort(_sort);
+            if (_self.IsEditingFilter) 
+                FastResort(); // compute current edited filter
+            Console.WriteLine($"Fastgrid {_self.Name} - FULL re-sort complete, took {watch.ElapsedMilliseconds} ms");
         }
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            if (_self.IsEditingFilter)
+                // optimization: while editing the filter, don't resort 
+                return;
+
             if (_propertyNames.Contains(e.PropertyName))
                 _self.NeedsResort();
         }
@@ -128,8 +156,18 @@ namespace FastGrid.FastGrid
         // at least an object's Sort property has changed
         //
         // Example: I'm sorting by username, and for an object, I've updated the username
-        public void Resort() {
-            _sortedList.Sort(_sort);
+        public void FastResort() {
+            var watch = Stopwatch.StartNew();
+            if (!_self.IsEditingFilter) {
+                _sortedList?.Sort(_sort);
+                _filteredSortedListWhileEditingFilter = null;
+            }
+            else {
+                // we're editing the filter -- we already have everything sorted
+                var editedFilter = _self.EditFilterItem;
+                _filteredSortedListWhileEditingFilter = _sortedList.Where(i => editedFilter.Matches(i)).ToList();
+            }
+            Console.WriteLine($"Fastgrid {_self.Name} - fast re-sort complete, took {watch.ElapsedMilliseconds} ms");
         }
 
         public void SortedAdd(object obj) {

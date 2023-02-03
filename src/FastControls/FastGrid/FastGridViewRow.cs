@@ -7,12 +7,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using OpenSilver.ControlsKit.Annotations;
 
 namespace FastGrid.FastGrid
 {
     internal class FastGridViewRow : Canvas, INotifyPropertyChanged {
 
-        private IReadOnlyList<FastGridViewColumn> _columns;
+        private FastGridViewColumnCollectionInternal _columns;
         private List<FastGridViewCell> _cells = new List<FastGridViewCell>();
         private bool _loaded = false;
         private double _rowHeight = 0;
@@ -48,7 +49,7 @@ namespace FastGrid.FastGrid
             }
         }
 
-        public FastGridViewRow(DataTemplate rowTemplate, IReadOnlyList<FastGridViewColumn> columnInfo, double rowHeight) {
+        public FastGridViewRow(DataTemplate rowTemplate, FastGridViewColumnCollectionInternal columnInfo, double rowHeight) {
             CustomLayout = true;
             _columns = columnInfo;
             RowHeight = rowHeight;
@@ -88,10 +89,8 @@ namespace FastGrid.FastGrid
             // create the cells
             var offset = 0d;
             foreach (var ci in _columns) {
-                var cc = new FastGridViewCell {
+                var cc = new FastGridViewCell(ci) {
                     ContentTemplate = ci.CellTemplate,
-                    IsCellVisible = ci.IsVisible,
-                    CellIndex = ci.ColumnIndex,
                     Width = ci.Width, 
                     MinWidth = ci.MinWidth,
                     MaxWidth = ci.MaxWidth,
@@ -189,38 +188,13 @@ namespace FastGrid.FastGrid
             var x = -HorizontalOffset;
             foreach (var cell in _cells) {
                 var offset = cell.IsCellVisible ? x : -100000;
+                cell.UpdateWidth();
                 FastGridUtil.SetLeft(cell, offset);
                 if (cell.IsCellVisible)
                     x += cell.Width;
             }
         }
 
-
-        internal void SetCellVisible(FastGridViewColumn column, bool isVisible) {
-            var idx = FastGridUtil.RefIndex(_columns, column);
-            Debug.Assert(idx >= 0);
-            _cells[idx].IsCellVisible = isVisible;
-        }
-        internal void SetCellWidth(FastGridViewColumn column, double width) {
-            var idx = FastGridUtil.RefIndex(_columns, column);
-            Debug.Assert(idx >= 0);
-            FastGridUtil.SetWidth(_cells[idx], width);
-        }
-        internal void SetCellMinWidth(FastGridViewColumn column, double width) {
-            var idx = FastGridUtil.RefIndex(_columns, column);
-            Debug.Assert(idx >= 0);
-            _cells[idx].MinWidth = width;
-        }
-        internal void SetCellMaxWidth(FastGridViewColumn column, double width) {
-            var idx = FastGridUtil.RefIndex(_columns, column);
-            Debug.Assert(idx >= 0);
-            _cells[idx].MaxWidth = width;
-        }
-        internal void SetCellIndex(FastGridViewColumn column, int index) {
-            var idx = FastGridUtil.RefIndex(_columns, column);
-            Debug.Assert(idx >= 0);
-            _cells[idx].CellIndex = index;
-        }
 
         private void BackgroundChanged()
         {
@@ -231,8 +205,6 @@ namespace FastGrid.FastGrid
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseLeftButtonDown(this, eventArgs);
         }
-
-
 
 
         private void vm_PropertyChanged(string propertyName) {
@@ -255,6 +227,7 @@ namespace FastGrid.FastGrid
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             if (_loaded)
                 vm_PropertyChanged(propertyName);

@@ -4,34 +4,22 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using OpenSilver.ControlsKit.Annotations;
 
 namespace FastGrid.FastGrid
 {
     internal class FastGridViewCell : ContentControl, INotifyPropertyChanged
     {
-        private int cellIndex_ = 0;
         private bool isCellVisible_ = true;
 
-        // just move it offscreen
-        public bool IsCellVisible {
-            get => isCellVisible_;
-            set {
-                if (value == isCellVisible_) return;
-                isCellVisible_ = value;
-                OnPropertyChanged();
-            }
-        }
+        // the reason for this - much easier to resort, when the column's display index changes
+        private FastGridViewColumn column_;
 
-        public int CellIndex {
-            get => cellIndex_;
-            set {
-                if (value == cellIndex_) return;
-                cellIndex_ = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool IsCellVisible => column_.IsVisible;
+        public int CellIndex => column_.DisplayIndex;
 
-        public FastGridViewCell() {
+        public FastGridViewCell(FastGridViewColumn column) {
+            column_ = column;
             CustomLayout = true;
             HorizontalAlignment = HorizontalAlignment.Stretch;
             VerticalAlignment = VerticalAlignment.Stretch;
@@ -66,8 +54,15 @@ namespace FastGrid.FastGrid
         }
 
 
+
+        public void UpdateWidth() {
+            FastGridUtil.SetWidth(this, column_.Width);
+            // note: I don't really care about Min/MaxWidth -- the column (header) itself deals with that
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

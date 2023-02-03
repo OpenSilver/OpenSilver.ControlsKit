@@ -1,19 +1,22 @@
-﻿using System;
+﻿using DotNetForHtml5.Core;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using FastControls.TestApp;
-using FastGrid.FastGrid;
 
 namespace FastGrid.FastGrid
 {
     public partial class TestFastGridView : Page
     {
-        private ObservableCollection<Pullout> _pullouts;
+        private ObservableCollection<DummyDate> _pullouts;
         public TestFastGridView()
         {
             this.InitializeComponent();
@@ -33,12 +36,12 @@ namespace FastGrid.FastGrid
             }
         }
 
-        private int RefIndex(Pullout pullout)
+        private int RefIndex(DummyDate dummyDate)
         {
             int idx = 0;
             _pullouts.FirstOrDefault(i =>
             {
-                if (ReferenceEquals(i, pullout))
+                if (ReferenceEquals(i, dummyDate))
                     return true;
                 ++idx;
                 return false;
@@ -47,7 +50,7 @@ namespace FastGrid.FastGrid
         }
         private async Task TestSimulateInsertionDeletions()
         {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
             ctrl.ItemsSource = _pullouts;
             await Task.Delay(2000);
 
@@ -81,7 +84,7 @@ namespace FastGrid.FastGrid
 
         private async Task TestConstantUpdates()
         {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
             ctrl.ItemsSource = _pullouts;
             await Task.Delay(2000);
 
@@ -126,7 +129,7 @@ namespace FastGrid.FastGrid
         }
 
         private async Task TestBoundBackground() {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
             ctrl.ItemsSource = _pullouts;
             ctrl.RowTemplate = FastGridContentTemplate.BindBackgroundRowTemplate("BgColor");
             await Task.Delay(2000);
@@ -140,7 +143,7 @@ namespace FastGrid.FastGrid
         }
 
         private async Task TestAddAndRemoveSorted() {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(5, 50));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(5, 50));
             ctrl.ItemsSource = _pullouts;
 
             ctrl.SortDescriptors.Add(new FastGridSortDescriptor { Column = ctrl.Columns["OperatorReportLabel"], SortDirection = SortDirection.Descending});
@@ -157,7 +160,7 @@ namespace FastGrid.FastGrid
         }
 
         private async Task TestResortingExistingItems() {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(5, 50));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(5, 50));
             ctrl.ItemsSource = _pullouts;
 
             ctrl.SortDescriptors.Add(new FastGridSortDescriptor { Column = ctrl.Columns["OperatorReportLabel"], SortDirection = SortDirection.Descending});
@@ -173,7 +176,7 @@ namespace FastGrid.FastGrid
         private async Task TestRowBackgroundFunc() {
             var reverseEven = false;
             ctrl.RowBackgroundColorFunc = (o) => {
-                var pullout = o as Pullout;
+                var pullout = o as DummyDate;
                 var isEven = pullout.OperatorRecordId % 2 == 0;
                 if (reverseEven)
                     isEven = !isEven;
@@ -181,7 +184,7 @@ namespace FastGrid.FastGrid
                 return BrushCache.Inst.GetByColor(color);
             };
 
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
             ctrl.ItemsSource = _pullouts;
 
             for (int i = 0; i < 100; ++i) {
@@ -192,20 +195,44 @@ namespace FastGrid.FastGrid
         }
 
         private void SimpleTest() {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(5));
             ctrl.ItemsSource = _pullouts;
             ctrl.AllowSortByMultipleColumns = false;
             ctrl.Columns[1].Sort = true;
 
             ctrl.AllowMultipleSelection = true;
             ctrl.SelectionChanged += (s, a) => {
-                var sel = Enumerable.OfType<Pullout>(ctrl.GetSelection());
+                var sel = ctrl.GetSelection().OfType<DummyDate>();
+                Console.WriteLine($"new selection {string.Join(",", sel.Select(p => p.Username))}");
+            };
+        }
+        // the idea - have special data that will generate diverse data for filtering
+        private void SimpleTestFilter() {
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCountForTestingFilter(5000));
+            ctrl.ItemsSource = _pullouts;
+            ctrl.AllowSortByMultipleColumns = false;
+//            ctrl.Columns[1].Sort = true;
+
+            ctrl.AllowMultipleSelection = true;
+            ctrl.SelectionChanged += (s, a) => {
+                var sel = ctrl.GetSelection().OfType<DummyDate>();
+                Console.WriteLine($"new selection {string.Join(",", sel.Select(p => p.Username))}");
+            };
+        }
+
+        private void SimpleTestFilterFewItmes() {
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCountForTestingFilter(5));
+            ctrl.ItemsSource = _pullouts;
+            ctrl.AllowSortByMultipleColumns = false;
+
+            ctrl.SelectionChanged += (s, a) => {
+                var sel = ctrl.GetSelection().OfType<DummyDate>();
                 Console.WriteLine($"new selection {string.Join(",", sel.Select(p => p.Username))}");
             };
         }
 
         private async Task TestOffscreen() {
-            _pullouts = new ObservableCollection<Pullout>(new MockViewModel().GetPulloutsByCount(500));
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
             ctrl.ItemsSource = _pullouts;
             for (int i = 0; i < 50; ++i) {
                 await Task.Delay(4000);
@@ -213,8 +240,22 @@ namespace FastGrid.FastGrid
             }
         }
 
+        private async Task TestChangeColumnOrder() {
+            _pullouts = new ObservableCollection<DummyDate>(new MockViewModel().GetPulloutsByCount(500));
+            ctrl.ItemsSource = _pullouts;
+            await Task.Delay(3000);
+            var idx = 0;
+            foreach (var col in ctrl.Columns)
+                col.DisplayIndex = (idx++ + 3) % ctrl.Columns.Count;
+        }
+
         private async void Page_Loaded(object sender, RoutedEventArgs e) {
-            SimpleTest();
+
+            ctrl.Columns["Time"].FilterCompareEquivalent.DateTimeFormat = "HH:mm";
+            //SimpleTest();
+            SimpleTestFilter();
+            //SimpleTestFilterFewItmes();
+            //await TestChangeColumnOrder();
             //await TestOffscreen();
 
             //await TestRowBackgroundFunc();
