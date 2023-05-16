@@ -47,7 +47,7 @@ namespace OpenSilver.ControlsKit
 
         private object _checkboxHtmlElementRef;
 
-        private JavascriptCallback _jsCallbackOnClick;
+        private JavaScriptCallback _jsCallbackOnClick;
         private object _labelHtmlElementRef;
         private object _spanHtmlElementRef;
 
@@ -95,7 +95,7 @@ namespace OpenSilver.ControlsKit
             INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("label", parentRef, this,
                     out _labelHtmlElementRef);
 
-            _jsCallbackOnClick = JavascriptCallback.Create((Action)(() =>
+            _jsCallbackOnClick = JavaScriptCallback.Create((Action)(() =>
             {
                 OnToggle();
 
@@ -104,7 +104,7 @@ namespace OpenSilver.ControlsKit
                 {
                     OriginalSource = this
                 });
-            }));
+            }), true);
             // Subscribe to the javascript click event through a simple listener
             Interop.ExecuteJavaScript("$0.onclick = function(e) { e.preventDefault(); $1(); }",
                 _labelHtmlElementRef, _jsCallbackOnClick);
