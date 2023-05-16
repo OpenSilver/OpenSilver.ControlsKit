@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using FastGrid.FastGrid;
 
 namespace FastControls.TestApp
 {
@@ -15,8 +16,7 @@ namespace FastControls.TestApp
 
             // Enter construction logic here...
 
-            var mainPage = new MainPage();
-            Window.Current.Content = mainPage;
+            Window.Current.Content = new TestFastGridView();
         }
     }
 }
