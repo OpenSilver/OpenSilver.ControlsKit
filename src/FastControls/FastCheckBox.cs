@@ -47,7 +47,7 @@ namespace OpenSilver.ControlsKit
 
         private object _checkboxHtmlElementRef;
 
-        private JavascriptCallback _jsCallbackOnClick;
+        private IDisposable _jsCallbackOnClick;
         private object _labelHtmlElementRef;
         private object _spanHtmlElementRef;
 
@@ -95,7 +95,7 @@ namespace OpenSilver.ControlsKit
             INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("label", parentRef, this,
                     out _labelHtmlElementRef);
 
-            _jsCallbackOnClick = JavascriptCallback.Create((Action)(() =>
+            _jsCallbackOnClick = Interop.CreateJavascriptCallback((Action)(() =>
             {
                 OnToggle();
 
