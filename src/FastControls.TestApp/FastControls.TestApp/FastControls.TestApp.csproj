@@ -20,6 +20,12 @@
     <Page Include="Pages\FastCheckBoxPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TestFastGridHierarchical.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TestFastGridView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
@@ -28,10 +34,20 @@
     <Compile Include="Pages\FastCheckBoxPage.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
     <Compile Include="Registry\TreeItem.cs" />
+    <Compile Include="TestFastGridHierarchical.xaml.cs" />
+    <Compile Include="TestFastGridView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="TestFastGridHierarchical.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="TestFastGridView.xaml" />
   </ItemGroup>
 
 </Project>

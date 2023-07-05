@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastGrid;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,8 +16,10 @@ namespace FastControls.TestApp
 
             // Enter construction logic here...
 
-            var mainPage = new MainPage();
-            Window.Current.Content = mainPage;
+            //Window.Current.Content = new MainPage();
+
+            //Window.Current.Content = new FastGrid.FastGrid.TestFastGridView();
+            Window.Current.Content = new TestFastGridHierarchical();
         }
     }
 }

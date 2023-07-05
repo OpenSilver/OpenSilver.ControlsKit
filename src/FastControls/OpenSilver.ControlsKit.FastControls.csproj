@@ -16,7 +16,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="FastGrid\FastGridView.xaml" />
+    <None Remove="FastGrid\Filter\FastGridViewFilterCtrl.xaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="OpenSilver" Version="1.2.0-preview-2023-07-04-222722-a16d662e" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Page Include="FastGrid\FastGridView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FastGrid\Filter\FastGridViewFilterCtrl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
 </Project>
