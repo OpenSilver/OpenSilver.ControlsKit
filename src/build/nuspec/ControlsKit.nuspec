@@ -19,9 +19,6 @@
       <group targetFramework=".NETStandard2.0">
         <dependency id="OpenSilver" version="$OpenSilverVersion$" />
       </group>
-      <group targetFramework="net7.0">
-        <dependency id="OpenSilver" version="$OpenSilverVersion$" />
-      </group>
     </dependencies>
   </metadata>
   <files>
