@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>OpenSilver.ControlsKit.Controls</id>
+    <id>OpenSilver.ControlsKit</id>
     <version>$PackageVersion$</version>
     <authors>Userware</authors>
     <projectUrl>https://www.opensilver.net</projectUrl>
     <repository type="git" url="$RepositoryUrl$" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>The ControlsKit.Controls is a collection of controls that developers can use directly in their OpenSilver projects, to complement the built-in controls.</description>
+    <description>The ControlsKit is a collection of controls that developers can use directly in their OpenSilver projects, to complement the built-in controls.</description>
     <copyright>Copyright (c) 2023, Userware. All rights reserved.</copyright>
     <tags>silverlight webassembly csharp xaml wasm dotnet .net C# javascript html html5 blazor mono uwp</tags>
     <!-- <iconUrl> is deprecated and replaced by <icon> -->
