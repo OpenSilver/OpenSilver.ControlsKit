@@ -16,10 +16,10 @@ namespace FastControls.TestApp
 
             // Enter construction logic here...
 
-            //Window.Current.Content = new MainPage();
+            Window.Current.Content = new MainPage();
 
             //Window.Current.Content = new FastGrid.FastGrid.TestFastGridView();
-            Window.Current.Content = new TestFastGridHierarchical();
+            //Window.Current.Content = new TestFastGridHierarchical();
         }
     }
 }

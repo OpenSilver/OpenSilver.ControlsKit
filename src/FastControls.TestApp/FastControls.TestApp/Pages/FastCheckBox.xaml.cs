@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace FastControls.TestApp.Pages
 {
-    public partial class FastCheckBoxPage : UserControl
+    public partial class FastCheckBox : UserControl
     {
-        public FastCheckBoxPage()
+        public FastCheckBox()
         {
             InitializeComponent();
         }

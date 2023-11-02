@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using FastGrid.FastGrid;
 using TestRadComboBox;
 
-namespace FastGrid
+namespace FastControls.TestApp.Pages
 {
     public partial class TestFastGridHierarchical : UserControl
     {

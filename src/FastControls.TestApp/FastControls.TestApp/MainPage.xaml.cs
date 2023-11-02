@@ -50,7 +50,7 @@ namespace FastControls.TestApp
         private void NavigateToPage(string pageName)
         {
             // Navigate to the target page:
-            Uri uri = new Uri(string.Format("/{0}Page", pageName), UriKind.Relative);
+            Uri uri = new Uri(string.Format("/{0}", pageName), UriKind.Relative);
             ContentContainer.Source = uri;
 
             // Scroll to top:

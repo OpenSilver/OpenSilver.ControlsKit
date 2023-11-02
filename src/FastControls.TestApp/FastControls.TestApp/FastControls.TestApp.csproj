@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenSilver" Version="2.1.0-preview-2023-10-24-151123-d105dd0c" />
+    <PackageReference Include="OpenSilver" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,13 +17,16 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\FastCheckBoxPage.xaml">
+    <Page Include="Pages\FastCheckBox.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestFastGridHierarchical.xaml">
+    <Page Include="Pages\TestFastGridHierarchical.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestFastGridView.xaml">
+    <Page Include="Pages\TestStaggeredPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TestFastGridView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -31,15 +34,17 @@
   <ItemGroup>
     <Compile Include="App.xaml.cs" />
     <Compile Include="MainPage.xaml.cs" />
-    <Compile Include="Pages\FastCheckBoxPage.xaml.cs" />
+    <Compile Include="Pages\FastCheckBox.xaml.cs" />
+    <Compile Include="Pages\TestStaggeredPanel.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
     <Compile Include="Registry\TreeItem.cs" />
-    <Compile Include="TestFastGridHierarchical.xaml.cs" />
-    <Compile Include="TestFastGridView.xaml.cs" />
+    <Compile Include="Pages\TestFastGridHierarchical.xaml.cs" />
+    <Compile Include="Pages\TestFastGridView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" />
+    <ProjectReference Include="..\..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +53,14 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="TestFastGridView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\FastCheckBox.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\TestStaggeredPanel.xaml" />
   </ItemGroup>
 
 </Project>

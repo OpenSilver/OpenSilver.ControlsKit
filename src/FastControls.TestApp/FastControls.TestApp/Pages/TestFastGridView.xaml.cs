@@ -1,4 +1,5 @@
 ﻿using DotNetForHtml5.Core;
+using FastGrid.FastGrid;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using TestRadComboBox;
 
-namespace FastGrid.FastGrid
+namespace FastControls.TestApp.Pages
 {
     public partial class TestFastGridView : Page
     {
