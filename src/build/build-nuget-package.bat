@@ -12,8 +12,8 @@ for /F %%a in ('"prompt $E$S & echo on & for %%b in (1) do rem"') do set "ESC=%%
 echo. 
 echo %ESC%[95mRestoring NuGet packages%ESC%[0m
 echo. 
-dotnet restore %~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj
-dotnet restore %~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj
+dotnet restore "%~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj"
+dotnet restore "%~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj"
 
 rem If argument 1 is not given, ask for PackageVersion:
 set PackageVersion=%1
@@ -37,12 +37,12 @@ md temp
 echo. 
 echo %ESC%[95mBuilding %ESC%[0m FastControl Release %ESC%[95mconfiguration%ESC%[0m
 echo. 
-msbuild %~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
+msbuild "%~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
 
 echo. 
 echo %ESC%[95mBuilding %ESC%[0m Controls Release %ESC%[95mconfiguration%ESC%[0m
 echo. 
-msbuild %~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
+msbuild "%~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
 
 echo. 
 echo %ESC%[95mPacking %ESC%[0mOpenSilver.ControlsKit.Controls %ESC%[95mNuGet package%ESC%[0m
