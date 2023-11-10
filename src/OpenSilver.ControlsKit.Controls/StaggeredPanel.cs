@@ -190,7 +190,13 @@ namespace OpenSilver.ControlsKit
 
             // adjust for horizontal spacing on all columns expect the first
             double totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
-            if (totalWidth > finalSize.Width)
+            #region Explanation for the -0.01 in the if below:
+            // we compare to totalWidth -0.01 because such a small overflow wouldn't be visible and it is still a likely scenario:
+            // If we are Stretched, MeasureOverride will have changed _columnWidth to availableWidth/numColumns, which can be rounded higher than the actual value.
+            // For example, we can end up with 100.16666667, which is higher than the non-rounded value of 100.166666666...
+            // A simplified version of what we actually do, assuming ColumnSpacing is 0, would result in something akin to saying: (availableWidth / numColumns) * numcolumns > availableWidth which does not make sense.
+            #endregion
+            if (totalWidth - 0.01 > finalSize.Width)
             {
                 numColumns--;
 
