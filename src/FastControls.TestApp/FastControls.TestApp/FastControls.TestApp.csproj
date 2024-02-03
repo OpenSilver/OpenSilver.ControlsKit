@@ -34,6 +34,7 @@
   <ItemGroup>
     <Compile Include="App.xaml.cs" />
     <Compile Include="MainPage.xaml.cs" />
+    <Compile Include="MockViewModel.cs" />
     <Compile Include="Pages\FastCheckBox.xaml.cs" />
     <Compile Include="Pages\TestStaggeredPanel.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
