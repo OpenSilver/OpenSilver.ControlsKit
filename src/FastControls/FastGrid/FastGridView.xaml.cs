@@ -84,11 +84,6 @@ namespace FastGrid.FastGrid
         internal delegate void RowClickHandler(FastGridViewRow row, MouseButtonEventArgs e);
         internal event RowClickHandler RowClick;
 
-
-        public const double SCROLLBAR_WIDTH = 12;
-        public const double SCROLLBAR_HEIGHT = 12;
-
-
         private FastGridViewRowProvider _rowProvider;
         private FastGridViewDrawController _drawController;
         private FastGridViewDataHolder _mainDataHolder;
@@ -147,7 +142,7 @@ namespace FastGrid.FastGrid
             _drawController = new FastGridViewDrawController(this);
 
             _columnsRoot = new FastGridViewColumnCollectionInternal();
-            _mainDataHolder = new FastGridViewDataHolder(this, _columnsRoot, HeaderTemplate, headerRowCount: 1) ;
+            _mainDataHolder = new FastGridViewDataHolder(this, _columnsRoot, HeaderTemplate, ColumnGroupTemplate, headerRowCount: 1) ;
             _expandController = new FastGridViewExpandController(this);
 
             HierarchicalRoot = new HierarchicalCollectionInfo(_columnsRoot, _mainDataHolder.SortDescriptors);
@@ -288,6 +283,17 @@ namespace FastGrid.FastGrid
 
         public event EventHandler SelectionChanged;
 
+        public class RowEventArgs : EventArgs {
+            public readonly FrameworkElement Row;
+
+            public RowEventArgs(FrameworkElement row) {
+                Row = row;
+            }
+        }
+
+        public event EventHandler<RowEventArgs> RowEnter;
+        public event EventHandler<RowEventArgs> RowLeave;
+
         public int UiTimerInterval {
             get => _drawController.UiTimerInterval;
             set => _drawController.UiTimerInterval = value;
@@ -304,6 +310,8 @@ namespace FastGrid.FastGrid
         public bool CanUserSortColumns { get; set; } = true;
         // note: not bindable at this time
         public bool IsFilteringAllowed { get; set; } = false;
+
+        public FastGridViewStyler FastGridViewStyler { get; set; } = new FastGridViewStyler();
 
         // you can have your own function that dictates if we can update the UI
         public Func<bool> CanUpdateUI = () => true;
@@ -343,6 +351,66 @@ namespace FastGrid.FastGrid
             set { SetValue(HeaderHeightProperty, value); }
         }
 
+        public static readonly DependencyProperty HeaderBackgroundProperty = DependencyProperty.Register(
+                                                "HeaderBackground", typeof(SolidColorBrush), typeof(FastGridView), new PropertyMetadata(new SolidColorBrush(Colors.Transparent), HeaderBackgroundChanged));
+
+        private static void HeaderBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView)._mainDataHolder.HeaderBackgroundColorChanged((SolidColorBrush)e.NewValue);
+        }
+
+        public SolidColorBrush HeaderBackground {
+            get { return (SolidColorBrush)GetValue(HeaderBackgroundProperty); }
+            set { SetValue(HeaderBackgroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty GroupHeaderBackgroundProperty = DependencyProperty.Register(
+                                        "GroupHeaderBackground", typeof(SolidColorBrush), typeof(FastGridView), new PropertyMetadata(new SolidColorBrush(Colors.Transparent), GroupHeaderBackgroundChanged));
+
+        private static void GroupHeaderBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView)._mainDataHolder.GroupHeaderBackgroundColorChanged((SolidColorBrush)e.NewValue);
+        }
+
+        public SolidColorBrush GroupHeaderBackground {
+            get { return (SolidColorBrush)GetValue(GroupHeaderBackgroundProperty); }
+            set { SetValue(GroupHeaderBackgroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty GroupHeaderForegroundProperty = DependencyProperty.Register(
+                                "GroupHeaderForeground", typeof(SolidColorBrush), typeof(FastGridView), new PropertyMetadata(new SolidColorBrush(Colors.Transparent), GroupHeaderForegroundChanged));
+
+        private static void GroupHeaderForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView)._mainDataHolder.GroupHeaderForegroundColorChanged((SolidColorBrush)e.NewValue);
+        }
+
+        public SolidColorBrush GroupHeaderForeground {
+            get { return (SolidColorBrush)GetValue(GroupHeaderForegroundProperty); }
+            set { SetValue(GroupHeaderForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty GroupHeaderLineBackgroundProperty = DependencyProperty.Register(
+                                "GroupHeaderLineBackground", typeof(SolidColorBrush), typeof(FastGridView), new PropertyMetadata(new SolidColorBrush(Colors.Transparent), GroupHeaderLineBackgroundChanged));
+
+        private static void GroupHeaderLineBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView)._mainDataHolder.GroupHeaderLineBackgroundChanged((SolidColorBrush)e.NewValue);
+        }
+
+        public SolidColorBrush GroupHeaderLineBackground {
+            get { return (SolidColorBrush)GetValue(GroupHeaderLineBackgroundProperty); }
+            set { SetValue(GroupHeaderLineBackgroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty GroupHeaderPaddingProperty = DependencyProperty.Register(
+                                "GroupHeaderPadding", typeof(Thickness), typeof(FastGridView), new PropertyMetadata(new Thickness(0), GroupHeaderPaddingChanged));
+
+        private static void GroupHeaderPaddingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView)._mainDataHolder.GroupHeaderPaddingChanged((Thickness)e.NewValue);
+        }
+
+        public Thickness GroupHeaderPadding {
+            get { return (Thickness)GetValue(GroupHeaderPaddingProperty); }
+            set { SetValue(GroupHeaderPaddingProperty, value); }
+        }
+
         private static void RowHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             (d as FastGridView)._rowProvider.RowHeightChanged();
         }
@@ -352,7 +420,13 @@ namespace FastGrid.FastGrid
 
 
         private void HeaderHeightChanged() {
-            _mainDataHolder.HeaderControl.Height = HeaderHeight;
+            _mainDataHolder.HeaderControl().Height = HeaderHeight;
+            if (_mainDataHolder.NeedsColumnGroup()) {
+                FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
+                FastGridUtil.SetTop(_mainDataHolder.HeaderBackground(), HeaderHeight);
+                _mainDataHolder.ColumnGroupControl().Height = HeaderHeight;
+                _mainDataHolder.ColumnGroupBackground().Height = HeaderHeight;
+            }
         }
 
         // to enumerate selection, regarless of its type: GetSelection()
@@ -443,6 +517,15 @@ namespace FastGrid.FastGrid
             set { SetValue(HeaderTemplateProperty, value); }
         }
 
+        public static readonly DependencyProperty ColumnGroupTemplateProperty = DependencyProperty.Register(
+            nameof(ColumnGroupTemplate), typeof(DataTemplate), typeof(FastGridView), new PropertyMetadata(FastGridContentTemplate.DefaultHeaderColumnGroupTemplate(), ColumnGroupTemplateChanged));
+
+
+        public DataTemplate ColumnGroupTemplate {
+            get { return (DataTemplate)GetValue(ColumnGroupTemplateProperty); }
+            set { SetValue(ColumnGroupTemplateProperty, value); }
+        }
+
         public static readonly DependencyProperty RightClickAutoSelectProperty = DependencyProperty.Register(
                                                         "RightClickAutoSelect", typeof(RightClickAutoSelectType), typeof(FastGridView), new PropertyMetadata(RightClickAutoSelectType.None));
 
@@ -460,6 +543,16 @@ namespace FastGrid.FastGrid
             }
         }
 
+
+        public double ScrollSize
+        {
+            get => _scrollSize;
+            set {
+                if (value.Equals(_scrollSize)) return;
+                _scrollSize = value;
+                OnPropertyChanged();
+            }
+        }
 
         private static void SingleSelectedIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -488,6 +581,10 @@ namespace FastGrid.FastGrid
         private static void HeaderTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             (d as FastGridView).HeaderTemplateChanged();
         }
+        private static void ColumnGroupTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            (d as FastGridView).ColumnGroupTemplateChanged();
+        }
+
 
         private void SingleSelectedIndexChanged()
         {
@@ -536,13 +633,15 @@ namespace FastGrid.FastGrid
 
         private void RowTemplateChanged() {
             HierarchicalRoot.RowTemplate = RowTemplate;
-            _rowProvider.ClearRows();
-            ClearCanvas();
-            PostponeUpdateUI();
+            Clear(clearSelection: false);
         }
 
         private void HeaderTemplateChanged() {
-            _mainDataHolder.HeaderControl.ItemTemplate = HeaderTemplate;
+            _mainDataHolder.HeaderControl().ItemTemplate = HeaderTemplate;
+        }
+        private void ColumnGroupTemplateChanged() {
+            if (_mainDataHolder.NeedsColumnGroup())
+                _mainDataHolder.ColumnGroupControl().ItemTemplate = ColumnGroupTemplate;
         }
 
         internal void OnCollectionUpdate(FastGridViewDataHolder dataHolder) {
@@ -556,11 +655,15 @@ namespace FastGrid.FastGrid
         }
 
         private void OnItemsSourceChanged() {
-            Logger($"fastgrid itemsource set for {Name}");
+            Logger($"fastgrid itemsource set for {Name} {(ItemsSource == null ? "to NULL" : "")}");
             if (ItemsSource == null) {
-                if (HideAllRowsOnItemsSourceChanged)
-                    _rowProvider.HideAllRows();
-                PostponeUpdateUI();
+                if (IsHierarchical)
+                    foreach (var item in _mainDataHolder.SortedItems)
+                        SetExpanded(item, false);
+
+                _mainDataHolder.SetSource(ItemsSource);
+                _drawController.SetSource(ItemsSource);
+                Clear();
                 return;
             }
 
@@ -688,30 +791,48 @@ namespace FastGrid.FastGrid
 
 
 
-
-
+        private Size _actualSize = Size.Empty;
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e) {
+            _actualSize = e.NewSize;
             canvas.Width = e.NewSize.Width;
             canvas.Height = e.NewSize.Height;
-            verticalScrollbar.Width = SCROLLBAR_WIDTH;
-            verticalScrollbar.Height = Math.Max(e.NewSize.Height - SCROLLBAR_HEIGHT, 0) ;
-            horizontalScrollbar.Width = Math.Max(e.NewSize.Width - SCROLLBAR_WIDTH, 0) ;
-            horizontalScrollbar.Height = SCROLLBAR_HEIGHT;
-            scrollGap.Height = SCROLLBAR_HEIGHT;
-            scrollGap.Width = SCROLLBAR_WIDTH;
-            FastGridUtil.SetLeft(scrollGap, e.NewSize.Width - SCROLLBAR_WIDTH);
-            FastGridUtil.SetTop(scrollGap, e.NewSize.Height - SCROLLBAR_HEIGHT);
+            UpdateScrollBarsPos();
 
-            FastGridUtil.SetLeft(verticalScrollbar, e.NewSize.Width - SCROLLBAR_WIDTH);
-            FastGridUtil.SetTop(horizontalScrollbar, e.NewSize.Height - SCROLLBAR_HEIGHT);
+            _mainDataHolder.HeaderControl().Width = e.NewSize.Width;
+            _mainDataHolder.HeaderControl().Height = HeaderHeight;
+            if (_mainDataHolder.NeedsColumnGroup()) {
+                FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
+                _mainDataHolder.ColumnGroupControl().Width = e.NewSize.Width;
+                _mainDataHolder.ColumnGroupControl().Height = HeaderHeight;
 
-            _mainDataHolder.HeaderControl.Width = e.NewSize.Width;
-            _mainDataHolder.HeaderControl.Height = HeaderHeight;
+                _mainDataHolder.ColumnGroupBackground().Width = e.NewSize.Width;
+                _mainDataHolder.ColumnGroupBackground().Height = HeaderHeight;
+            }
+
+            _mainDataHolder.HeaderBackground().Width = e.NewSize.Width;
+            _mainDataHolder.HeaderBackground().Height = HeaderHeight;
 
             _rowProvider.SetWidth(e.NewSize.Width);
 
             UpdateHorizontalScrollbar();
             PostponeUpdateUI();
+        }
+
+        private void UpdateScrollBarsPos() {
+            if (_actualSize == Size.Empty)
+                return;
+
+            verticalScrollbar.Width = ScrollSize;
+            verticalScrollbar.Height = Math.Max(_actualSize.Height - ScrollSize, 0);
+            horizontalScrollbar.Width = Math.Max(_actualSize.Width - ScrollSize, 0);
+            horizontalScrollbar.Height = ScrollSize;
+            scrollGap.Height = ScrollSize;
+            scrollGap.Width = ScrollSize;
+            FastGridUtil.SetLeft(scrollGap, _actualSize.Width - ScrollSize);
+            FastGridUtil.SetTop(scrollGap, _actualSize.Height - ScrollSize);
+
+            FastGridUtil.SetLeft(verticalScrollbar, _actualSize.Width - ScrollSize);
+            FastGridUtil.SetTop(horizontalScrollbar, _actualSize.Height - ScrollSize);
         }
 
 
@@ -727,6 +848,9 @@ namespace FastGrid.FastGrid
             PostponeUpdateUI();
         }
 
+        public void FullReFilter() {
+            _expandController.FullReFilter();
+        }
         public void Redraw() {
             PostponeUpdateUI();
         }
@@ -772,6 +896,14 @@ namespace FastGrid.FastGrid
                 SelectedItem = null;
         }
 
+        private void Clear(bool clearSelection = true) {
+            ClearCanvas();
+            if (clearSelection)
+                ClearSelection();
+            _rowProvider.ClearRows();
+            PostponeUpdateUI();
+        }
+
         private void SelectShiftAdd(FastGridViewRow row) {
             // FIXME if i have from several (expanded) fastgrids, only select one
 
@@ -800,7 +932,7 @@ namespace FastGrid.FastGrid
             }
         }
 
-        private void SelectAdd(FastGridViewRow row) {
+        private void SelectAdd(FastGridViewRow row, bool forceAdd = false) {
             // FIXME if i have from several (expanded) fastgrids, only select one
             if (UseSelectionIndex) {
                 var rowIdx = ObjectToRowIndex(row.RowObject, TopRowIndex);
@@ -808,14 +940,20 @@ namespace FastGrid.FastGrid
                     throw new Exception($"fastgrid {Name}: Can't find row");
                 if (AllowMultipleSelection) {
                     var copy = SelectedIndexes.ToList();
-                    copy.Add(rowIdx);
+                    if (!copy.Contains(rowIdx))
+                        copy.Add(rowIdx);
+                    else if (!forceAdd)
+                        copy.Remove(rowIdx);
                     SelectedIndexes = new ObservableCollection<int>(copy.Distinct());
                 } else
                     SelectedIndex = rowIdx;
             } else {
                 if (AllowMultipleSelection) {
                     var copy = SelectedItems.ToList();
-                    copy.Add(row.RowObject);
+                    if (!copy.Contains(row.RowObject))
+                        copy.Add(row.RowObject);
+                    else if (!forceAdd)
+                        copy.Remove(row.RowObject);
                     SelectedItems = new ObservableCollection<object>(copy.Distinct());
                 }
                 else
@@ -857,6 +995,14 @@ namespace FastGrid.FastGrid
             PostponeUpdateUI();
         }
 
+        internal void OnMouseRowEnter(FastGridViewRow row) {
+            RowEnter?.Invoke(this, new RowEventArgs(row));
+        }
+
+        internal void OnMouseRowLeave(FastGridViewRow row) {
+            RowLeave?.Invoke(this, new RowEventArgs(row));
+        }
+
         private void EnsureColumnUniqueNames() {
             int uniqueIndex = 0;
             string prefix = "__unique__";
@@ -881,20 +1027,22 @@ namespace FastGrid.FastGrid
             _rowProvider.RowHeightChanged();
             PostponeUpdateUI();
 
-            FastGridUtil.SetLeft(MainDataHolder.HeaderControl, IsHierarchical ? FastGridViewRow.WIDTH_PER_INDENT_LEVEL : 0);
+            FastGridUtil.SetLeft(MainDataHolder.HeaderControl(), 0);
+            if (MainDataHolder.NeedsColumnGroup()) 
+                FastGridUtil.SetLeft(MainDataHolder.ColumnGroupControl(), 0);
 
             foreach (var hci in HierarchicalInfos())
                 hci.PropertyChanged += HierarchicalInfo_PropertyChanged;
-            
+
+            horizontalScrollbar.Minimum = 0;
+            horizontalScrollbar.Value = 0;
         }
 
         private void HierarchicalInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName) {
                 case "RowTemplate":
-                    _rowProvider.ClearRows();
-                    ClearCanvas();
-                    PostponeUpdateUI();
+                    Clear(clearSelection: false);
                     break;
 
                 case "HeaderTemplate": 
@@ -940,6 +1088,7 @@ namespace FastGrid.FastGrid
         private bool isOffscreen_ = false;
         private object _rightClickSelectedObject = null;
         private bool _monitorOffscreen = true;
+        private double _scrollSize = 17.5;
 
 
         private void OnHorizontalOffsetChange() {
@@ -967,7 +1116,7 @@ namespace FastGrid.FastGrid
                 SelectSet(row);
                 break;
             case RightClickAutoSelectType.SelectAdd:
-                SelectAdd(row);
+                SelectAdd(row, forceAdd:true);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

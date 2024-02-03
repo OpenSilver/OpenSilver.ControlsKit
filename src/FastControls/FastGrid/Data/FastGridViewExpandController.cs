@@ -65,5 +65,7 @@ namespace FastGrid.FastGrid.Data
         public void ToggleExpanded(object o) => Impl.ToggleExpanded(o);
 
         public void UpdateExpandRow(FastGridViewRow row) => Impl.UpdateExpandRow(row);
+
+        public void FullReFilter() => Impl.FullReFilter();
     }
 }

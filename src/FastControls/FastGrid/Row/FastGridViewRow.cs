@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using FastGrid.FastGrid.Row;
 
 namespace FastGrid.FastGrid
 {
@@ -249,6 +250,18 @@ namespace FastGrid.FastGrid
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs eventArgs) {
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseLeftButtonDown(this, eventArgs);
+        }
+
+        protected override void OnMouseEnter(MouseEventArgs eventArgs) {
+            base.OnMouseEnter(eventArgs);
+            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            view?.OnMouseRowEnter(this);
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs eventArgs) {
+            base.OnMouseLeave(eventArgs);
+            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            view?.OnMouseRowLeave(this);
         }
 
 

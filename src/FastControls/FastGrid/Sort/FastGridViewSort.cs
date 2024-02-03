@@ -96,8 +96,11 @@ namespace FastGrid.FastGrid
         }
 
         public void SortedAdd(object obj) {
-            if (_sortedList == null)
+            if (_sortedList == null) {
+                // the idea - if we don't have any sort, i need to actually add this to the filtered items
+                _self.NeedsRefilter();
                 return;
+            }
 
             var index = _sortedList.BinarySearch(obj, _sort);
             if (index < 0) {
@@ -126,8 +129,11 @@ namespace FastGrid.FastGrid
         }
 
         public void Remove(object obj) {
-            if (_sortedList == null)
+            if (_sortedList == null) {
+                // the idea - if we don't have any sort, i need to actually remove this from filtered items
+                _self.NeedsRefilter();
                 return;
+            }
 
             var index = IndexOf(obj);
             if (index >= 0) {

@@ -20,9 +20,7 @@
             <local:FastGridView.ContextMenu>
                 <ContextMenu x:Name="menu">
                     <MenuItem Header="Inspect Visual Tree" Cursor="Hand" Click="ButtonViewXamlTree_Click"/>
-                    <local:MenuItemSeparator/>
                     <MenuItem Header="View HTML/JS compilation log..." x:Name="MenuButtonViewCompilationLog" Cursor="Hand" Click="ButtonViewCompilationLog_Click" />
-                    <local:MenuItemSeparator/>
                     <MenuItem Header="Execute custom JavaScript code..." Cursor="Hand" Click="ButtonExecuteJS_Click"/>
                     
                 </ContextMenu>

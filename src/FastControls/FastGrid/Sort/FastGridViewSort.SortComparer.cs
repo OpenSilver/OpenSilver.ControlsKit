@@ -7,7 +7,14 @@ namespace FastGrid.FastGrid {
     internal partial class FastGridViewSort {
         private class SortComparer : IComparer<object>, IDisposable {
             private FastGridViewSort _self;
-            private List<(PropertyInfo Property, bool Ascending)> _compareProperties;
+
+            private class PropertyComparer {
+                public PropertyInfo Property;
+                public bool Ascending;
+                public Func<object, object, int> SortFunc;
+            }
+
+            private List<PropertyComparer> _compareProperties;
 
             public SortComparer(FastGridViewSort self) {
                 _self = self;
@@ -18,13 +25,18 @@ namespace FastGrid.FastGrid {
             }
 
             private void RecomputeProperties(object obj) {
-                _compareProperties = new List<(PropertyInfo,bool)>();
+                _compareProperties = new List<PropertyComparer>();
                 var type = obj.GetType();
                 foreach (var col in _self._self.SortDescriptors.Columns) {
                     var pi = type.GetProperty(col.Column.DataBindingPropertyName, BindingFlags.Instance | BindingFlags.Public);
                     if (pi == null)
                         throw new Exception($"Fastgrid: can't find property {col.Column.DataBindingPropertyName}");
-                    _compareProperties.Add((pi, col.SortDirection == SortDirection.Ascending));
+
+                    _compareProperties.Add(new PropertyComparer {
+                        Property = pi, 
+                        Ascending = col.SortDirection == SortDirection.Ascending, 
+                        SortFunc = col.Column.SortFunc,
+                    });
                 }
             }
 
@@ -36,7 +48,8 @@ namespace FastGrid.FastGrid {
                 foreach (var prop in _compareProperties) {
                     var aValue = prop.Property.GetValue(a);
                     var bValue = prop.Property.GetValue(b);
-                    var compare = CompareValue(aValue, bValue);
+
+                    var compare = prop.SortFunc?.Invoke(aValue,bValue) ?? CompareValue(aValue, bValue);
                     if (compare != 0)
                         return prop.Ascending ? compare : -compare;
                 }

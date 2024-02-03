@@ -17,7 +17,7 @@ namespace FastGrid.FastGrid
     // At this time, these properties are not bindable. If at some point this will be needed, I will need to create a LightweightFastGridViewColumn class
     // however, this would be an insane pain, since for hierarchical grids, I need to copy this information, since each child (expanded) control will need to have its own copy of the data
     // (the idea is each child will have its own header, and be able to resize/sort/filter that header)
-    public class FastGridViewColumn : INotifyPropertyChanged
+    public sealed class FastGridViewColumn : INotifyPropertyChanged
     {
         public double Width {
             get => _width;
@@ -52,6 +52,51 @@ namespace FastGrid.FastGrid
             set {
                 if (value == _headerText) return;
                 _headerText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // used in FastGridContentTemplate.DefaultHeaderTemplate
+        public Brush HeaderForeground {
+            get => _headerForeground;
+            set {
+                if (value == _headerForeground) return;
+                _headerForeground = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        // used in FastGridContentTemplate.DefaultHeaderTemplate
+        public double HeaderFontSize {
+            get => _headerFontSize;
+            set {
+                if (value == _headerFontSize) return;
+                _headerFontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public FontWeight HeaderFontWeight
+        {
+            get => _headerFontWeight;
+            set
+            {
+                if (value == _headerFontWeight) return;
+                _headerFontWeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public FontFamily HeaderFontFamily
+        {
+            get => _headerFontFamily;
+            set
+            {
+                if (value == _headerFontFamily) return;
+                _headerFontFamily = value;
                 OnPropertyChanged();
             }
         }
@@ -92,6 +137,18 @@ namespace FastGrid.FastGrid
             }
         }
 
+        // allow several columns to be "auto" - take remaining space
+        // for now, I only allow for one column
+        //
+        public int AutoWidth {
+            get => _autoWidth;
+            set {
+                if (value == _autoWidth) return;
+                _autoWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
         internal bool IsResizingColumn {
             get => _isResizingColumn;
             set {
@@ -124,6 +181,15 @@ namespace FastGrid.FastGrid
             }
         }
 
+        public string ColumnGroupName {
+            get => _columnGroupName;
+            set {
+                if (value == _columnGroupName) return;
+                _columnGroupName = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Gets or sets the data template for the cell in edit mode.
         public DataTemplate CellEditTemplate {
             get => _cellEditTemplate;
@@ -151,17 +217,33 @@ namespace FastGrid.FastGrid
         // if you want sorting and/or filtering
         public string DataBindingPropertyName { get; set; } = "";
 
+        // normally, when you filter by a property, and the user clicks to filter, you'll show the names from DataBindingPropertyName
+        // which are also used for sorting
+        //
+        // however, there will be a few cases when you want to show a friendly name instead. 
+        // Example: you're sorting by an integer, but visually you want to show something friendly (like, "Early", "Inactive", etc)
+        public string FilterFriendlyPropertyName { get; set; } = "";
+
+        // sort function - set this only if the default sorting (which uses default comparison) doesn't work
+        public Func<object, object, int> SortFunc { get; set; } = null;
+
+        public string FilterPropertyName() => FilterFriendlyPropertyName != "" ? FilterFriendlyPropertyName : DataBindingPropertyName;
+
         public string ToolTipPropertyName { get; set; } = "";
 
-        public FastGridViewColumn Clone() {
-            return new FastGridViewColumn {
+        public FastGridViewColumn Clone(FastGridViewStyler styler) {
+            var clone = new FastGridViewColumn {
                 Width = Width, MinWidth = MinWidth, MaxWidth = MaxWidth,
                 HeaderText = HeaderText, IsVisible = IsVisible, CanResize = CanResize, UniqueName = UniqueName,
                 DisplayIndex = DisplayIndex, IsResizingColumn = IsResizingColumn, Sort = Sort, IsEditingFilter = IsEditingFilter,
                 IsFilterable = IsFilterable, IsSortable = IsSortable,
                 DataBindingPropertyName = DataBindingPropertyName,
+                FilterFriendlyPropertyName = FilterFriendlyPropertyName,
                 ToolTipPropertyName = ToolTipPropertyName,
+                ColumnGroupName = ColumnGroupName,
             };
+            styler.StyleColumn(clone);
+            return clone;
         }
 
         public bool IsSortAscending => Sort == true;
@@ -201,13 +283,19 @@ namespace FastGrid.FastGrid
         private bool _canResize = true;
         private bool _isVisible = true;
         private string _headerText = "";
+        private Brush _headerForeground = new SolidColorBrush(Colors.White);
+        private double _headerFontSize = 14;
+        private FontWeight _headerFontWeight = FontWeights.Normal;
+        private FontFamily _headerFontFamily = null;
         private double _maxWidth = double.MaxValue;
         private double _minWidth = 0;
         private double _width = 0;
+        private int _autoWidth = 0;
+        private string _columnGroupName = "";
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

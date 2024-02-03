@@ -144,19 +144,21 @@ namespace FastGrid.FastGrid.Filter
         private const string FilterEmptyLabel = "[empty]";
 
         // ... sorted by values
-        private static IReadOnlyList<(string, object)> ToUniqueValuesNumbers(IReadOnlyList<object> items, string propertyName, PropertyValueCompareEquivalent tolerance) {
+        private static IReadOnlyList<(string, object)> ToUniqueValuesNumbers(IReadOnlyList<object> items, string propertyName, string friendlyPropertyName, PropertyValueCompareEquivalent tolerance) {
             List<Number> numbers = new List<Number>();
             var propertyInfo = items[0].GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            var friendlyPropertyInfo = items[0].GetType().GetProperty(friendlyPropertyName, BindingFlags.Public | BindingFlags.Instance);
             HashSet<long> hashSet = new HashSet<long>();
             foreach (var item in items) {
                 var value = propertyInfo.GetValue(item);
                 var hash = tolerance.NumberToLongHash(value);
                 if (!hashSet.Contains(hash)) {
                     hashSet.Add(hash);
+                    var strValue = friendlyPropertyName != propertyName ? friendlyPropertyInfo.GetValue(item).ToString() : NumberToString(value);
                     var number = new Number {
                         AsDouble = NumberToDouble(value),
                         OriginalNumber = value,
-                        AsString = NumberToString(value),
+                        AsString = strValue,
                     };
                     numbers.Add(number);
                 }
@@ -175,8 +177,11 @@ namespace FastGrid.FastGrid.Filter
         }
 
         // ... sorted by values
-        private static IReadOnlyList<(string, object)> ToUniqueValuesDateTime(IReadOnlyList<object> items, string propertyName, PropertyValueCompareEquivalent tolerance)
+        private static IReadOnlyList<(string, object)> ToUniqueValuesDateTime(IReadOnlyList<object> items, string propertyName, string friendlyPropertyName, PropertyValueCompareEquivalent tolerance)
         {
+            // having a different friendly property - not implemented yet
+            Debug.Assert(propertyName == friendlyPropertyName);
+
             var values = new List<DateTimeValue>();
             var propertyInfo = items[0].GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
             var hashSet = new HashSet<long>();
@@ -219,7 +224,10 @@ namespace FastGrid.FastGrid.Filter
             public static readonly StringValue Empty = new StringValue() { AsString = FilterEmptyLabel, AsLocaseString = FilterEmptyLabel, OriginalValue = string.Empty };
         }
 
-        private static IReadOnlyList<(string, object)> ToUniqueValuesStrings(IReadOnlyList<object> items, string propertyName, PropertyValueCompareEquivalent tolerance) {
+        private static IReadOnlyList<(string, object)> ToUniqueValuesStrings(IReadOnlyList<object> items, string propertyName, string friendlyPropertyName, PropertyValueCompareEquivalent tolerance) {
+            // having a different friendly property - not implemented yet
+            Debug.Assert(propertyName == friendlyPropertyName);
+
             var strings = new List<StringValue>();
             var propertyInfo = items[0].GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
             var hashSet = new HashSet<string>();
@@ -261,19 +269,20 @@ namespace FastGrid.FastGrid.Filter
             return strings.OrderBy(s => s.AsLocaseString).Select(s => (s.AsString, s.OriginalValue)).ToList();
         }
 
+
         // ... sorted by values
-        public static IReadOnlyList<(string AsString, object OriginalValue)> ToUniqueValues(IReadOnlyList<object> items, string propertyName, PropertyValueCompareEquivalent tolerance) {
+        public static IReadOnlyList<(string AsString, object OriginalValue)> ToUniqueValues(IReadOnlyList<object> items, string propertyName, string friendlyPropertyName, PropertyValueCompareEquivalent tolerance) {
             if (items.Count < 1)
                 return new List<(string, object)>();
 
             var propertyInfo = items[0].GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
 
             if (IsDateTime(propertyInfo))
-                return ToUniqueValuesDateTime(items, propertyName, tolerance);
+                return ToUniqueValuesDateTime(items, propertyName, friendlyPropertyName, tolerance);
             else if (IsNumber(propertyInfo))
-                return ToUniqueValuesNumbers(items, propertyName, tolerance);
+                return ToUniqueValuesNumbers(items, propertyName, friendlyPropertyName, tolerance);
             else
-                return ToUniqueValuesStrings(items, propertyName, tolerance);
+                return ToUniqueValuesStrings(items, propertyName, friendlyPropertyName,tolerance);
         }
 
     }

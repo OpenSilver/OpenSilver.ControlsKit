@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using DotNetForHtml5.Core;
+using FastGrid.FastGrid.Column;
 
 namespace FastGrid.FastGrid
 {
@@ -120,14 +121,14 @@ namespace FastGrid.FastGrid
         public static Path SortPath() {
             var path = new Path {
                 Data = SortGeometry(), 
-                Fill = new SolidColorBrush(Colors.Gray), 
+                Fill = new SolidColorBrush(Color.FromArgb(255, 1, 119, 192)),
                 RenderTransformOrigin = new Point(0.5, 0.5),
                 Opacity = 0,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 6, 0, 0),
                 Stretch = Stretch.Fill, 
-                Width = 6, Height = 4,
+                Width = 9, Height = 6,
+                Margin = new Thickness(0, 0, 0, 0),
                 RenderTransform = new RotateTransform { Angle = 180 },
             };
             return path;
@@ -170,8 +171,7 @@ namespace FastGrid.FastGrid
                 var tb = new TextBlock {
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = headerMargin,
-                    FontSize = 14,
+                    Margin = headerMargin,                   
                 };
                 grid.SetBinding(Grid.WidthProperty, new Binding("Width"));
                 grid.SetBinding(Grid.MinWidthProperty, new Binding("MinWidth"));
@@ -179,6 +179,10 @@ namespace FastGrid.FastGrid
                 grid.SetBinding(Grid.VisibilityProperty, new Binding("IsVisible") { Converter = new BooleanToVisibilityConverter() });
 
                 tb.SetBinding(TextBlock.TextProperty, new Binding("HeaderText"));
+                tb.SetBinding(TextBlock.FontSizeProperty, new Binding("HeaderFontSize"));
+                tb.SetBinding(TextBlock.ForegroundProperty, new Binding("HeaderForeground"));
+                tb.SetBinding(TextBlock.FontWeightProperty, new Binding("HeaderFontWeight"));
+                tb.SetBinding(TextBlock.FontFamilyProperty, new Binding("HeaderFontFamily"));
 
                 var path = SortPath();
                 var filterButton = new ContentControl {
@@ -194,9 +198,10 @@ namespace FastGrid.FastGrid
                     VerticalAlignment = VerticalAlignment.Stretch,
                 };
                 var rect = new Rectangle {
-                    Fill = new SolidColorBrush(Colors.Gray),
                     Width = 1, 
+                    Fill = new SolidColorBrush(Color.FromRgb(71, 71, 71)),
                 };
+                Canvas.SetZIndex(rect, 1000);
                 const int TRANSPARENT_WIDTH = 10;
                 var transparentRect = new Rectangle {
                     Fill = new SolidColorBrush(Colors.Transparent),
@@ -309,5 +314,45 @@ namespace FastGrid.FastGrid
                 path.Opacity = 0;
             }
         }
+
+        public static DataTemplate DefaultHeaderColumnGroupTemplate() {
+            return DefaultHeaderColumnGroupTemplate(new Thickness(5, 0, 5, 0));
+        }
+        public static DataTemplate DefaultHeaderColumnGroupTemplate(Thickness headerMargin) {
+            var dt = FastGridUtil.CreateDataTemplate(() => {
+                /*
+                    <Grid Width="{Binding Width}" Visibility="{Binding IsVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding HeaderText}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10 0"/>
+                    </Grid>                
+                 */
+                var grid = new Grid {
+                    Background = new SolidColorBrush(Colors.Transparent),
+                };
+                var tb = new TextBlock {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = headerMargin,
+                    FontSize = 14,
+                };
+                grid.SetBinding(Grid.WidthProperty, new Binding("Width"));
+                grid.SetBinding(Grid.BackgroundProperty, new Binding("NonEmptyGroupHeaderBackground"));
+                grid.SetBinding(Grid.MarginProperty, new Binding("GroupHeaderPadding"));
+                tb.SetBinding(TextBlock.TextProperty, new Binding("ColumnGroupName"));
+                tb.SetBinding(TextBlock.ForegroundProperty, new Binding("GroupHeaderForeground"));
+
+                // note: right now, I don't care about visibility, we don't need it at this time
+
+                var canvas = new Canvas {
+                    VerticalAlignment = VerticalAlignment.Stretch,
+                };
+
+                grid.Children.Add(tb);
+                grid.Children.Add(canvas);
+
+                return grid;
+            });
+            return dt;
+        }
+
     }
 }

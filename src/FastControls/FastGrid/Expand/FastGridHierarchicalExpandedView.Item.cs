@@ -56,9 +56,12 @@ namespace FastGrid.FastGrid.Expand {
 
                 var headerId = (Children.Count > 0) ? Children[0].RowInfo.HeaderId : ++_nextHeaderId;
                 var newChildren = new List<Item> ();
-                for (int i = 0; i < DataHolder.HeaderRowCount; ++i)
-                    newChildren.Add(
-                        new Item(new RowInfo(DataHolder, new object(), headerId, DataHolder.HeaderRowCount, i, RowInfo.IndentLevel + 1 )));
+                var areChildrenOfRoot = ReferenceEquals(self.MainDataHolder, DataHolder);
+                if (!areChildrenOfRoot)
+                    for (int i = 0; i < DataHolder.HeaderRowCount; ++i) {
+                        var ri = new RowInfo(DataHolder, new object(), headerId, DataHolder.HeaderRowCount, i, RowInfo.IndentLevel + 1);
+                        newChildren.Add(new Item(ri));
+                    }
 
                 foreach (var si in DataHolder.SortedItems) {
                     if (oldItems.TryGetValue(si, out var existingChild)) {
@@ -86,7 +89,7 @@ namespace FastGrid.FastGrid.Expand {
                 if (Collection != null && CollectionLength() > 0) {
                     var hci = self.ObjectTypeFunc( CollectionItem(0));
 
-                    DataHolder = new FastGridViewDataHolder(self, hci.InternalColumns.Clone(), hci.HeaderTemplate, headerRowCount: hci.HeaderRowCount);
+                    DataHolder = new FastGridViewDataHolder(self, hci.InternalColumns.Clone(self.FastGridViewStyler), hci.HeaderTemplate, hci.ColumnGroupTemplate, headerRowCount: hci.HeaderRowCount);
                     // this will force a UI redraw, which will then redraw the children
                     DataHolder.SetSource(Collection);
                 } else 

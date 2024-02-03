@@ -77,6 +77,8 @@ namespace FastGrid.FastGrid.Data
         }
 
         public void ClearRows() {
+            foreach (var row in _rows)
+                FastGridUtil.SetDataContext(row, null, out _);
             _rows.Clear();
         }
 

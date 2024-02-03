@@ -33,6 +33,10 @@ namespace FastGrid.FastGrid.Expand
             // nothing to do, no Expand allowed
         }
 
+        public void FullReFilter() {
+            Root.FullReFilter();
+        }
+
 
         // extra optimization - if this is towards the end, and we could actually see more object, return an index that will show as many objects as possbible
         //
@@ -59,6 +63,9 @@ namespace FastGrid.FastGrid.Expand
 
         // returns null if not found
         public object RowIndexToObject(int idx) {
+            if (Root.SortedItems == null)
+                return null;
+
             if (idx >= 0 && idx < Root.SortedItems.Count)
                 return Root.SortedItems[idx];
             else
@@ -66,7 +73,7 @@ namespace FastGrid.FastGrid.Expand
         }
 
         public RowInfo RowIndexToInfo(int idx) {
-            return new RowInfo(Root, RowIndexToObject(idx)) ;
+            return new RowInfo(Root, RowIndexToObject(idx), indentLevel: 0) ;
         }
 
 

@@ -70,6 +70,11 @@ namespace FastGrid.FastGrid
             if (Math.Abs(fe.Height - height) > TOLERANCE || double.IsNaN(fe.Height))
                 fe.Height = height;
         }
+        public static void SetZIndex(FrameworkElement fe, int zindex) {
+            if (Canvas.GetZIndex(fe) != zindex)
+                Canvas.SetZIndex(fe, zindex);
+        }
+
 
         public static void SetOpacity(FrameworkElement fe, double opacity) {
             if (Math.Abs(fe.Opacity - opacity) > TOLERANCE)
@@ -109,6 +114,11 @@ namespace FastGrid.FastGrid
                 fe.VerticalAlignment = val;
         }
 
+        public static void SetText(TextBlock tb, string text) {
+            if (tb.Text != text)
+                tb.Text = text;
+        }
+
 
 
         public static T TryGetAscendant<T>(FrameworkElement fe) where T : FrameworkElement {
@@ -132,12 +142,18 @@ namespace FastGrid.FastGrid
         }
 
         public static void SetControlBackground(FrameworkElement fe, Brush bg) {
-            if (fe is Control control) 
-                control.Background = bg;
-            else if (fe is Panel panel)
-                panel.Background = bg;
-            else if (fe is Border border)
-                border.Background = bg;
+            if (fe is Control control) {
+                if (!ReferenceEquals(control.Background, bg))
+                    control.Background = bg;
+            }
+            else if (fe is Panel panel) {
+                if (!ReferenceEquals(panel.Background, bg))
+                    panel.Background = bg;
+            }
+            else if (fe is Border border) {
+                if (!ReferenceEquals(border.Background, bg))
+                    border.Background = bg;
+            }
         }
 
 
@@ -173,11 +189,12 @@ namespace FastGrid.FastGrid
 
         public static ItemsControl NewHeaderControl() {
             var ipt = CreateItemsPanelTemplate(() => new StackPanel { Orientation = Orientation.Horizontal });
-            return new ItemsControl {
+            var ic = new ItemsControl {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
                 ItemsPanel = ipt,
             };
+            return ic;
         }
     }
 }

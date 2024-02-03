@@ -22,7 +22,7 @@ namespace FastGrid.FastGrid.Expand
 
         public FastGridHierarchicalExpandedView(FastGridView self) {
             _self = self;
-            _root = new Item(new RowInfo(null,null)) {
+            _root = new Item(new RowInfo(null,null, indentLevel: -1)) {
                 DataHolder = _self.MainDataHolder,
             };
         }
@@ -135,6 +135,12 @@ namespace FastGrid.FastGrid.Expand
             foreach (var sub in item.Children)
                 Walk(sub, action);
         }
+        private void Walk(Item item, Action<Item> action, Func<Item,bool> walkChildrenFunc) {
+            action(item);
+            if (walkChildrenFunc(item))
+                foreach (var sub in item.Children)
+                    Walk(sub, action);
+        }
 
         private Item FirstOrDefault(Item item, Func<Item, bool> action) {
             if (action(item))
@@ -173,7 +179,7 @@ namespace FastGrid.FastGrid.Expand
 
             foreach (var si in _self.MainDataHolder.SortedItems) {
                 var coll = _self.ExpandFunc(si);
-                _root.Children.Add(new Item(new RowInfo(_self.MainDataHolder, si)) {
+                _root.Children.Add(new Item(new RowInfo(_self.MainDataHolder, si, indentLevel: 0)) {
                     Collection = coll,
                 });
             }
@@ -218,8 +224,12 @@ namespace FastGrid.FastGrid.Expand
 
         public void OnCollectionUpdate(FastGridViewDataHolder dataHolder) {
             _itemsAsList = null;
-            if (ReferenceEquals(dataHolder, _self.MainDataHolder) )
-                Initialize();
+            if (ReferenceEquals(dataHolder, _self.MainDataHolder)) {
+                if (_root.Children.Count == 0)
+                    Initialize();
+                else 
+                    SubRefresh(dataHolder);
+            }
             else 
                 SubRefresh(dataHolder);
         }
@@ -230,5 +240,8 @@ namespace FastGrid.FastGrid.Expand
             row.UpdateExpandCell(item.CanBeExpanded, item.IsExpanded);
         }
 
+        public void FullReFilter() {
+            Walk(_root, (i) => { i.DataHolder.FullReFilter(); }, i => i.IsExpanded);
+        }
     }
 }

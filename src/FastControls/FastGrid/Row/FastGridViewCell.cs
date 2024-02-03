@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Path = System.Windows.Shapes.Path;
 
-namespace FastGrid.FastGrid
+namespace FastGrid.FastGrid.Row
 {
     internal class FastGridViewCell : ContentControl, INotifyPropertyChanged
     {
@@ -28,12 +28,14 @@ namespace FastGrid.FastGrid
 
         private bool _isHovered = false;
 
-        public FastGridViewColumn Column {
+        public FastGridViewColumn Column
+        {
             get => _column;
             set => _column = value;
         }
 
-        public FastGridViewCell(FastGridViewColumn column) {
+        public FastGridViewCell(FastGridViewColumn column)
+        {
             _column = column;
             CustomLayout = true;
             HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -43,7 +45,8 @@ namespace FastGrid.FastGrid
         }
 
 
-        private async void TryInitialize() {
+        private async void TryInitialize()
+        {
             if (_isInitialized)
                 return; // already initialized
             if (!IsFullyLoaded())
@@ -54,9 +57,11 @@ namespace FastGrid.FastGrid
             await Task.Delay(100);
 
             var cp = VisualTreeHelper.GetChild(this, 0) as ContentPresenter;
-            if (VisualTreeHelper.GetChildrenCount(cp) > 0) {
+            if (VisualTreeHelper.GetChildrenCount(cp) > 0)
+            {
                 var border = VisualTreeHelper.GetChild(cp, 0) as Border;
-                if (border?.Name == FastGridUtil.EXPANDER_BORDER_NAME) {
+                if (border?.Name == FastGridUtil.EXPANDER_BORDER_NAME)
+                {
                     // it's the Expander column
                     border.MouseLeftButtonDown += Border_MouseLeftButtonDown;
                 }
@@ -70,24 +75,30 @@ namespace FastGrid.FastGrid
             SubscribeToTooltip(null);
         }
 
-        private void SubscribeToTooltip(object oldValue) {
-            if (_column.ToolTipPropertyName != "" && oldValue is INotifyPropertyChanged oldNotifyPropertyChanged) {
+        private void SubscribeToTooltip(object oldValue)
+        {
+            if (_column.ToolTipPropertyName != "" && oldValue is INotifyPropertyChanged oldNotifyPropertyChanged)
+            {
                 oldNotifyPropertyChanged.PropertyChanged -= NotifyPropertyChanged_PropertyChanged;
             }
-            if (_column.ToolTipPropertyName != "" && DataContext is INotifyPropertyChanged notifyPropertyChanged) {
+            if (_column.ToolTipPropertyName != "" && DataContext is INotifyPropertyChanged notifyPropertyChanged)
+            {
                 notifyPropertyChanged.PropertyChanged += NotifyPropertyChanged_PropertyChanged;
             }
             UpdateToolTip();
         }
 
-        private void NotifyPropertyChanged_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void NotifyPropertyChanged_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
             if (e.PropertyName == _column.ToolTipPropertyName)
                 UpdateToolTip();
         }
 
         // IMPORTANT: initially, I would set the tooltip on OnMouseEnter -- but that is too late, and due to how it's handled in OpenSilver, it just wouldn't work
-        public void UpdateToolTip() {
-            if (_column.ToolTipPropertyName != "" && DataContext != null) {
+        public void UpdateToolTip()
+        {
+            if (_column.ToolTipPropertyName != "" && DataContext != null)
+            {
                 var cp = VisualTreeHelper.GetChild(this, 0) as ContentPresenter;
                 var property = DataContext.GetType().GetProperty(_column.ToolTipPropertyName);
                 var value = property.GetValue(DataContext);
@@ -95,12 +106,14 @@ namespace FastGrid.FastGrid
             }
         }
 
-        private void FastGridViewCell_Loaded(object sender, RoutedEventArgs e) {
+        private void FastGridViewCell_Loaded(object sender, RoutedEventArgs e)
+        {
             TryInitialize();
         }
 
-        private void FastGridViewCell_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-            
+        private void FastGridViewCell_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
             var childCount = VisualTreeHelper.GetChildrenCount(this);
             if (childCount < 1)
                 return;
@@ -116,24 +129,28 @@ namespace FastGrid.FastGrid
             SubscribeToTooltip(e.OldValue);
         }
 
-        public override void OnApplyTemplate() {
+        public override void OnApplyTemplate()
+        {
             base.OnApplyTemplate();
             TryInitialize();
         }
 
-        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
             var row = FastGridUtil.TryGetAscendant<FastGridViewRow>(this);
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
             view.OnExpandToggle(row.RowObject);
             e.Handled = true;
         }
 
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs eventArgs) {
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs eventArgs)
+        {
             // later: needed for CellEditTemplate
             base.OnMouseLeftButtonDown(eventArgs);
         }
 
-        internal void UpdateExpandCell(bool canExpand, bool isExpanded) {
+        internal void UpdateExpandCell(bool canExpand, bool isExpanded)
+        {
             if (!_isInitialized)
                 return;
 
@@ -153,18 +170,21 @@ namespace FastGrid.FastGrid
         }
 
 
-        public void UpdateWidth() {
+        public void UpdateWidth()
+        {
             FastGridUtil.SetWidth(this, _column.Width);
             // note: I don't really care about Min/MaxWidth -- the column (header) itself deals with that
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null) {
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
             OnPropertyChanged(propertyName);

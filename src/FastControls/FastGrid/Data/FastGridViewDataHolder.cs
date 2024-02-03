@@ -1,4 +1,5 @@
-﻿using FastGrid.FastGrid.Filter;
+﻿using FastGrid.FastGrid.Column;
+using FastGrid.FastGrid.Filter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,11 +8,9 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Xml.Linq;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace FastGrid.FastGrid.Data
 {
@@ -36,6 +35,12 @@ namespace FastGrid.FastGrid.Data
         internal bool _needsFullReSort = false;
         private bool _needsReSort = false;
         private bool _needsRebuildHeader = false;
+        private ItemsControl _headerControl;
+        private Grid _headerBackground;
+        private Grid _columnGroupBackground;
+        private ItemsControl _columnGroupControl;
+        private bool _columnsGroupAddedToCanvas = false;
+        private DataTemplate _columnGroupTemplate;
 
         public bool HasSource => _items != null;
         public bool IsEmpty => _items == null || _items.Count < 1;
@@ -47,7 +52,42 @@ namespace FastGrid.FastGrid.Data
 
         private static Action<string> Logger => FastGridView.Logger;
 
-        public ItemsControl HeaderControl { get; } = FastGridUtil.NewHeaderControl();
+        public bool NeedsColumnGroup() => Columns.Any(c => c.ColumnGroupName != "");
+
+        public ItemsControl HeaderControl() {
+            if (_headerControl == null) {
+                _headerControl = FastGridUtil.NewHeaderControl();
+                _headerControl.SizeChanged += headerControl_SizeChanged;
+            }
+
+            return _headerControl;
+        }
+        public Grid HeaderBackground() {
+            if (_headerBackground == null) {
+                _headerBackground = new Grid();
+            }
+
+            return _headerBackground;
+        }
+        // ... just in case we have a column group
+        public ItemsControl ColumnGroupControl() {
+            Debug.Assert(NeedsColumnGroup());
+
+            if (_columnGroupControl == null) {
+                _columnGroupControl = FastGridUtil.NewHeaderControl();
+            }
+
+            return _columnGroupControl;
+        }
+        public Grid ColumnGroupBackground() {
+            if (_columnGroupBackground == null) {
+                _columnGroupBackground = new Grid();
+            }
+
+            return _columnGroupBackground;
+        }
+
+
         public int HeaderRowCount { get; }
 
 
@@ -62,11 +102,12 @@ namespace FastGrid.FastGrid.Data
 
         public bool IsDisposed => _columns == null;
 
-        public FastGridViewDataHolder(FastGridView self, FastGridViewColumnCollectionInternal columns, DataTemplate headerTemplate, int headerRowCount) {
+        public FastGridViewDataHolder(FastGridView self, FastGridViewColumnCollectionInternal columns, DataTemplate headerTemplate, DataTemplate columnGroupTemplate, int headerRowCount) {
             Debug.Assert(columns != null);
             _self = self;
             _columns = columns;
             _columns.DataHolder = this;
+            _columnGroupTemplate = columnGroupTemplate;
             HeaderRowCount = headerRowCount;
 
             _sort = new FastGridViewSort(this, self.Name);
@@ -76,12 +117,13 @@ namespace FastGrid.FastGrid.Data
                 _self.PostponeUpdateUI();
             };
 
-            HeaderControl.ItemTemplate = headerTemplate;
+            HeaderControl().ItemTemplate = headerTemplate;
             if (self.IsHierarchical)
                 columns.EnsureExpandColumn();
             CreateHeader();
-            _self.canvas.Children.Add(HeaderControl);
-            FastGridUtil.SetLeft(HeaderControl, FastGridViewDrawController.OUTSIDE_SCREEN);
+            _self.canvas.Children.Add(HeaderBackground());
+            _self.canvas.Children.Add(HeaderControl());
+            FastGridUtil.SetLeft(HeaderControl(), FastGridViewDrawController.OUTSIDE_SCREEN);
         }
 
 
@@ -97,6 +139,23 @@ namespace FastGrid.FastGrid.Data
                 var filterItem = Filter.GetOrAddFilterForProperty(column);
                 return filterItem;
             }
+        }
+
+        private void headerControl_SizeChanged(object sender, SizeChangedEventArgs e) {
+            var width = e.NewSize.Width;
+            OnNewHeaderWidth(width);
+            HeaderBackground().Height = HeaderControl().Height;
+            HeaderBackground().Width = width;
+        }
+
+        private void OnNewHeaderWidth(double width) {
+            var auto = Columns.FirstOrDefault(c => c.AutoWidth > 0);
+            if (auto == null)
+                return;
+            var otherWidth = Columns.Sum(c => c.AutoWidth > 0 ? 0 : c.Width);
+            var autoWidth = width - otherWidth;
+            if (autoWidth >= auto.MinWidth)
+                auto.Width = autoWidth;
         }
 
         internal void CreateFilter() {
@@ -201,6 +260,8 @@ namespace FastGrid.FastGrid.Data
             switch (propertyName) {
             case "IsVisible": 
                 _self.PostponeUpdateUI();
+                if (NeedsColumnGroup())
+                    UpdateColumnGroupWidths();
                 break;
 
             case "IsResizingColumn":
@@ -228,6 +289,8 @@ namespace FastGrid.FastGrid.Data
                     _self.RowProvider.UpdateUI();
                     _self.PostponeUpdateUI();
                 }
+                if (NeedsColumnGroup())
+                    UpdateColumnGroupWidths();
                 break;
             
             case "MinWidth": 
@@ -272,6 +335,50 @@ namespace FastGrid.FastGrid.Data
             case "CanResize": break;
             case "CellTemplate": break;
             case "CellEditTemplate": break;
+                case "HeaderForeground": break;
+                case "HeaderFontSize": break;
+            }
+        }
+
+        private IReadOnlyList<FastGridViewColumnGroup> CreateColumnGroups() {
+            if (_columns.Count < 1)
+                return new List<FastGridViewColumnGroup>();
+
+            var sortedColumns = HeaderControl().ItemsSource as IReadOnlyList<FastGridViewColumn>;
+            var names = sortedColumns.Where(c =>c.ColumnGroupName != "").Select(c => c.ColumnGroupName).Distinct().ToList();
+            if (sortedColumns[0].ColumnGroupName == "")
+                // the idea: in this case, the first area is without text
+                names.Insert(0, "");
+
+            return names.Select(n => new FastGridViewColumnGroup {
+                ColumnGroupName = n, Width = 0,
+            }).ToList();
+        }
+
+        private void UpdateColumnGroupWidths() {
+            if (_columns.Count < 1)
+                return;
+            if (_needsRebuildHeader)
+                return; // we'll be called as part of rebuilding the header
+            var sortedColumns = HeaderControl().ItemsSource as IReadOnlyList<FastGridViewColumn>;
+            if (sortedColumns == null || sortedColumns.Count != _columns.Count)
+                return; // we'll be called as part of rebuilding the header
+
+            var columnGroups = ColumnGroupControl().ItemsSource as IReadOnlyList<FastGridViewColumnGroup>;
+            var isEmptyTextColumn = sortedColumns[0].ColumnGroupName == "";
+            var padding = _self.GroupHeaderPadding.Left + _self.GroupHeaderPadding.Right;
+            foreach (var cg in columnGroups) {
+                if (isEmptyTextColumn) {
+                    isEmptyTextColumn = false;
+                    var emptyWidth = 0d;
+                    foreach (var column in _columns) {
+                        if (column.ColumnGroupName != "")
+                            break;
+                        emptyWidth += column.IsVisible ? column.Width : 0;
+                    }
+                    cg.Width = emptyWidth - padding;
+                } else
+                    cg.Width = _columns.Sum(c => c.ColumnGroupName == cg.ColumnGroupName && cg.IsVisible ? c.Width : 0) - padding;
             }
         }
 
@@ -287,7 +394,26 @@ namespace FastGrid.FastGrid.Data
             // once column order changes -> make sure we reflect that instantly
             _self.RowProvider.UpdateUI();
 
-            HeaderControl.ItemsSource = _columns.OrderBy(c => c.DisplayIndex).ToList();
+            if (_self.IsHierarchical)
+                _columns.EnsureExpandColumn();
+            HeaderControl().ItemsSource = _columns.OrderBy(c => c.DisplayIndex).ToList();
+            foreach(var col in _columns)
+                _self.FastGridViewStyler.StyleColumn(col);
+            if (NeedsColumnGroup()) {
+                if (ColumnGroupControl().ItemTemplate == null)
+                    ColumnGroupControl().ItemTemplate = _columnGroupTemplate;
+                ColumnGroupControl().ItemsSource = CreateColumnGroups();
+                UpdateColumnGroupWidths();
+                if (!_columnsGroupAddedToCanvas) {
+                    _columnsGroupAddedToCanvas = true;
+                    _self.canvas.Children.Add(ColumnGroupBackground());
+                    _self.canvas.Children.Add(ColumnGroupControl());
+
+                    GroupHeaderBackgroundColorChanged(_self.GroupHeaderBackground);
+                    GroupHeaderForegroundColorChanged(_self.GroupHeaderForeground);
+                    GroupHeaderPaddingChanged(_self.GroupHeaderPadding);
+                }
+            }
         }
 
         public bool NeedsCollectionUpdate => _needsRefilter || _needsFullReSort || _needsReSort;
@@ -385,62 +511,66 @@ namespace FastGrid.FastGrid.Data
 
 
         private void FastGridView_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-
-            // search for outdated references in selected items
-            if (e.NewItems != null)
-            {
-                // IMPORTANT:
-                // I'm not touching old items. This is because if I have a selected item that is removed, that won't be visible to the user anyway.
-                //
-                // But more importantly, when something is replaced, it's done via a Remove + Insert.
-                // So, on any update, we could end up with that item being removed from the selection
-                var selectedItems = _self.GetSelection().ToList() ;
-                var anyChange = false;
-                for (int i = 0; i < selectedItems.Count; i++)
+            try {
+                // search for outdated references in selected items
+                if (e.NewItems != null)
                 {
-                    foreach (var item in e.NewItems)
+                    // IMPORTANT:
+                    // I'm not touching old items. This is because if I have a selected item that is removed, that won't be visible to the user anyway.
+                    //
+                    // But more importantly, when something is replaced, it's done via a Remove + Insert.
+                    // So, on any update, we could end up with that item being removed from the selection
+                    var selectedItems = _self.GetSelection().ToList() ;
+                    var anyChange = false;
+                    for (int i = 0; i < selectedItems.Count; i++)
                     {
-                        if (RowEquals(selectedItems[i], item))
+                        foreach (var item in e.NewItems)
                         {
-                            selectedItems[i] = item;
-                            anyChange = true;
-                            continue;
+                            if (RowEquals(selectedItems[i], item))
+                            {
+                                selectedItems[i] = item;
+                                anyChange = true;
+                                continue;
+                            }
                         }
                     }
+                    if (anyChange)
+                        SetSelection(selectedItems, _self.IsHierarchical ? -1 : _self.DrawController.TopRowIndex);
                 }
-                if (anyChange)
-                    SetSelection(selectedItems, _self.IsHierarchical ? -1 : _self.DrawController.TopRowIndex);
-            }
 
-            if (IsEditingFilter)
-                // the idea -- once the user stops filtering, we'll do a full refilter + resort anyway
-                return;
+                if (IsEditingFilter)
+                    // the idea -- once the user stops filtering, we'll do a full refilter + resort anyway
+                    return;
 
-            if (_self.CanUserSortColumns || _self.IsFilteringAllowed) {
-                switch (e.Action) {
-                case NotifyCollectionChangedAction.Add:
-                case NotifyCollectionChangedAction.Remove:
-                    if (e.NewItems != null)
-                        foreach (var item in e.NewItems)
-                            OnAddedItem(item);
-                    if (e.OldItems != null)
-                        foreach(var item in e.OldItems)
-                            OnRemovedItem(item);
-                    break;
+                if (_self.CanUserSortColumns || _self.IsFilteringAllowed) {
+                    switch (e.Action) {
+                    case NotifyCollectionChangedAction.Add:
+                    case NotifyCollectionChangedAction.Remove:
+                        if (e.NewItems != null)
+                            foreach (var item in e.NewItems)
+                                OnAddedItem(item);
+                        if (e.OldItems != null)
+                            foreach(var item in e.OldItems)
+                                OnRemovedItem(item);
+                        break;
 
-                    // consider this is a complete collection reset
-                default:
-                    if (_self.IsFilteringAllowed)
-                        _needsRefilter = true;
-                    if (_self.CanUserSortColumns)
-                        _needsFullReSort = true;
-                    //Logger($"Fastgrid {Name} - needs refilter/resort");
-                    _self.OnCollectionUpdate(this);
-                    break;
+                        // consider this is a complete collection reset
+                    default:
+                        if (_self.IsFilteringAllowed)
+                            _needsRefilter = true;
+                        if (_self.CanUserSortColumns)
+                            _needsFullReSort = true;
+                        //Logger($"Fastgrid {Name} - needs refilter/resort");
+                        _self.OnCollectionUpdate(this);
+                        break;
+                    }
                 }
-            }
 
-            _self.PostponeUpdateUI();
+                _self.PostponeUpdateUI();
+            }
+            catch (Exception exception) {
+                Logger($"FATAL: exception in collectionchanged {_self.Name} :{e}");
+            }
         }
 
         private bool MatchesFilter(object item) {
@@ -474,7 +604,7 @@ namespace FastGrid.FastGrid.Data
             ComputeTemporaryFilterItems(column);
             editFilterCtrl.ViewModel.EditColumn = column;
             var filterItem = Filter.GetOrAddFilterForProperty(column);
-            var uniqueValues = FastGridViewFilterUtil.ToUniqueValues(FilteredItems, column.DataBindingPropertyName, filterItem.CompareEquivalent);
+            var uniqueValues = FastGridViewFilterUtil.ToUniqueValues(FilteredItems, column.DataBindingPropertyName, column.FilterPropertyName(), filterItem.CompareEquivalent);
             editFilterCtrl.ViewModel.FilterItem = filterItem;
             var selectedValues = new HashSet<string>(filterItem.PropertyValues.Select(v => v.AsString));
             var list = uniqueValues.Select(v => new FastGridViewFilterValueItem {
@@ -583,8 +713,50 @@ namespace FastGrid.FastGrid.Data
 
             Filter.Dispose();
 
-            HeaderControl.ItemsSource = null;
-            _self.canvas.Children.Remove(HeaderControl);
+            HeaderControl().ItemsSource = null;
+            _self.canvas.Children.Remove(HeaderControl());
+            _self.canvas.Children.Remove(HeaderBackground());
+
+            if (_headerControl != null)
+                _headerControl.SizeChanged -= headerControl_SizeChanged;
+
+            if (_columnGroupControl != null) {
+                _columnGroupControl.ItemsSource = null;
+                _self.canvas.Children.Remove(_columnGroupControl);
+                _self.canvas.Children.Remove(_columnGroupBackground);
+            }
+        }
+
+        internal void HeaderBackgroundColorChanged(SolidColorBrush color) {
+            FastGridUtil.SetControlBackground(HeaderBackground(), color);
+        }
+
+        internal void GroupHeaderForegroundColorChanged(SolidColorBrush newValue) {
+            if (!NeedsColumnGroup())
+                return;
+
+            var groupColumns = ColumnGroupControl().ItemsSource as List<FastGridViewColumnGroup>;
+            groupColumns?.ForEach(x => x.GroupHeaderForeground = newValue ?? new SolidColorBrush(Colors.White));
+        }
+
+        internal void GroupHeaderBackgroundColorChanged(SolidColorBrush newValue) {
+            if (!NeedsColumnGroup())
+                return;
+            var groupColumns = ColumnGroupControl().ItemsSource as List<FastGridViewColumnGroup>;
+            groupColumns?.ForEach(x => x.GroupHeaderBackground = newValue ?? new SolidColorBrush(Colors.Transparent));
+        }
+
+        internal void GroupHeaderLineBackgroundChanged(SolidColorBrush newValue) {
+            if (!NeedsColumnGroup())
+                return;
+            FastGridUtil.SetControlBackground(ColumnGroupBackground(), newValue);
+        }
+
+        internal void GroupHeaderPaddingChanged(Thickness newValue) {
+            if (!NeedsColumnGroup())
+                return;
+            var groupColumns = ColumnGroupControl().ItemsSource as List<FastGridViewColumnGroup>;
+            groupColumns?.ForEach(x => x.GroupHeaderPadding = newValue);
         }
     }
 }

@@ -108,37 +108,43 @@ namespace FastGrid.FastGrid.Data
 
 
         private bool TryUpdateUITick() {
-            if (_scrollingTopRowIndex >= 0) {
-                _successfullyDrawnTopRowIdx = -1;
-                if (TryScrollToRowIndex(_scrollingTopRowIndex, out var optimizeDrawNow)) {
-                    // scroll succeeded
-                    if (_scrollingTopRowIndex < Expander.RowCount()) {
-                        _topRow = Expander.RowIndexToObject(_scrollingTopRowIndex);
-                        _topRowIndexWhenNotScrolling = _scrollingTopRowIndex;
-                    } else {
-                        _topRow = Expander.RowCount() > 0 ? Expander.RowIndexToObject(0) : null;
-                        _topRowIndexWhenNotScrolling = 0;
+            try {
+                if (_scrollingTopRowIndex >= 0) {
+                    _successfullyDrawnTopRowIdx = -1;
+                    if (TryScrollToRowIndex(_scrollingTopRowIndex, out var optimizeDrawNow)) {
+                        // scroll succeeded
+                        if (_scrollingTopRowIndex < Expander.RowCount()) {
+                            _topRow = Expander.RowIndexToObject(_scrollingTopRowIndex);
+                            _topRowIndexWhenNotScrolling = _scrollingTopRowIndex;
+                        } else {
+                            _topRow = Expander.RowCount() > 0 ? Expander.RowIndexToObject(0) : null;
+                            _topRowIndexWhenNotScrolling = 0;
+                        }
+                        _scrollingTopRowIndex = -1;
+                        Logger($"new top row (scrolled) {_self.Name}: {_topRowIndexWhenNotScrolling}");
                     }
-                    _scrollingTopRowIndex = -1;
-                    Logger($"new top row (scrolled) {_self.Name}: {_topRowIndexWhenNotScrolling}");
+                    // the idea - allow the new bound rows to be shown visually (albeit, off-screen)
+                    // this way, on the next tick, I can show them to the user visually -- instantly
+                    if (!optimizeDrawNow)
+                        return false;
                 }
-                // the idea - allow the new bound rows to be shown visually (albeit, off-screen)
-                // this way, on the next tick, I can show them to the user visually -- instantly
-                if (!optimizeDrawNow)
-                    return false;
-            }
 
-            var uiAlreadyDrawn = _successfullyDrawnTopRowIdx == _topRowIndexWhenNotScrolling && _successfullyDrawnTopRowIdx >= 0;
-            if (uiAlreadyDrawn) {
-                PreloadAhead();
-                return true;
-            }
+                var uiAlreadyDrawn = _successfullyDrawnTopRowIdx == _topRowIndexWhenNotScrolling && _successfullyDrawnTopRowIdx >= 0;
+                if (uiAlreadyDrawn) {
+                    PreloadAhead();
+                    return true;
+                }
 
-            if (TryUpdateUI())
-                // the idea - first, I show the user the updated UI (which can be time consuming anyway)
-                // then, on the next tick, I will preload stuff ahead, so that if user just moves a few rows up/down, everything is already good to go
-                _successfullyDrawnTopRowIdx = _topRowIndexWhenNotScrolling;
-            return false;
+                if (TryUpdateUI())
+                    // the idea - first, I show the user the updated UI (which can be time consuming anyway)
+                    // then, on the next tick, I will preload stuff ahead, so that if user just moves a few rows up/down, everything is already good to go
+                    _successfullyDrawnTopRowIdx = _topRowIndexWhenNotScrolling;
+                return false;
+            }
+            catch (Exception e) {
+                Logger($"FATAL: exception in UI Tick {_self.Name} {e}");
+                return false;
+            }
         }
 
         private bool CanDraw() {
@@ -242,7 +248,9 @@ namespace FastGrid.FastGrid.Data
                 var top = Canvas.GetTop(header.HeaderControl);
                 DrawHeader(header.HeaderControl, top, header.IndentLevel);
             }
-            FastGridUtil.SetLeft(_self.MainDataHolder.HeaderControl, -_self.HorizontalOffset);
+            FastGridUtil.SetLeft(_self.MainDataHolder.HeaderControl(), -_self.HorizontalOffset);
+            if (_self.MainDataHolder.NeedsColumnGroup())
+                FastGridUtil.SetLeft(_self.MainDataHolder.ColumnGroupControl(), -_self.HorizontalOffset);
         }
 
         internal void UpdateHorizontalScrollbar() {
@@ -265,7 +273,14 @@ namespace FastGrid.FastGrid.Data
                     columnsWidth = curWidth;
             }
 
-            FastGridUtil.SetMaximum( _self.horizontalScrollbar, Math.Max(columnsWidth + EXTRA_SIZE - _self.canvas.Width, 0)); 
+
+            var maxValue = Math.Max(columnsWidth + EXTRA_SIZE - _self.canvas.Width, 0);
+            FastGridUtil.SetMaximum(_self.horizontalScrollbar, maxValue);
+            FastGridUtil.SetIsVisible(_self.horizontalScrollbar, maxValue > 0);
+            if (maxValue == 0) {
+                _self.HorizontalOffset = 0;
+                _self.horizontalScrollbar.Value = 0;
+            }
         }
 
         internal bool TryUpdateUI() {
@@ -293,6 +308,11 @@ namespace FastGrid.FastGrid.Data
                 (_topRow, _topRowIndexWhenNotScrolling) = Expander.ComputeTopRowIndex(_topRow, _topRowIndexWhenNotScrolling);
 
                 double y = _self.HeaderHeight;
+                if (_self.MainDataHolder.Columns.Any(c => c.ColumnGroupName != ""))
+                    // the idea : if we have a column group -> we show that too, at the same height as the header
+                    // at this time, I only support ColumnGroupName for the main header, if the grid is hierarchical
+                    y *= 2;
+
                 var height = _self.canvas.Height;
                 var rowIdx = _topRowIndexWhenNotScrolling;
 
@@ -303,7 +323,7 @@ namespace FastGrid.FastGrid.Data
                 while (y < height && rowIdx < Expander.RowCount()) {
                     var ri = Expander.RowIndexToInfo(rowIdx);
                     if (ri.HeaderControl != null) {
-                        DrawHeader(ri.HeaderControl, y - ri.HeaderRowIndex * _self.RowHeight, ri.IndentLevel );
+                        DrawHeader(ri.HeaderControl, y - ri.HeaderRowIndex * _self.RowHeight, ri.IndentLevel);
                         newVisibleHeaders.Add(ri.HeaderId, ri);
                         rowIdx += ri.HeaderRowCount - ri.HeaderRowIndex;
                         visibleCount += ri.HeaderRowCount - ri.HeaderRowIndex;
@@ -323,8 +343,9 @@ namespace FastGrid.FastGrid.Data
                     var sameContext = ReferenceEquals(row.DataContext, obj);
                     if (!sameContext) {
                         FastGridUtil.SetLeft(row, -100000);
-                        rowChangeCount ++;
+                        rowChangeCount++;
                     }
+
                     UpdateRowColor(row);
                     Expander.UpdateExpandRow(row);
                     FastGridUtil.SetDataContext(row, obj, out _);
@@ -337,6 +358,7 @@ namespace FastGrid.FastGrid.Data
                     ++rowIdx;
                     ++visibleCount;
                 }
+
                 // ... update visible count just once, just in case the above is async
                 _visibleCount = visibleCount;
 
@@ -357,10 +379,13 @@ namespace FastGrid.FastGrid.Data
                 } else {
                     const int WAIT_BLOCK = 3;
                     const int MAX_WAIT_TICKS = 8;
-                    _waitBeforeDrawCount = Math.Min((rowChangeCount + WAIT_BLOCK -1) / WAIT_BLOCK, MAX_WAIT_TICKS) ;
+                    _waitBeforeDrawCount = Math.Min((rowChangeCount + WAIT_BLOCK - 1) / WAIT_BLOCK, MAX_WAIT_TICKS);
                     Logger($"fastgrid {_self.Name} - wait {_waitBeforeDrawCount} ticks");
                 }
 
+            }
+            catch (Exception e) {
+                Logger($"FATAL: exception in TryUpdateUI {_self.Name} {e}");
             } finally {
                 _isUpdatingUI = false;
             }

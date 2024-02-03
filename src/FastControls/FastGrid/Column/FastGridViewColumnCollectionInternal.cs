@@ -71,8 +71,8 @@ namespace FastGrid.FastGrid
         }
 
         // you still need to set DataHolder afterwards
-        public FastGridViewColumnCollectionInternal Clone() {
-            FastGridViewColumnCollectionInternal clone = new FastGridViewColumnCollectionInternal(this.Select(c => c.Clone()));
+        public FastGridViewColumnCollectionInternal Clone(FastGridViewStyler styler) {
+            FastGridViewColumnCollectionInternal clone = new FastGridViewColumnCollectionInternal(this.Select(c => c.Clone(styler)));
             return clone;
         }
 

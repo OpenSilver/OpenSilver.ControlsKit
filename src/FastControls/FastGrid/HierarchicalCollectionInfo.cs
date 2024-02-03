@@ -7,6 +7,7 @@ namespace FastGrid.FastGrid {
     public class HierarchicalCollectionInfo : INotifyPropertyChanged {
         private DataTemplate _rowTemplate = FastGridContentTemplate.DefaultRowTemplate();
         private DataTemplate _headerTemplate = FastGridContentTemplate.DefaultHeaderTemplate();
+        private DataTemplate _columnGroupTemplate = FastGridContentTemplate.DefaultHeaderColumnGroupTemplate();
         internal FastGridViewColumnCollectionInternal InternalColumns { get; }
         public FastGridViewColumnCollection Columns { get; private set; }
         public FastGridViewSortDescriptors SortDescriptors { get; private set; }
@@ -25,6 +26,15 @@ namespace FastGrid.FastGrid {
             set {
                 if (Equals(value, _headerTemplate)) return;
                 _headerTemplate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DataTemplate ColumnGroupTemplate {
+            get => _columnGroupTemplate;
+            set {
+                if (Equals(value, _columnGroupTemplate)) return;
+                _columnGroupTemplate = value;
                 OnPropertyChanged();
             }
         }

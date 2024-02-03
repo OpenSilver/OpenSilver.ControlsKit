@@ -25,10 +25,10 @@ namespace FastGrid.FastGrid.Expand
             HeaderRowIndex = startBeforeCount;
             IndentLevel = indentLevel;
             DataHolder = dataHolder;
-            HeaderControl = dataHolder?.HeaderControl;
+            HeaderControl = dataHolder?.HeaderControl();
         }
 
-        public RowInfo(FastGridViewDataHolder dataHolder, object rowObject, int indentLevel = 0) : this(dataHolder, rowObject, 0, 0, 0, indentLevel) {
+        public RowInfo(FastGridViewDataHolder dataHolder, object rowObject, int indentLevel ) : this(dataHolder, rowObject, 0, 0, 0, indentLevel) {
             HeaderControl = null;
         }
 
@@ -52,5 +52,6 @@ namespace FastGrid.FastGrid.Expand
         int MaxRowIdx();
         void UpdateExpandRow(FastGridViewRow row);
 
+        void FullReFilter();
     }
 }
