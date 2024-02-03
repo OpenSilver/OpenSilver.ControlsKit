@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace FastControls.TestApp.Pages
 {
-    public partial class FastCheckBox : UserControl
+    public partial class FastCheckBox : Page
     {
         public FastCheckBox()
         {

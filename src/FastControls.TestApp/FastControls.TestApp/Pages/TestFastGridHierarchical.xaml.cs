@@ -16,7 +16,7 @@ using TestRadComboBox;
 
 namespace FastControls.TestApp.Pages
 {
-    public partial class TestFastGridHierarchical : UserControl
+    public partial class TestFastGridHierarchical : Page
     {
         public TestFastGridHierarchical()
         {

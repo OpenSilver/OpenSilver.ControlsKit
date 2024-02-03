@@ -1,4 +1,4 @@
-﻿<UserControl
+﻿<Page
     x:Class="FastControls.TestApp.Pages.TestFastGridHierarchical"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -154,4 +154,5 @@
         </local:FastGridView>
 
     </Canvas>
-</UserControl>
+</Page>
+    
