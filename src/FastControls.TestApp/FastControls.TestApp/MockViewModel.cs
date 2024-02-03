@@ -17,7 +17,6 @@ namespace TestRadComboBox
         private string department;
         private string city;
         private int vehicleId;
-        private int pulloutId;
         private DateTime time_ = DateTime.Now;
         private IReadOnlyList<DummyData> _children = new List<DummyData>();
 
@@ -31,14 +30,6 @@ namespace TestRadComboBox
             }
         }
 
-        public int PulloutId {
-            get => pulloutId;
-            set {
-                if (value == pulloutId) return;
-                pulloutId = value;
-                OnPropertyChanged();
-            }
-        }
 
         // must match the Operator.ReportLabel
         public string OperatorReportLabel {
