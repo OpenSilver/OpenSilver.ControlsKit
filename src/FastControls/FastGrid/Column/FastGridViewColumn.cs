@@ -283,7 +283,7 @@ namespace FastGrid.FastGrid
         private bool _canResize = true;
         private bool _isVisible = true;
         private string _headerText = "";
-        private Brush _headerForeground = new SolidColorBrush(Colors.White);
+        private Brush _headerForeground = new SolidColorBrush(Colors.Black);
         private double _headerFontSize = 14;
         private FontWeight _headerFontWeight = FontWeights.Normal;
         private FontFamily _headerFontFamily = null;
