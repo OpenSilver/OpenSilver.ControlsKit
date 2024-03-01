@@ -89,12 +89,14 @@ namespace FastGrid.FastGrid
             }
         }
 
+        private static readonly FontFamily DefaultHeaderFontFamily = (FontFamily)System.Windows.Documents.TextElement.FontFamilyProperty.GetMetadata(typeof(FrameworkElement)).DefaultValue;
 
         public FontFamily HeaderFontFamily
         {
             get => _headerFontFamily;
             set
             {
+                if (value == null) value = DefaultHeaderFontFamily;
                 if (value == _headerFontFamily) return;
                 _headerFontFamily = value;
                 OnPropertyChanged();
@@ -286,7 +288,7 @@ namespace FastGrid.FastGrid
         private Brush _headerForeground = new SolidColorBrush(Colors.Black);
         private double _headerFontSize = 14;
         private FontWeight _headerFontWeight = FontWeights.Normal;
-        private FontFamily _headerFontFamily = null;
+        private FontFamily _headerFontFamily = DefaultHeaderFontFamily;
         private double _maxWidth = double.MaxValue;
         private double _minWidth = 0;
         private double _width = 0;
