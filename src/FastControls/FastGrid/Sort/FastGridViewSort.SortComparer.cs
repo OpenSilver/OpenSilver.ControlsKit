@@ -60,6 +60,8 @@ namespace FastGrid.FastGrid {
             private int CompareValue(object a, object b) {
                 if (a is int)
                     return (int)a - (int)b;
+                if (a is bool)
+                    return ((bool)a ? 1 : 0) - ((bool)b ? 1 : 0);
                 if (a is uint)
                     return (uint)a < (uint)b ? -1 : ( (uint)a > (uint)b ? 1 : 0 );
                 if (a is long)

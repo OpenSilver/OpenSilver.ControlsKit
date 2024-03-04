@@ -11,6 +11,7 @@ namespace FastControls.TestApp.Registry
             Tests = new []
             {
                 new TreeItem("TestFastGridView", "TestFastGridView"),
+                new TreeItem("TestFastGridViewCodeBehind", "TestFastGridViewCodeBehind"),
                 new TreeItem("TestFastGridHierarchical", "TestFastGridHierarchical"),
                 new TreeItem("TestStaggeredPanel", "TestStaggeredPanel"),
                 new TreeItem("FastCheckBox", "FastCheckBox"),

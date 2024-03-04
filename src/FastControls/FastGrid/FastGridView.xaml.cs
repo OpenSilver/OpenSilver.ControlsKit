@@ -633,7 +633,7 @@ namespace FastGrid.FastGrid
 
         private void RowTemplateChanged() {
             HierarchicalRoot.RowTemplate = RowTemplate;
-            Clear(clearSelection: false);
+            ClearImpl(clearSelection: false);
         }
 
         private void HeaderTemplateChanged() {
@@ -663,7 +663,7 @@ namespace FastGrid.FastGrid
 
                 _mainDataHolder.SetSource(ItemsSource);
                 _drawController.SetSource(ItemsSource);
-                Clear();
+                ClearImpl();
                 return;
             }
 
@@ -677,6 +677,13 @@ namespace FastGrid.FastGrid
             ClearSelection();
             _mainDataHolder.SetSource(ItemsSource);
             _drawController.SetSource(ItemsSource);
+
+            if (_mainDataHolder.HeaderControl().Items.Count < 1) {
+                // this can happen when creating columns via code-behind, and we reset the itemssource (in other words, we create the columns once, when we set an itemssource,
+                // and then we set another itemssource with completely different data, which means, re-create the header completely)
+                _mainDataHolder.CreateFilter();
+                _mainDataHolder.CreateHeader();
+            }
         }
 
         public void SuspendRender() => _drawController.SuspendRender();
@@ -896,12 +903,19 @@ namespace FastGrid.FastGrid
                 SelectedItem = null;
         }
 
-        private void Clear(bool clearSelection = true) {
+        private void ClearImpl(bool clearSelection = true) {
             ClearCanvas();
             if (clearSelection)
                 ClearSelection();
             _rowProvider.ClearRows();
             PostponeUpdateUI();
+        }
+
+        public void Clear() {
+            ItemsSource = null;
+            Columns.Clear();
+            MainDataHolder.CreateFilter();
+            MainDataHolder.CreateHeader();
         }
 
         private void SelectShiftAdd(FastGridViewRow row) {
@@ -1042,7 +1056,7 @@ namespace FastGrid.FastGrid
         {
             switch (e.PropertyName) {
                 case "RowTemplate":
-                    Clear(clearSelection: false);
+                    ClearImpl(clearSelection: false);
                     break;
 
                 case "HeaderTemplate": 

@@ -19,6 +19,7 @@ namespace TestRadComboBox
         private int vehicleId;
         private DateTime time_ = DateTime.Now;
         private IReadOnlyList<DummyData> _children = new List<DummyData>();
+        private bool _editableBool;
 
         // allow tree-like structure
         public IReadOnlyList<DummyData> Children {
@@ -131,6 +132,18 @@ namespace TestRadComboBox
         }
 
         public bool IsActive => (OperatorRecordId % 10) == 0;
+
+        public bool EditableBool {
+            get => _editableBool;
+            set {
+                if (value == _editableBool) {
+                    return;
+                }
+
+                _editableBool = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -13,6 +13,10 @@ namespace FastGrid.FastGrid
 
         public IReadOnlyList<FastGridViewFilterItem> FilterItems => _filterItems;
 
+        public void Clear() {
+            _filterItems.Clear();
+        }
+
         public void AddFilter(FastGridViewFilterItem filterItem) {
             Debug.Assert(filterItem.PropertyName != "");
             var foundIdx = _filterItems.FindIndex(fi => fi.PropertyName == filterItem.PropertyName);

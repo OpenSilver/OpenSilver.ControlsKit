@@ -162,6 +162,8 @@ namespace FastGrid.FastGrid.Data
             if (!_self.CanUserSortColumns && !_self.IsFilteringAllowed)
                 return;
 
+            Filter.Clear();
+
             // rationale: allow the user to customize the filter for a column
             //
             // usually, I want to allow customizing the Filter equivalence, for instance, on a Date/time column, I can specify the date/time format
@@ -183,7 +185,7 @@ namespace FastGrid.FastGrid.Data
             // here, each sortable/filterable column needs to have a databinding property name
             foreach (var col in Columns)
                 if ((col.IsFilterable || col.IsSortable) && col.DataBindingPropertyName == "")
-                    throw new Exception($"Fastgrid: if filter and/or sort, you need to set DataBindingPropertyName for all columns ({col.FriendlyName()})");
+                    throw new Exception($"Fastgrid: if filter and/or sort for a column, you need to set DataBindingPropertyName for it ({col.FriendlyName()})");
         }
 
         private void OnColumnSortChanged(FastGridViewColumn col) {

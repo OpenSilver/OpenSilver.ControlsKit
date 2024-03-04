@@ -59,7 +59,7 @@ namespace FastGrid.FastGrid.Filter
                 || t == typeof(char);
         }
 
-        private static bool IsNumber(PropertyInfo pi)
+        internal static bool IsNumber(PropertyInfo pi)
         {
             if (IsNumber(pi.PropertyType))
             {
@@ -71,10 +71,21 @@ namespace FastGrid.FastGrid.Filter
             return (underlyingType != null) && IsNumber(underlyingType);
         }
 
-        private static bool IsDateTime(PropertyInfo pi)
+        internal static bool IsDateTime(PropertyInfo pi)
         {
-            return pi.PropertyType == typeof(DateTime?)
-                || pi.PropertyType == typeof(DateTime);
+            return pi.PropertyType == typeof(DateTime?) || pi.PropertyType == typeof(DateTime);
+        }
+        internal static bool IsBool(PropertyInfo pi)
+        {
+            return pi.PropertyType == typeof(bool?) || pi.PropertyType == typeof(bool);
+        }
+        internal static bool IsString(PropertyInfo pi)
+        {
+            return pi.PropertyType == typeof(string);
+        }
+
+        internal static bool IsEnum(PropertyInfo pi) {
+            return pi.PropertyType.IsEnum;
         }
 
         private static string NumberToString(object a) {
