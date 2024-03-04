@@ -94,9 +94,10 @@ namespace FastGrid.FastGrid
         public FontFamily HeaderFontFamily
         {
             get => _headerFontFamily;
-            set
-            {
-                if (value == null) value = DefaultHeaderFontFamily;
+            set {
+                if (value == null)
+                    value = DefaultHeaderFontFamily;
+
                 if (value == _headerFontFamily) return;
                 _headerFontFamily = value;
                 OnPropertyChanged();
@@ -285,7 +286,7 @@ namespace FastGrid.FastGrid
         private bool _canResize = true;
         private bool _isVisible = true;
         private string _headerText = "";
-        private Brush _headerForeground = new SolidColorBrush(Colors.Black);
+        private Brush _headerForeground = new SolidColorBrush(Colors.White);
         private double _headerFontSize = 14;
         private FontWeight _headerFontWeight = FontWeights.Normal;
         private FontFamily _headerFontFamily = DefaultHeaderFontFamily;

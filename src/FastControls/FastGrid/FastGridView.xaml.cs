@@ -798,13 +798,11 @@ namespace FastGrid.FastGrid
             canvas.Height = e.NewSize.Height;
             UpdateScrollBarsPos();
 
-            // IMPORTANT:
-            // we don't set the width of the header control(s) - it's because they can be a lot bigger than what's visible, and we can 
-            // horizontally scroll them. Our main canvas is clipped, so we're covered
-
+            _mainDataHolder.HeaderControl().Width = e.NewSize.Width;
             _mainDataHolder.HeaderControl().Height = HeaderHeight;
             if (_mainDataHolder.NeedsColumnGroup()) {
                 FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
+                _mainDataHolder.ColumnGroupControl().Width = e.NewSize.Width;
                 _mainDataHolder.ColumnGroupControl().Height = HeaderHeight;
 
                 _mainDataHolder.ColumnGroupBackground().Width = e.NewSize.Width;
