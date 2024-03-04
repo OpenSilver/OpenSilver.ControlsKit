@@ -11,7 +11,7 @@ using OpenSilver.Internal.Xaml.Context;
 
 namespace FastGrid.FastGrid
 {
-    internal static class FastGridUtil
+    public static class FastGridUtil
     {
         private const double TOLERANCE = 0.0001;
         // easy way to figure out if we added the Expander column, for hierarchical grids
