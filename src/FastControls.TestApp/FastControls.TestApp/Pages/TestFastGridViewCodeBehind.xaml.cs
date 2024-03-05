@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using FastGrid.FastGrid;
 using OpenSilver.ControlsKit.FastGrid.DataTemplate;
+using OpenSilver.ControlsKit.FastGrid.Util;
 using TestRadComboBox;
 
 namespace FastControls.TestApp.Pages
@@ -144,6 +145,7 @@ namespace FastControls.TestApp.Pages
             ctrl.Columns[1].Sort = true;
             ctrl.AllowMultipleSelection = false;
         }
+
         private void Page_Loaded(object sender, RoutedEventArgs e) {
             ToggleItemsSource();
         }
