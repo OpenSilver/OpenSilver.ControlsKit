@@ -249,6 +249,10 @@ namespace FastGrid.FastGrid
 
         public bool HideAllRowsOnItemsSourceChanged { get; set; } = true;
 
+        // if false (default), we hide everything when no items to show (efficient)
+        // if true, we'll show the header even if there are no items to show
+        public bool ShowHeaderOnNoItems { get; set; } = false;
+
         internal FastGridViewFilter Filter => _mainDataHolder.Filter;
 
         // optimization: you can set this to true when we're offscreen -- in this case, we'll unbind all rows (so that no unnecessary updates take place)
@@ -300,9 +304,8 @@ namespace FastGrid.FastGrid
         }
 
 
-        // FIXME not implemented yet
         // note: not bindable at this time
-        public bool CanUserReorderColumns { get; set; } = false;
+        public bool CanUserReorderColumns { get; set; } = true;
 
         // note: not bindable at this time
         public bool CanUserResizeRows { get; set; } = true;

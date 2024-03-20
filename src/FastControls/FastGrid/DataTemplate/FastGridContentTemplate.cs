@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Shapes;
 using DotNetForHtml5.Core;
 using FastGrid.FastGrid.Column;
+using Microsoft.Windows;
 
 namespace FastGrid.FastGrid
 {
@@ -157,6 +158,9 @@ namespace FastGrid.FastGrid
         public static DataTemplate DefaultHeaderTemplate() {
             return DefaultHeaderTemplate(new Thickness(5, 0, 5, 0));
         }
+
+
+
         public static DataTemplate DefaultHeaderTemplate(Thickness headerMargin) {
             var dt = FastGridUtil.CreateDataTemplate(() => {
                 const double MIN_WIDTH = 20;
@@ -167,6 +171,7 @@ namespace FastGrid.FastGrid
                  */
                 var grid = new Grid {
                     Background = new SolidColorBrush(Colors.Transparent),
+                    RenderTransform = null,
                 };
                 var tb = new TextBlock {
                     HorizontalAlignment = HorizontalAlignment.Left,
@@ -177,6 +182,9 @@ namespace FastGrid.FastGrid
                 grid.SetBinding(Grid.MinWidthProperty, new Binding("MinWidth"));
                 grid.SetBinding(Grid.MaxWidthProperty, new Binding("MaxWidth"));
                 grid.SetBinding(Grid.VisibilityProperty, new Binding("IsVisible") { Converter = new BooleanToVisibilityConverter() });
+                // CanDrag -> means we can both drag and drop
+                //grid.SetBinding(Grid.AllowDropProperty, new Binding("CanDrag"));
+                grid.AllowDrop = true;
 
                 tb.SetBinding(TextBlock.TextProperty, new Binding("HeaderText"));
                 tb.SetBinding(TextBlock.FontSizeProperty, new Binding("HeaderFontSize"));
@@ -220,19 +228,67 @@ namespace FastGrid.FastGrid
                     Column_PropertyChanged(grid);
                 };
                 grid.MouseLeftButtonUp += (s, a) => {
-                    if ((s as FrameworkElement).DataContext is FastGridViewColumn column) {
-                        if (column.DataBindingPropertyName == "" || !column.IsSortable)
+                    if (s is FrameworkElement fe && fe.DataContext is FastGridViewColumn sourceColumn) {
+                        sourceColumn.MouseLeftDown = FastGridViewColumn.InvalidMousePos;
+                        if (sourceColumn.IsDragging) {
+                            fe.ReleaseMouseCapture();
+                            fe.RenderTransform = null;
+                            sourceColumn.IsDragging = false;
+                            var destColumn = FastGridUtil. FindColumnAtPos(a.GetPosition(null));
+                            if (destColumn != null && !ReferenceEquals(destColumn, sourceColumn)) {
+                                FastGridView.Logger($"dragging column {sourceColumn.FriendlyName()} complete: over {destColumn.FriendlyName()}");
+                                var sourceDislayIndex = sourceColumn.DisplayIndex;
+                                var destDisplayIndex = destColumn.DisplayIndex;
+                                int minIndex = Math.Min(sourceDislayIndex, destDisplayIndex), maxIndex = Math.Max(sourceDislayIndex, destDisplayIndex);
+                                var fastGrid = FastGridUtil.ColumnToView(fe);
+                                var colsToUpdate = fastGrid.Columns.Where(c => c.DisplayIndex >= minIndex && c.DisplayIndex <= maxIndex && !ReferenceEquals(c, sourceColumn)).ToList();
+                                foreach (var c in colsToUpdate)
+                                    c.DisplayIndex = sourceDislayIndex > destDisplayIndex ? c.DisplayIndex + 1 : c.DisplayIndex - 1;
+                                sourceColumn.DisplayIndex = destDisplayIndex;
+                            }
+                            return;
+                        }
+                        if (sourceColumn.DataBindingPropertyName == "" || !sourceColumn.IsSortable)
                             return; // we can't sort by this column
 
-                        if (column.IsSortNone) {
+                        if (sourceColumn.IsSortNone) {
                             // none to ascending
-                            column.Sort = true; 
-                        } else if (column.IsSortAscending) {
+                            sourceColumn.Sort = true; 
+                        } else if (sourceColumn.IsSortAscending) {
                             //ascending to descending
-                            column.Sort = false;
+                            sourceColumn.Sort = false;
                         } else {
                             // descending to none
-                            column.Sort = null; 
+                            sourceColumn.Sort = null; 
+                        }
+                    }
+                };
+                grid.MouseLeftButtonDown += (s, a) => {
+                    if ((s as FrameworkElement).DataContext is FastGridViewColumn column) {
+                        var header = VisualTreeHelper.GetParent(s as DependencyObject) as UIElement;
+                        column.MouseLeftDown = a.GetPosition(header);
+                    }
+                };
+                grid.MouseMove += (s, a) => {
+                    if (s is FrameworkElement fe && fe.DataContext is FastGridViewColumn column && column.CanDrag && column.MouseLeftDown != FastGridViewColumn.InvalidMousePos) {
+                        var header = VisualTreeHelper.GetParent(fe) as UIElement;
+                        var curPos = a.GetPosition(header);
+                        var diffX = Math.Abs(curPos.X - column.MouseLeftDown.X);
+                        var diffY = Math.Abs(curPos.Y - column.MouseLeftDown.Y);
+                        const int MIN_DRAG_PX = 10;
+                        if ((diffX >= MIN_DRAG_PX || diffY >= MIN_DRAG_PX) && !column.IsDragging) {
+                            column.IsDragging = true;
+                            fe.CaptureMouse();
+                            FastGridView.Logger($"dragging column {column.FriendlyName()}");
+                        }
+
+                        if (column.IsDragging) {
+                            if (!(fe.RenderTransform is TranslateTransform))
+                                fe.RenderTransform = new TranslateTransform();
+                            if (fe.RenderTransform is TranslateTransform _translate) {
+                                _translate.X = curPos.X - column.MouseLeftDown.X;
+                                _translate.Y = curPos.Y - column.MouseLeftDown.Y;
+                            }
                         }
                     }
                 };

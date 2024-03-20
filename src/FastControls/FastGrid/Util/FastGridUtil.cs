@@ -175,7 +175,7 @@ namespace FastGrid.FastGrid
             return false;
         }
 
-        public static FastGridViewColumn NewExpanderColumn() {
+        internal static FastGridViewColumn NewExpanderColumn() {
             return new FastGridViewColumn {
                 HeaderText = "",
                 IsFilterable = false,
@@ -187,7 +187,7 @@ namespace FastGrid.FastGrid
             };
         }
 
-        public static ItemsControl NewHeaderControl() {
+        internal static ItemsControl NewHeaderControl() {
             var ipt = CreateItemsPanelTemplate(() => new StackPanel { Orientation = Orientation.Horizontal });
             var ic = new ItemsControl {
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -196,5 +196,27 @@ namespace FastGrid.FastGrid
             };
             return ic;
         }
+
+        internal static FastGridViewColumn FindColumnAtPos(Point p) {
+            var ui = VisualTreeHelper.FindElementInHostCoordinates(p);
+            while (ui != null) {
+                if (ui is FrameworkElement fe && fe.DataContext is FastGridViewColumn column)
+                    return column;
+                ui = VisualTreeHelper.GetParent(ui) as UIElement;
+            }
+            return null;
+        }
+
+        internal static FastGridView ColumnToView(FrameworkElement ctrl) {
+            Debug.Assert(ctrl.DataContext is FastGridViewColumn);
+            while (ctrl != null) {
+                if (ctrl is FastGridView view)
+                    return view;
+                ctrl = VisualTreeHelper.GetParent(ctrl) as FrameworkElement;
+            }
+
+            throw new Exception("FastGridView not found, from column");
+        }
+
     }
 }

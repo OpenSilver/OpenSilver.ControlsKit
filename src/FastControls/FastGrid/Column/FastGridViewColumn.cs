@@ -56,6 +56,20 @@ namespace FastGrid.FastGrid
             }
         }
 
+        // if true, user can drag this column, in order to move it (reorder columns)
+        public bool CanDrag {
+            get => _canDrag;
+            set {
+                if (value == _canDrag) {
+                    return;
+                }
+
+                _canDrag = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         // used in FastGridContentTemplate.DefaultHeaderTemplate
         public Brush HeaderForeground {
             get => _headerForeground;
@@ -78,6 +92,7 @@ namespace FastGrid.FastGrid
         }
 
 
+        // used in FastGridContentTemplate.DefaultHeaderTemplate
         public FontWeight HeaderFontWeight
         {
             get => _headerFontWeight;
@@ -91,6 +106,7 @@ namespace FastGrid.FastGrid
 
         private static readonly FontFamily DefaultHeaderFontFamily = (FontFamily)System.Windows.Documents.TextElement.FontFamilyProperty.GetMetadata(typeof(FrameworkElement)).DefaultValue;
 
+        // used in FastGridContentTemplate.DefaultHeaderTemplate
         public FontFamily HeaderFontFamily
         {
             get => _headerFontFamily;
@@ -254,6 +270,9 @@ namespace FastGrid.FastGrid
         public bool IsSortNone => Sort == null;
         public double SortArrowAngle => IsSortAscending ? 0 : 180;
 
+        internal static readonly Point InvalidMousePos = new Point(-100000, -100000);
+        internal Point MouseLeftDown { get; set; } = InvalidMousePos;
+        internal bool IsDragging { get; set; }
 
         public void ForceUpdateColor() {
             // FIXME for some strange reason, the "Filter.Color" binding doesn't work for filters that are non-root
@@ -295,6 +314,7 @@ namespace FastGrid.FastGrid
         private double _width = 0;
         private int _autoWidth = 0;
         private string _columnGroupName = "";
+        private bool _canDrag = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

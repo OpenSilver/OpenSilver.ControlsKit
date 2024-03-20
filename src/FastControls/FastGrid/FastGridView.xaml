@@ -13,10 +13,10 @@
     </UserControl.Resources>
 
     <Canvas x:Name="canvas" CustomLayout="True" ClipToBounds="True" MouseWheel="canvas_MouseWheel" Background="Transparent">
-        <Canvas>
+        <Canvas Canvas.ZIndex="1000" >
 
-            <ScrollBar x:Name="verticalScrollbar" Orientation="Vertical" Scroll="vertical_bar_scroll" Canvas.ZIndex="1000"/>
             <ScrollBar x:Name="horizontalScrollbar" Orientation="Horizontal" Canvas.ZIndex="1000" Scroll="horiz_bar_scroll" />
+            <ScrollBar x:Name="verticalScrollbar" Orientation="Vertical" Scroll="vertical_bar_scroll" Canvas.ZIndex="1000"/>
             <Rectangle x:Name="scrollGap" Fill="{StaticResource GridView_ScrollViewerIntersectionRectangleBackground}" Canvas.ZIndex="1000" />
 
             <Popup x:Name="editFilterPopup" CustomLayout="True" >
@@ -24,6 +24,7 @@
                                               Width="250" Height="400"
                                               />
             </Popup>
+            
         </Canvas>
 
     </Canvas>

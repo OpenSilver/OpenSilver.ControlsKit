@@ -254,7 +254,8 @@ namespace FastGrid.FastGrid.Data
 
 
         internal void OnColumnsCollectionChanged() {
-
+            if (Columns.Any(c => c.IsFilterable))
+                _self.IsFilteringAllowed = true;
         }
 
 
@@ -386,13 +387,16 @@ namespace FastGrid.FastGrid.Data
 
         private void RebuildHeaderCollection() {
             _ignoreUpdate = true;
+            if (_self.CanUserReorderColumns)
+                foreach (var col in _columns)
+                    col.CanDrag = true;
             for (var index = 0; index < _columns.Count; index++) {
                 var column = _columns[index];
                 if (column.DisplayIndex < 0)
                     column.DisplayIndex = index;
             }
-
             _ignoreUpdate = false;
+
             // once column order changes -> make sure we reflect that instantly
             _self.RowProvider.UpdateUI();
 

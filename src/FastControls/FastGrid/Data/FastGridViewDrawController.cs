@@ -285,9 +285,17 @@ namespace FastGrid.FastGrid.Data
 
         internal bool TryUpdateUI() {
             if (Expander.IsEmpty) {
-                FastGridUtil.SetIsVisible(_self.canvas, false);
-                return false;
+                if (_self.ShowHeaderOnNoItems) {
+                    _self.RowProvider.HideAllRows();
+                    FastGridUtil.SetIsVisible(_self.verticalScrollbar, false);
+                    FastGridUtil.SetIsVisible(_self.scrollGap, false);
+                } else 
+                    FastGridUtil.SetIsVisible(_self.canvas, false);
+                return true;
             }
+
+            FastGridUtil.SetIsVisible(_self.verticalScrollbar, true);
+            FastGridUtil.SetIsVisible(_self.scrollGap, true);
             FastGridUtil.SetIsVisible(_self.canvas, true);
             if (!CanDraw()) {
                 _waitBeforeDrawCount = 0;
