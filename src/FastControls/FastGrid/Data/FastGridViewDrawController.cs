@@ -277,25 +277,28 @@ namespace FastGrid.FastGrid.Data
             var maxValue = Math.Max(columnsWidth + EXTRA_SIZE - _self.canvas.Width, 0);
             FastGridUtil.SetMaximum(_self.horizontalScrollbar, maxValue);
             FastGridUtil.SetIsVisible(_self.horizontalScrollbar, maxValue > 0);
+            FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
             if (maxValue == 0) {
                 _self.HorizontalOffset = 0;
                 _self.horizontalScrollbar.Value = 0;
             }
         }
 
+        private bool ScrollGapVisibility() => _self.verticalScrollbar.IsVisible && _self.horizontalScrollbar.IsVisible;
+
         internal bool TryUpdateUI() {
             if (Expander.IsEmpty) {
                 if (_self.ShowHeaderOnNoItems) {
                     _self.RowProvider.HideAllRows();
                     FastGridUtil.SetIsVisible(_self.verticalScrollbar, false);
-                    FastGridUtil.SetIsVisible(_self.scrollGap, false);
+                    FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
                 } else 
                     FastGridUtil.SetIsVisible(_self.canvas, false);
                 return true;
             }
 
             FastGridUtil.SetIsVisible(_self.verticalScrollbar, true);
-            FastGridUtil.SetIsVisible(_self.scrollGap, true);
+            FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
             FastGridUtil.SetIsVisible(_self.canvas, true);
             if (!CanDraw()) {
                 _waitBeforeDrawCount = 0;

@@ -52,7 +52,7 @@ namespace FastGrid.FastGrid.Expand
         }
 
         public int RowCount() {
-            return Root.SortedItems.Count;
+            return Root.SortedItems?.Count ?? 0;
             
         }
 
