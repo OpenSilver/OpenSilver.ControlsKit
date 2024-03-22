@@ -78,7 +78,7 @@ namespace FastGrid.FastGrid.Expand
         public int MaxRowIdx() {
             EnsureItemsList();
             // ... note: the last row is not fully visible
-            var visibleCount = _self.GuessRowCount();
+            var visibleCount = _self.GuessVisibleRowCount();
             var maxRowIdx = Math.Max(_itemsAsList.Count - visibleCount + 1, 0);
 
             return maxRowIdx;

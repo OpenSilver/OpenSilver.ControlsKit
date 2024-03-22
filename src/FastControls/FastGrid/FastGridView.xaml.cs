@@ -183,7 +183,7 @@ namespace FastGrid.FastGrid
         private int TopRowIndex => _drawController.TopRowIndex;
 
 
-        internal int GuessRowCount() => (int)( canvas.Height / RowHeight);
+        internal int GuessVisibleRowCount() => (int)((canvas.Height - HeaderHeight) / RowHeight) ;
 
 
         public HierarchicalCollectionInfo HierarchicalRoot { get; }
@@ -808,7 +808,7 @@ namespace FastGrid.FastGrid
             canvas.Height = e.NewSize.Height;
             UpdateScrollBarsPos();
 
-            _mainDataHolder.HeaderControl().Width = e.NewSize.Width;
+            //_mainDataHolder.HeaderControl().Width = e.NewSize.Width;
             _mainDataHolder.HeaderControl().Height = HeaderHeight;
             if (_mainDataHolder.NeedsColumnGroup()) {
                 FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
@@ -833,8 +833,6 @@ namespace FastGrid.FastGrid
                 return;
 
             verticalScrollbar.Width = ScrollSize;
-            verticalScrollbar.Height = Math.Max(_actualSize.Height - ScrollSize, 0);
-            horizontalScrollbar.Width = Math.Max(_actualSize.Width - ScrollSize, 0);
             horizontalScrollbar.Height = ScrollSize;
             scrollGap.Height = ScrollSize;
             scrollGap.Width = ScrollSize;
@@ -843,8 +841,36 @@ namespace FastGrid.FastGrid
 
             FastGridUtil.SetLeft(verticalScrollbar, _actualSize.Width - ScrollSize);
             FastGridUtil.SetTop(horizontalScrollbar, _actualSize.Height - ScrollSize);
+
+            // just size, based on which is visible
+            UpdateScrollBarsVisibilityAndSize();
         }
 
+        internal void UpdateScrollBarsVisibilityAndSize(bool? showHorizontal = null, bool? showVertical = null) {
+            var isHorizontalVisible = horizontalScrollbar.IsVisible;
+            var isVerticalVisible = verticalScrollbar.IsVisible;
+
+            if (showVertical == null) {
+                var visibleCount = GuessVisibleRowCount();
+                showVertical = (ExpandController.RowCount() > visibleCount);
+            }
+
+            if (showHorizontal != null) {
+                FastGridUtil.SetIsVisible(horizontalScrollbar, showHorizontal.Value);
+                isHorizontalVisible = showHorizontal.Value;
+            }
+
+            if (showVertical != null) {
+                FastGridUtil.SetIsVisible(verticalScrollbar, showVertical.Value);
+                isVerticalVisible = showVertical.Value;
+            }
+            FastGridUtil.SetIsVisible(scrollGap, isHorizontalVisible && isVerticalVisible);
+
+            var horizontalWidth = canvas.Width - (isVerticalVisible ? ScrollSize : 0);
+            var verticalHeight = canvas.Height - (isHorizontalVisible ? ScrollSize : 0);
+            FastGridUtil.SetWidth(horizontalScrollbar, Math.Max(horizontalWidth, 0));
+            FastGridUtil.SetHeight(verticalScrollbar, Math.Max(verticalHeight, 0));
+        }
 
 
         public override void OnApplyTemplate()
@@ -1208,10 +1234,10 @@ namespace FastGrid.FastGrid
             }
         }
 
-        internal void UpdateVerticalScrollbar()
+        internal void UpdateVerticalScrollbarValue()
         {
             // ... note: the last row is not fully visible
-            var visibleCount = GuessRowCount();
+            var visibleCount = (canvas.Height / RowHeight);
             if (Math.Abs((double)(verticalScrollbar.ViewportSize - visibleCount)) > TOLERANCE)
                 verticalScrollbar.ViewportSize = visibleCount;
             if (Math.Abs((double)(verticalScrollbar.Value - TopRowIndex)) > TOLERANCE)

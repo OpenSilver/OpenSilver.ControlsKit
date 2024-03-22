@@ -159,9 +159,29 @@ namespace FastGrid.FastGrid
             return DefaultHeaderTemplate(new Thickness(5, 0, 5, 0));
         }
 
+        public class SimpleHeaderTemplate {
+            public readonly Grid Grid;
+            public readonly TextBlock Text;
+            // the arrow used for sorting
+            public readonly Path SortPath;
+            // the content control for filtering
+            public readonly ContentControl Filter;
+            // ... composed of a grid
+            public readonly Grid FilterGrid;
+            // ... that holds a path
+            public readonly Path FilterPath;
 
+            public SimpleHeaderTemplate(Grid grid, TextBlock text, Path sortPath, ContentControl filter, Grid filterGrid, Path filterPath) {
+                Grid = grid;
+                Text = text;
+                SortPath = sortPath;
+                Filter = filter;
+                FilterPath = filterPath;
+                FilterGrid = filterGrid;
+            }
+        }
 
-        public static DataTemplate DefaultHeaderTemplate(Thickness headerMargin) {
+        public static DataTemplate DefaultHeaderTemplate(Thickness headerMargin, Action<SimpleHeaderTemplate> updateHeader = null) {
             var dt = FastGridUtil.CreateDataTemplate(() => {
                 const double MIN_WIDTH = 20;
                 /*
@@ -349,6 +369,10 @@ namespace FastGrid.FastGrid
                     }
                     a.Handled = true;
                 };
+
+                var filterGrid = filterButton.Content as Grid;
+                var filterPath = filterGrid.Children.First() as Path;
+                updateHeader?.Invoke(new SimpleHeaderTemplate(grid, tb, path, filterButton, filterGrid, filterPath));
                 return grid;
             });
             return dt;

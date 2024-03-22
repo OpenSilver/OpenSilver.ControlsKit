@@ -45,6 +45,13 @@ namespace FastControls.TestApp.Pages
 
             var list = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
 
+            ctrl.HeaderTemplate = FastGridContentTemplate.DefaultHeaderTemplate(new Thickness(5, 0, 5, 0), (h) => {
+                h.SortPath.Fill = new SolidColorBrush(Colors.Black);
+                h.SortPath.HorizontalAlignment = HorizontalAlignment.Right;
+                h.SortPath.VerticalAlignment = VerticalAlignment.Center;
+                h.SortPath.Margin = new Thickness(0, 0, 5, 0);
+            });
+
             ctrl.Columns.Add(new FastGridViewColumn {
                     HeaderText = "City",
                     Width = 70, MinWidth = 50, IsFilterable = false, IsSortable = false,

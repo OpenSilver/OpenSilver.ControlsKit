@@ -28,7 +28,7 @@
             
             <local:FastGridView.Columns>
 
-                <local:FastGridViewColumn HeaderText="-" Width="40" MinWidth="40" IsFilterable="False" IsSortable="False">
+                <local:FastGridViewColumn HeaderText="-" Width="40" MinWidth="40" IsFilterable="False" IsSortable="False" HeaderForeground="Gray">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid Visibility="{Binding IsActive,Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -41,7 +41,7 @@
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
 
-                <local:FastGridViewColumn HeaderText="Operator" Width="100" MinWidth="80" MaxWidth="200" DataBindingPropertyName="OperatorReportLabel" ToolTipPropertyName="OperatorReportLabel">
+                <local:FastGridViewColumn  HeaderForeground="Gray" HeaderText="Operator" Width="100" MinWidth="80" MaxWidth="200" DataBindingPropertyName="OperatorReportLabel" ToolTipPropertyName="OperatorReportLabel">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
@@ -52,7 +52,7 @@
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
 
-                <local:FastGridViewColumn HeaderText="Rec Id" Width="120"  DataBindingPropertyName="OperatorRecordId" ToolTipPropertyName="OperatorRecordId">
+                <local:FastGridViewColumn HeaderForeground="Gray" HeaderText="Rec Id" Width="120"  DataBindingPropertyName="OperatorRecordId" ToolTipPropertyName="OperatorRecordId">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >
@@ -62,8 +62,8 @@
                         </DataTemplate>
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
-                
-                <local:FastGridViewColumn HeaderText="Time" Width="80" DataBindingPropertyName="Time">
+
+                <local:FastGridViewColumn HeaderForeground="Gray" HeaderText="Time" Width="80" DataBindingPropertyName="Time">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >
@@ -73,8 +73,8 @@
                         </DataTemplate>
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
-                
-                <local:FastGridViewColumn HeaderText="User" Width="150" DataBindingPropertyName="Username">
+
+                <local:FastGridViewColumn HeaderText="User" HeaderForeground="Gray" Width="150" DataBindingPropertyName="Username">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >
@@ -84,8 +84,8 @@
                         </DataTemplate>
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
-                
-                <local:FastGridViewColumn HeaderText="Pass" Width="120" IsFilterable="False" IsSortable="False">
+
+                <local:FastGridViewColumn HeaderText="Pass" Width="120" HeaderForeground="Gray" IsFilterable="False" IsSortable="False">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >
@@ -96,7 +96,7 @@
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
 
-                <local:FastGridViewColumn HeaderText="Department" Width="150" IsFilterable="False" IsSortable="False">
+                <local:FastGridViewColumn HeaderText="Department" Width="150" HeaderForeground="Gray" IsFilterable="False" IsSortable="False">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >
@@ -107,7 +107,7 @@
                     </local:FastGridViewColumn.CellTemplate>
                 </local:FastGridViewColumn>
 
-                <local:FastGridViewColumn HeaderText="City" Width="120" IsFilterable="False" IsSortable="False">
+                <local:FastGridViewColumn HeaderText="City" Width="120" IsFilterable="False" HeaderForeground="Gray" IsSortable="False">
                     <local:FastGridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Grid >

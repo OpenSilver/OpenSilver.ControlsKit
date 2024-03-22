@@ -196,7 +196,8 @@ namespace FastControls.TestApp.Pages
         }
 
         private void SimpleTest() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            //_pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(25));
             ctrl.ItemsSource = _pullouts;
             ctrl.AllowSortByMultipleColumns = false;
             ctrl.Columns[1].Sort = true;

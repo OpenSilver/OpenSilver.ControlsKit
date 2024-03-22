@@ -22,6 +22,7 @@ namespace FastControls.TestApp
 
 
             Window.Current.Content = new TestFastGridViewCodeBehind();
+            //Window.Current.Content = new TestFastGridView();
             //Window.Current.Content = new TestFastGridHierarchical();
         }
     }

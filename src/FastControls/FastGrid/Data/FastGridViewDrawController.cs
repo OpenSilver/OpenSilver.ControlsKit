@@ -276,29 +276,28 @@ namespace FastGrid.FastGrid.Data
 
             var maxValue = Math.Max(columnsWidth + EXTRA_SIZE - _self.canvas.Width, 0);
             FastGridUtil.SetMaximum(_self.horizontalScrollbar, maxValue);
-            FastGridUtil.SetIsVisible(_self.horizontalScrollbar, maxValue > 0);
-            FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
+            _self.UpdateScrollBarsVisibilityAndSize(showHorizontal: maxValue > 0);
             if (maxValue == 0) {
                 _self.HorizontalOffset = 0;
                 _self.horizontalScrollbar.Value = 0;
             }
         }
 
-        private bool ScrollGapVisibility() => _self.verticalScrollbar.IsVisible && _self.horizontalScrollbar.IsVisible;
+
 
         internal bool TryUpdateUI() {
             if (Expander.IsEmpty) {
                 if (_self.ShowHeaderOnNoItems) {
                     _self.RowProvider.HideAllRows();
-                    FastGridUtil.SetIsVisible(_self.verticalScrollbar, false);
-                    FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
+                    _self.UpdateScrollBarsVisibilityAndSize(showHorizontal: false, showVertical: false);
                 } else 
                     FastGridUtil.SetIsVisible(_self.canvas, false);
                 return true;
             }
 
-            FastGridUtil.SetIsVisible(_self.verticalScrollbar, true);
-            FastGridUtil.SetIsVisible(_self.scrollGap, ScrollGapVisibility());
+            // update vertical scrollbar
+            _self.UpdateScrollBarsVisibilityAndSize();
+
             FastGridUtil.SetIsVisible(_self.canvas, true);
             if (!CanDraw()) {
                 _waitBeforeDrawCount = 0;
@@ -381,7 +380,7 @@ namespace FastGrid.FastGrid.Data
                 // we do the full update only when everything is preloaded
                 if (rowChangeCount == 0) {
                     RowProvider.HideInvisibleRows();
-                    _self.UpdateVerticalScrollbar();
+                    _self.UpdateVerticalScrollbarValue();
                     if (_self.IsHierarchical)
                         // the idea: wherever we scroll, the scrollbar size might change, for instance, at some point we could be seeing only Root rows, fully visible, 
                         // but at some point, we could see expanded rows, which are partially visible, and have horizontal scroll
