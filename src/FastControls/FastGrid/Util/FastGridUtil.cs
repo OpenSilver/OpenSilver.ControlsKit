@@ -198,11 +198,22 @@ namespace FastGrid.FastGrid
         }
 
         internal static FastGridViewColumn FindColumnAtPos(Point p) {
-            var ui = VisualTreeHelper.FindElementInHostCoordinates(p);
-            while (ui != null) {
-                if (ui is FrameworkElement fe && fe.DataContext is FastGridViewColumn column)
-                    return column;
-                ui = VisualTreeHelper.GetParent(ui) as UIElement;
+            // note: commented out: this is an internal function
+            //var ui = VisualTreeHelper.FindElementInHostCoordinates(p);
+            //while (ui != null) {
+            //    if (ui is FrameworkElement fe && fe.DataContext is FastGridViewColumn column)
+            //        return column;
+            //    ui = VisualTreeHelper.GetParent(ui) as UIElement;
+            //}
+            //return null;
+
+            foreach (var element in VisualTreeHelper.FindElementsInHostCoordinates(p, null)) {
+                var ui = element;
+                while (ui != null) {
+                    if (ui is FrameworkElement fe && fe.DataContext is FastGridViewColumn column)
+                        return column;
+                    ui = VisualTreeHelper.GetParent(ui) as UIElement;
+                }
             }
             return null;
         }
