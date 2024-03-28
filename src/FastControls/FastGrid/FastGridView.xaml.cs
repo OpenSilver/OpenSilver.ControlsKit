@@ -312,7 +312,17 @@ namespace FastGrid.FastGrid
         // note: not bindable at this time
         public bool CanUserSortColumns { get; set; } = true;
         // note: not bindable at this time
-        public bool IsFilteringAllowed { get; set; } = false;
+        public bool IsFilteringAllowed { get; set; } = true;
+
+        internal bool IsFilteringAllowedImpl() {
+            if (!IsFilteringAllowed)
+                return false;
+
+            if (Columns.Any(c => c.IsFilterable))
+                return true;
+
+            return false;
+        }
 
         public FastGridViewStyler FastGridViewStyler { get; set; } = new FastGridViewStyler();
 

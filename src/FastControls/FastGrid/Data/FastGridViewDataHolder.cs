@@ -159,7 +159,7 @@ namespace FastGrid.FastGrid.Data
         }
 
         internal void CreateFilter() {
-            if (!_self.CanUserSortColumns && !_self.IsFilteringAllowed)
+            if (!_self.CanUserSortColumns && !_self.IsFilteringAllowedImpl())
                 return;
 
             Filter.Clear();
@@ -179,7 +179,7 @@ namespace FastGrid.FastGrid.Data
         }
 
         private void HandleFilterSortColumns() {
-            if (!_self.CanUserSortColumns && !_self.IsFilteringAllowed)
+            if (!_self.CanUserSortColumns && !_self.IsFilteringAllowedImpl())
                 return;
             
             // here, each sortable/filterable column needs to have a databinding property name
@@ -254,8 +254,6 @@ namespace FastGrid.FastGrid.Data
 
 
         internal void OnColumnsCollectionChanged() {
-            if (Columns.Any(c => c.IsFilterable))
-                _self.IsFilteringAllowed = true;
         }
 
 
@@ -548,7 +546,7 @@ namespace FastGrid.FastGrid.Data
                     // the idea -- once the user stops filtering, we'll do a full refilter + resort anyway
                     return;
 
-                if (_self.CanUserSortColumns || _self.IsFilteringAllowed) {
+                if (_self.CanUserSortColumns || _self.IsFilteringAllowedImpl()) {
                     switch (e.Action) {
                     case NotifyCollectionChangedAction.Add:
                     case NotifyCollectionChangedAction.Remove:
@@ -562,7 +560,7 @@ namespace FastGrid.FastGrid.Data
 
                         // consider this is a complete collection reset
                     default:
-                        if (_self.IsFilteringAllowed)
+                        if (_self.IsFilteringAllowedImpl())
                             _needsRefilter = true;
                         if (_self.CanUserSortColumns)
                             _needsFullReSort = true;
@@ -580,7 +578,7 @@ namespace FastGrid.FastGrid.Data
         }
 
         private bool MatchesFilter(object item) {
-            if (!_self.IsFilteringAllowed)
+            if (!_self.IsFilteringAllowedImpl())
                 return true; // no filtering
             return Filter.Matches(item);
         }

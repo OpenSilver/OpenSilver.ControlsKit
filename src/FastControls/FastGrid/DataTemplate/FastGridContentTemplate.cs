@@ -359,6 +359,11 @@ namespace FastGrid.FastGrid
                     a.Handled = true;
                 };
 
+                filterButton.MouseLeftButtonDown += (s, a) => {
+                    // so that i don't trigger a "drag" of the column
+                    a.Handled = true;
+                };
+
                 filterButton.MouseLeftButtonUp += (s, a) => {
                     var self = s as FrameworkElement;
                     var view = FastGridUtil.TryGetAscendant<FastGridView>(self);
