@@ -145,7 +145,6 @@ namespace FastGrid.FastGrid.Data
             var width = e.NewSize.Width;
             OnNewHeaderWidth(width);
             HeaderBackground().Height = HeaderControl().Height;
-            HeaderBackground().Width = width;
         }
 
         private void OnNewHeaderWidth(double width) {
