@@ -58,6 +58,12 @@ namespace FastGrid.FastGrid {
             }
 
             private int CompareValue(object a, object b) {
+                if (a == null || b == null)
+                {
+                    if (a == null && b == null)
+                        return 0;
+                    return a == null ? -1 : 1;
+                }
                 if (a is int)
                     return (int)a - (int)b;
                 if (a is bool)
@@ -91,12 +97,6 @@ namespace FastGrid.FastGrid {
                 }
                 if (a is DateTime)
                     return (DateTime)a < (DateTime)b ? -1 : ( (DateTime)a > (DateTime)b ? 1 : 0 );
-
-                if (a == null || b == null) {
-                    if (a == null && b == null)
-                        return 0;
-                    return a == null ? -1 : 1;
-                }
                 Debug.Assert(false);
                 throw new Exception($"Type {a.GetType().ToString()} -- don't know how to Compare");
             }
