@@ -268,7 +268,9 @@ namespace FastGrid.FastGrid
                             }
                             return;
                         }
-                        if (sourceColumn.DataBindingPropertyName == "" || !sourceColumn.IsSortable)
+
+                        var view = FastGridUtil.ColumnToView(fe);
+                        if (sourceColumn.DataBindingPropertyName == "" || !sourceColumn.IsSortable || !view.CanUserSortColumns)
                             return; // we can't sort by this column
 
                         if (sourceColumn.IsSortNone) {
@@ -322,7 +324,8 @@ namespace FastGrid.FastGrid
 
                 grid.Loaded += (s, a) => {
                     var column = ((s as FrameworkElement).DataContext as FastGridViewColumn);
-                    if (column.DataBindingPropertyName == "" || !column.IsFilterable)
+                    var view = FastGridUtil.ColumnToView(s as FrameworkElement);
+                    if (column.DataBindingPropertyName == "" || !column.IsFilterable || !view.IsFilteringAllowed)
                         filterButton.Visibility = Visibility.Collapsed;
                     if (!column.IsSortable)
                         path.Visibility = Visibility.Collapsed;
