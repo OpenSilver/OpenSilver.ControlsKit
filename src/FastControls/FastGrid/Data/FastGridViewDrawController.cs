@@ -315,7 +315,7 @@ namespace FastGrid.FastGrid.Data
             try {
                 Expander.OnBeforeUpdateUI();
 
-                (_topRow, _topRowIndexWhenNotScrolling) = Expander.ComputeTopRowIndex(_topRow, _topRowIndexWhenNotScrolling);
+                _topRow = Expander.RowIndexToObject(_topRowIndexWhenNotScrolling);
 
                 double y = _self.HeaderHeight;
                 if (_self.MainDataHolder.Columns.Any(c => c.ColumnGroupName != ""))
