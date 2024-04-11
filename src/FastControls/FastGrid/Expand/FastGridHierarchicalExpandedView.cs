@@ -166,7 +166,7 @@ namespace FastGrid.FastGrid.Expand
 
             if (_needsUpdateHorizontalScrollbar) {
                 _needsUpdateHorizontalScrollbar = false;
-                _self.UpdateHorizontalScrollbar();
+                _self.DrawController.UpdateHorizontalScrollbar();
             }
         }
 

@@ -770,10 +770,6 @@ namespace FastGrid.FastGrid
                 horizontalScrollbar.Value = value;
         }
 
-        internal void UpdateHorizontalScrollbar() {
-            DrawController.UpdateHorizontalScrollbar();
-        }
-
         public IEqualityComparer RowEqualityComparer { get; set; }
 
 
@@ -834,7 +830,7 @@ namespace FastGrid.FastGrid
 
             _rowProvider.SetWidth(e.NewSize.Width);
 
-            UpdateHorizontalScrollbar();
+            DrawController.UpdateHorizontalScrollbar();
             PostponeUpdateUI();
         }
 
@@ -1146,7 +1142,7 @@ namespace FastGrid.FastGrid
 
         private void OnHorizontalOffsetChange() {
             _rowProvider.SetHorizontalOffset(HorizontalOffset);
-            UpdateHorizontalScrollbar();
+            DrawController.UpdateHorizontalScrollbar();
             DrawController.OnHorizontalOffsetChange();
         }
 

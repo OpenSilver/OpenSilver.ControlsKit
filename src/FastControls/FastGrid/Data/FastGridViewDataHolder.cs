@@ -253,6 +253,7 @@ namespace FastGrid.FastGrid.Data
 
 
         internal void OnColumnsCollectionChanged() {
+            _self.DrawController.UpdateHorizontalScrollbar();
         }
 
 
@@ -277,7 +278,7 @@ namespace FastGrid.FastGrid.Data
                         _self.PostponeUpdateUI();
                     }
 
-                    _self.UpdateHorizontalScrollbar();
+                    _self.DrawController.UpdateHorizontalScrollbar();
                     // the idea - the old value might have become invalid
                     _self.RefreshHorizontalScroll();
                 }

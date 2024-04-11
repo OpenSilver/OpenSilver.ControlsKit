@@ -290,13 +290,14 @@ namespace FastGrid.FastGrid.Data
                 if (_self.ShowHeaderOnNoItems) {
                     _self.RowProvider.HideAllRows();
                     UpdateHorizontalScrollbar();
+                    _self.UpdateScrollBarsVisibilityAndSize(showVertical: false);
                 } else 
                     FastGridUtil.SetIsVisible(_self.canvas, false);
                 return true;
             }
 
             // update horizontal and vertical scrollbar
-            UpdateHorizontalScrollbar();
+            _self.UpdateScrollBarsVisibilityAndSize();
 
             FastGridUtil.SetIsVisible(_self.canvas, true);
             if (!CanDraw()) {

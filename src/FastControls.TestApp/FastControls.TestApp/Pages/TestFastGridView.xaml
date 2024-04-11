@@ -13,7 +13,7 @@
         </Canvas.Resources>
 
         
-        <local:FastGridView x:Name="ctrl" Width="900" Padding="0" RowHeight="30" FontSize="14" Background="Gray"                            
+        <local:FastGridView x:Name="ctrl" Width="600" Padding="0" RowHeight="30" FontSize="14" Background="Gray"                            
                             Height="800" 
                             RightClickAutoSelect="Select"
                             >
