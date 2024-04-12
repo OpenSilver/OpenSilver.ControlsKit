@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid.Data
 {
@@ -184,7 +185,7 @@ namespace FastGrid.FastGrid.Data
             // here, each sortable/filterable column needs to have a databinding property name
             foreach (var col in Columns)
                 if ((col.IsFilterable || col.IsSortable) && col.DataBindingPropertyName == "")
-                    throw new Exception($"Fastgrid: if filter and/or sort for a column, you need to set DataBindingPropertyName for it ({col.FriendlyName()})");
+                    throw new FastGridViewException($"Fastgrid: if filter and/or sort for a column, you need to set DataBindingPropertyName for it ({col.FriendlyName()})");
         }
 
         private void OnColumnSortChanged(FastGridViewColumn col) {
@@ -254,6 +255,7 @@ namespace FastGrid.FastGrid.Data
 
         internal void OnColumnsCollectionChanged() {
             _self.DrawController.UpdateHorizontalScrollbar();
+            _self.EditRow.RecreateEditCells();
         }
 
 

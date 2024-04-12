@@ -55,46 +55,47 @@ namespace FastControls.TestApp.Pages
             ctrl.Columns.Add(new FastGridViewColumn {
                     HeaderText = "City",
                     Width = 70, MinWidth = 50, IsFilterable = false, IsSortable = false,
-                    CellTemplate = FastGridViewCellTemplate.Default(list[0], "City"),
-                }
+                    IsReadOnly = false,
+                    DataBindingPropertyName = "City",
+                }.CreateDefaultDataTemplate(list[0])
             );
             ctrl.Columns.Add(new FastGridViewColumn {
                     Width = 200, MinWidth = 50,
                     HeaderText = "Operator",
-                    CellTemplate = FastGridViewCellTemplate.Default(list[0], "OperatorReportLabel"),
+                    IsReadOnly = false,
                     // for filtering/sorting
                     DataBindingPropertyName = "OperatorReportLabel",
-
                     ToolTipPropertyName = "OperatorReportLabel",
-                }
+                }.CreateDefaultDataTemplate(list[0])
             );
             ctrl.Columns.Add(new FastGridViewColumn {
                     Width = 100, MinWidth = 50,
                     HeaderText = "User",
-                    CellTemplate = FastGridViewCellTemplate.DefaultEdit(list[0], "Username"),
+                    IsReadOnly = false,
                     DataBindingPropertyName = "Username",
-                }
+                }.CreateDefaultDataTemplate(list[0])
             );
             ctrl.Columns.Add(new FastGridViewColumn {
                     Width = 100, MinWidth = 60,
                     HeaderText = "Pass",
-                    CellTemplate = FastGridViewCellTemplate.DefaultEdit(list[0], "Password"),
+                    IsReadOnly = false,
                     DataBindingPropertyName = "Password",
-                }
+                }.CreateDefaultDataTemplate(list[0])
             );
             ctrl.Columns.Add(new FastGridViewColumn {
                     Width = 70, MinWidth = 50,
                     HeaderText = "Active",
-                    CellTemplate = FastGridViewCellTemplate.Default(list[0], "IsActive"),
+                    IsReadOnly = false,
                     DataBindingPropertyName = "IsActive",
-                }
+                }.CreateDefaultDataTemplate(list[0])
             );
             ctrl.Columns.Add(new FastGridViewColumn {
                     Width = 70, MinWidth = 50,
                     HeaderText = "Editable BB",
-                    CellTemplate = FastGridViewCellTemplate.DefaultEdit(list[0], "EditableBool"),
                     IsFilterable = false, IsSortable = false,
-                }
+                    IsReadOnly = false,
+                    DataBindingPropertyName = "EditableBool",
+                }.CreateDefaultDataTemplate(list[0])
             );
             foreach (var col in ctrl.Columns)
                 col.HeaderForeground = BrushCache.Inst.GetByColor(Colors.Gray);

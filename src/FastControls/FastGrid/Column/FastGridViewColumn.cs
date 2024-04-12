@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using FastGrid.FastGrid.Filter;
+using OpenSilver.ControlsKit.FastGrid.DataTemplate;
 
 namespace FastGrid.FastGrid
 {
@@ -17,6 +19,7 @@ namespace FastGrid.FastGrid
     // At this time, these properties are not bindable. If at some point this will be needed, I will need to create a LightweightFastGridViewColumn class
     // however, this would be an insane pain, since for hierarchical grids, I need to copy this information, since each child (expanded) control will need to have its own copy of the data
     // (the idea is each child will have its own header, and be able to resize/sort/filter that header)
+    [DebuggerDisplay("u={UniqueName} bind={DataBindingPropertyName}")]
     public sealed class FastGridViewColumn : INotifyPropertyChanged
     {
         public double Width {
@@ -168,6 +171,19 @@ namespace FastGrid.FastGrid
             }
         }
 
+        // default : true
+        public bool IsReadOnly {
+            get => _isReadOnly;
+            set {
+                if (value == _isReadOnly) {
+                    return;
+                }
+
+                _isReadOnly = value;
+                OnPropertyChanged();
+            }
+        }
+
         internal bool IsResizingColumn {
             get => _isResizingColumn;
             set {
@@ -224,6 +240,7 @@ namespace FastGrid.FastGrid
             get => _cellTemplate;
             set {
                 if (Equals(value, _cellTemplate)) return;
+                _isDummyCellTemplate = false;
                 _cellTemplate = value;
                 OnPropertyChanged();
             }
@@ -286,9 +303,18 @@ namespace FastGrid.FastGrid
 
         public string FriendlyName() => UniqueName != "" ? UniqueName : DataBindingPropertyName != "" ? DataBindingPropertyName : DisplayIndex.ToString();
 
-        private static DataTemplate DefaultDataTemplate() {
+        private static DataTemplate DummyDataTemplate() {
             var dt = FastGridUtil.CreateDataTemplate(() => new Canvas());
             return dt;
+        }
+
+        public FastGridViewColumn CreateDefaultDataTemplate(object o) {
+            Debug.Assert(DataBindingPropertyName != "");
+            if (_isDummyCellTemplate)
+                CellTemplate = FastGridViewCellTemplate.Default(o, DataBindingPropertyName);
+            if (!IsReadOnly && CellEditTemplate == null)
+                CellEditTemplate = FastGridViewCellTemplate.DefaultEdit(o, DataBindingPropertyName);
+            return this;
         }
 
 
@@ -298,8 +324,9 @@ namespace FastGrid.FastGrid
         private bool? _sort = null;
         private bool _isResizingColumn = false;
         private bool _isEditingFilter = false;
-        private DataTemplate _cellEditTemplate = DefaultDataTemplate();
-        private DataTemplate _cellTemplate = DefaultDataTemplate();
+        private DataTemplate _cellEditTemplate = null;
+        private bool _isDummyCellTemplate = true;
+        private DataTemplate _cellTemplate = DummyDataTemplate();
         private int _displayIndex = -1;
         private string _uniqueName = "";
         private bool _canResize = true;
@@ -315,6 +342,7 @@ namespace FastGrid.FastGrid
         private int _autoWidth = 0;
         private string _columnGroupName = "";
         private bool _canDrag = false;
+        private bool _isReadOnly = true;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

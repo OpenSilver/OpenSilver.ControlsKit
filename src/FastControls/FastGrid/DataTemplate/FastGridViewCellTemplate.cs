@@ -93,7 +93,7 @@ namespace OpenSilver.ControlsKit.FastGrid.DataTemplate
 
 
         public static System.Windows.DataTemplate Default(object o, string propertyName) {
-            var pi = o.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            var pi = o.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             var isBool = FastGridViewFilterUtil.IsBool(pi);
             var isEnum = FastGridViewFilterUtil.IsEnum(pi);
@@ -112,7 +112,7 @@ namespace OpenSilver.ControlsKit.FastGrid.DataTemplate
 
         // creates the CellEditTemplate
         public static System.Windows.DataTemplate DefaultEdit(object o, string propertyName) {
-            var pi = o.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            var pi = o.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             var isBool = FastGridViewFilterUtil.IsBool(pi);
             var isEnum = FastGridViewFilterUtil.IsEnum(pi);

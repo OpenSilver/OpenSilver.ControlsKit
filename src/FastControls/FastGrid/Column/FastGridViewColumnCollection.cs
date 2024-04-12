@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
@@ -21,7 +22,7 @@ namespace FastGrid.FastGrid
                     if (col.UniqueName == name)
                         return col;
                 }
-                throw new Exception($"column {name} not found");
+                throw new FastGridViewException($"column {name} not found");
             }
         }
 

@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using FastGrid.FastGrid.Row;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
@@ -237,31 +238,34 @@ namespace FastGrid.FastGrid
 
         private void OnColumnsChanged() {
             if (_cells.Count != Columns.Count)
-                throw new Exception($"invalid set of columns for row, expected {_cells.Count} but got {Columns.Count}");
+                throw new FastGridViewException($"invalid set of columns for row, expected {_cells.Count} but got {Columns.Count}");
 
             foreach (var cell in _cells) {
                 var column = Columns.FirstOrDefault(c => c.UniqueName == cell.Column.UniqueName);
                 if (column == null)
-                    throw new Exception($"Can't find cell column: {cell.Column.FriendlyName()}");
+                    throw new FastGridViewException($"Can't find cell column: {cell.Column.FriendlyName()}");
                 cell.Column = column;
             }
         }
 
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs eventArgs) {
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs args) {
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
-            view?.OnMouseLeftButtonDown(this, eventArgs);
+            view?.OnMouseLeftButtonDown(this, args);
+            args.Handled = true;
         }
 
-        protected override void OnMouseEnter(MouseEventArgs eventArgs) {
-            base.OnMouseEnter(eventArgs);
+        protected override void OnMouseEnter(MouseEventArgs args) {
+            base.OnMouseEnter(args);
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseRowEnter(this);
+            args.Handled = true;
         }
 
-        protected override void OnMouseLeave(MouseEventArgs eventArgs) {
-            base.OnMouseLeave(eventArgs);
+        protected override void OnMouseLeave(MouseEventArgs args) {
+            base.OnMouseLeave(args);
             var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseRowLeave(this);
+            args.Handled = true;
         }
 
 

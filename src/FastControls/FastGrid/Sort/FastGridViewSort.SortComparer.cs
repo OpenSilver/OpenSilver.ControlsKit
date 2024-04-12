@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid {
     internal partial class FastGridViewSort {
@@ -30,7 +31,7 @@ namespace FastGrid.FastGrid {
                 foreach (var col in _self._self.SortDescriptors.Columns) {
                     var pi = type.GetProperty(col.Column.DataBindingPropertyName, BindingFlags.Instance | BindingFlags.Public);
                     if (pi == null)
-                        throw new Exception($"Fastgrid: can't find property {col.Column.DataBindingPropertyName}");
+                        throw new FastGridViewException($"Fastgrid: can't find property {col.Column.DataBindingPropertyName}");
 
                     _compareProperties.Add(new PropertyComparer {
                         Property = pi, 
@@ -98,7 +99,7 @@ namespace FastGrid.FastGrid {
                 if (a is DateTime)
                     return (DateTime)a < (DateTime)b ? -1 : ( (DateTime)a > (DateTime)b ? 1 : 0 );
                 Debug.Assert(false);
-                throw new Exception($"Type {a.GetType().ToString()} -- don't know how to Compare");
+                throw new FastGridViewException($"Type {a.GetType().ToString()} -- don't know how to Compare");
             }
 
             public void Dispose() {

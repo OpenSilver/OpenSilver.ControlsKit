@@ -13,6 +13,11 @@ namespace FastGrid.FastGrid
         // if null -> force recreation
         private List<FastGridViewColumn> _sortedColumns = null;
 
+        public IReadOnlyList<FastGridViewColumn> SortedColumns() {
+            BuildSortedColumns();
+            return _sortedColumns;
+        }
+
         internal FastGridViewDataHolder DataHolder {
             set {
                 Debug.Assert(_self == null);

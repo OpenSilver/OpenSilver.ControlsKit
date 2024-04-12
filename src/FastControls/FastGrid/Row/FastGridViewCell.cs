@@ -113,7 +113,6 @@ namespace FastGrid.FastGrid.Row
 
         private void FastGridViewCell_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-
             var childCount = VisualTreeHelper.GetChildrenCount(this);
             if (childCount < 1)
                 return;
@@ -124,7 +123,7 @@ namespace FastGrid.FastGrid.Row
             FastGridUtil.SetCustomLayout(cp, true);
             FastGridUtil.SetHorizontalAlignment(cp, HorizontalAlignment.Stretch);
             FastGridUtil.SetVerticalAlignment(cp, VerticalAlignment.Stretch);
-            FastGridUtil.SetDataContext(cp, DataContext, out _);
+            FastGridUtil.SetDataContext(cp, DataContext);
 
             SubscribeToTooltip(e.OldValue);
         }

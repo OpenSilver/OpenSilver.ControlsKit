@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Xml.Linq;
 using FastGrid.FastGrid.Expand;
+using OpenSilver.ControlsKit.FastGrid.Row;
 
 namespace FastGrid.FastGrid.Data
 {
@@ -21,6 +22,8 @@ namespace FastGrid.FastGrid.Data
 
         private FastGridViewRowProvider RowProvider => _self.RowProvider;
         private FastGridViewExpandController Expander => _self.ExpandController;
+
+        internal FastGridViewEditRow EditRow => _self.EditRow;
 
         private bool _suspendRender = false;
 
@@ -362,7 +365,7 @@ namespace FastGrid.FastGrid.Data
 
                     UpdateRowColor(row);
                     Expander.UpdateExpandRow(row);
-                    FastGridUtil.SetDataContext(row, obj, out _);
+                    FastGridUtil.SetDataContext(row, obj);
                     FastGridUtil.SetTop(row, y);
                     y += row.RowHeight;
                     row.IsSelected = _self.IsRowSelected(obj, rowIdx);
@@ -516,6 +519,12 @@ namespace FastGrid.FastGrid.Data
             PostponeUpdateUI();
         }
 
+        public void EnsureVisible(object obj) {
+            var rowIdx = ObjectToRowIndex(obj, -1);
+            if (rowIdx >= _topRowIndexWhenNotScrolling && rowIdx < _topRowIndexWhenNotScrolling + _visibleCount)
+                return; // already visible
+            ScrollToRow(obj);
+        }
 
     }
 }

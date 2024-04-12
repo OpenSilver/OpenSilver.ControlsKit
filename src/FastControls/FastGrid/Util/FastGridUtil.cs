@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using OpenSilver.ControlsKit.FastGrid.Util;
 using OpenSilver.Internal.Xaml;
 using OpenSilver.Internal.Xaml.Context;
 
@@ -79,6 +80,15 @@ namespace FastGrid.FastGrid
         public static void SetOpacity(FrameworkElement fe, double opacity) {
             if (Math.Abs(fe.Opacity - opacity) > TOLERANCE)
                 fe.Opacity = opacity;
+        }
+
+        public static void SetEnabled(FrameworkElement fe, bool enabled) {
+            if (fe.IsEnabled != enabled)
+                fe.IsEnabled = enabled;
+        }
+
+        public static void SetDataContext(FrameworkElement fe, object context) {
+            SetDataContext(fe, context, out _);
         }
 
         public static void SetDataContext(FrameworkElement fe, object context, out bool changed) {
@@ -226,7 +236,7 @@ namespace FastGrid.FastGrid
                 ctrl = VisualTreeHelper.GetParent(ctrl) as FrameworkElement;
             }
 
-            throw new Exception("FastGridView not found, from column");
+            throw new FastGridViewException("FastGridView not found, from column");
         }
 
     }

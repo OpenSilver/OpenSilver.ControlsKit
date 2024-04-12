@@ -12,7 +12,7 @@
         <SolidColorBrush x:Key="GridView_ScrollViewerIntersectionRectangleBackground" Color="#FF3D3D3D"/>
     </UserControl.Resources>
 
-    <Canvas x:Name="canvas" CustomLayout="True" ClipToBounds="True" MouseWheel="canvas_MouseWheel" Background="Transparent">
+    <Canvas x:Name="canvas" CustomLayout="True" ClipToBounds="True" MouseWheel="canvas_MouseWheel" Background="Transparent" KeyDown="canvas_KeyDown">
         <Canvas Canvas.ZIndex="1000" >
 
             <ScrollBar x:Name="horizontalScrollbar" Orientation="Horizontal" Canvas.ZIndex="1000" Scroll="horiz_bar_scroll" />

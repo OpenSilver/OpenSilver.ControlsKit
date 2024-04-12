@@ -18,47 +18,38 @@ using System.Windows.Threading;
 using FastGrid.FastGrid.Data;
 using FastGrid.FastGrid.Filter;
 using OpenSilver;
+using OpenSilver.ControlsKit.Edit.Args;
+using OpenSilver.ControlsKit.FastGrid.Row;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
-    /* Fix for Opensilver
-        private struct MinMax
-        {
-            private static double NotNan(double d, double defaultIfNan)
-            {
-                return double.IsNaN(d) ? defaultIfNan : d;
-            }
-            internal MinMax(FrameworkElement e)
-            {
-                maxHeight = NotNan(e.MaxHeight, double.PositiveInfinity) ;
-                minHeight = NotNan(e.MinHeight, 0) ;
+    [Flags]
+    public enum FastGridViewEditTriggers {
+        // Denotes that no action will put cell into edit mode.
+        None = 1,
 
-                double height = NotNan(e.Height, double.PositiveInfinity);
-                maxHeight = Math.Max(Math.Min(height, maxHeight), minHeight);
+        // Denotes that Single click on a cell will put it into edit mode.
+        CellClick = 2,
 
-                height =  NotNan(e.Height, 0);
-                minHeight = Math.Max(Math.Min(maxHeight, height), minHeight);
+        // Denotes that click on a current cell will put it into edit mode.
+        //
+        // note: we don't support clicking on a cell (in other words, clicking will always select the full row)
+        // in our case, if you click on the selected row, it will go into edit mode on the cell you clicked
+        CurrentCellClick = 4,
 
-                maxWidth = NotNan(e.MaxWidth, double.PositiveInfinity) ;
-                minWidth = NotNan(e.MinWidth, 0) ;
+        // Denotes that F2 key on a cell will put it into edit mode.
+        F2 = 8,
 
-                double width = NotNan(e.Width, double.PositiveInfinity);
-                maxWidth = Math.Max(Math.Min(width, maxWidth), minWidth);
+        // Denotes that any text input key will put a cell into edit mode.
+        // not supported yet
+        //TextInput = 16,
 
-                width =  NotNan(e.Width, 0);
-                minWidth = Math.Max(Math.Min(maxWidth, width), minWidth);
-            }
-
-            internal double minWidth;
-            internal double maxWidth;
-            internal double minHeight;
-            internal double maxHeight;
-        }
-     *
-     */
+        Default = CurrentCellClick | F2 
+    }
 
 
-    /* 
+    /*
      *
      * IMPORTANT:
      * Filtering
@@ -66,10 +57,6 @@ namespace FastGrid.FastGrid
      *   Example: I can filter by Salary>1000. I add a user with Salary=500 (automatically filtered out). I later set his Salary=1001 (it will still be filtered out)
      *   Note: this limitation exists in Telerik as well.
      *
-        FIXME
-     * move to ControlKit
-     *
-     * FIXME CellEditTemplate
      *
      * LATER IDEAS:
      * - just in case this is still slow - i can create copies of the original objects and update stuff at a given interval
@@ -77,7 +64,6 @@ namespace FastGrid.FastGrid
      *
      *     */
     // all the information needed to properly show and edit the collection
-
     public partial class FastGridView : UserControl, INotifyPropertyChanged {
         private const double TOLERANCE = 0.0001;
 
@@ -98,6 +84,9 @@ namespace FastGrid.FastGrid
 
         private FastGridViewColumnCollectionInternal _columnsRoot;
 
+        public event EventHandler<CellEditBeginArgs> CellEditBegin;
+        public event EventHandler<CellEditEndedArgs> CellEditEnded;
+        public event EventHandler<CellEditEndingArgs> CellEditEnding; 
 
 
         private static bool _firstTime = true;
@@ -146,6 +135,7 @@ namespace FastGrid.FastGrid
             _expandController = new FastGridViewExpandController(this);
 
             HierarchicalRoot = new HierarchicalCollectionInfo(_columnsRoot, _mainDataHolder.SortDescriptors);
+            _editRow = new FastGridViewEditRow(this, HierarchicalRoot);
 
             CheckIsOffscreen = () => {
                 if (VisualTreeHelper.GetParent(this) is Canvas) {
@@ -172,6 +162,8 @@ namespace FastGrid.FastGrid
         }
 
 
+        private FastGridViewEditRow _editRow;
+        internal FastGridViewEditRow EditRow => _editRow;
 
         internal FastGridViewRowProvider RowProvider => _rowProvider;
         internal FastGridViewDataHolder MainDataHolder => _mainDataHolder;
@@ -192,8 +184,18 @@ namespace FastGrid.FastGrid
         public HierarchicalCollectionInfo Hierarchical3 { get; set; }
         public HierarchicalCollectionInfo Hierarchical4 { get; set; }
 
+        public FastGridViewEditTriggers EditTriggers { get; set; } = FastGridViewEditTriggers.Default;
+
+        private bool EditWithF2() => (EditTriggers & FastGridViewEditTriggers.F2) != 0;
+        private bool EditWithClick() => (EditTriggers & FastGridViewEditTriggers.CellClick) != 0;
+        private bool EditWithCurrentCellClick() => (EditTriggers & FastGridViewEditTriggers.CurrentCellClick) != 0;
+        private bool DisableEdit() => (EditTriggers & FastGridViewEditTriggers.None) != 0;
+
         public FastGridViewColumnCollection Columns => HierarchicalRoot.Columns;
         public FastGridViewSortDescriptors SortDescriptors => HierarchicalRoot.SortDescriptors;
+        internal IReadOnlyList<FastGridViewColumn> SortedColumns => HierarchicalRoot.InternalColumns.SortedColumns();
+
+        internal bool CanEdit() => Columns.Any(c => c.CellEditTemplate != null);
 
         // for an object -> returns the collection that represents the object's details (expanding it)
         // 
@@ -481,7 +483,7 @@ namespace FastGrid.FastGrid
         {
             get {
                 if (AllowMultipleSelection)
-                    throw new Exception("can't use SelectedItem when using multi-selection");
+                    throw new FastGridViewException("can't use SelectedItem when using multi-selection");
                 if (UseSelectionIndex)
                     return _expandController.RowIndexToObject(SelectedIndex);
                 return (object)GetValue(SelectedItemProperty);
@@ -602,7 +604,7 @@ namespace FastGrid.FastGrid
         private void SingleSelectedIndexChanged()
         {
             if (AllowMultipleSelection)
-                throw new Exception("can't set SelectedIndex on multi-selection");
+                throw new FastGridViewException("can't set SelectedIndex on multi-selection");
 
             UseSelectionIndex = true;
             UpdateSelection();
@@ -612,7 +614,7 @@ namespace FastGrid.FastGrid
         private void SelectedIndexesChanged()
         {
             if (!AllowMultipleSelection)
-                throw new Exception("can't set SelectedIndexes on multi-selection");
+                throw new FastGridViewException("can't set SelectedIndexes on multi-selection");
 
             UseSelectionIndex = true;
             UpdateSelection();
@@ -622,7 +624,7 @@ namespace FastGrid.FastGrid
         private void SingleSelectedItemChanged()
         {
             if (AllowMultipleSelection)
-                throw new Exception("can't set SelectedItem on multi-selection");
+                throw new FastGridViewException("can't set SelectedItem on multi-selection");
 
             UseSelectionIndex = false;
             UpdateSelection();
@@ -632,7 +634,7 @@ namespace FastGrid.FastGrid
         private void SelectedItemsChanged()
         {
             if (!AllowMultipleSelection)
-                throw new Exception("can't set SelectedItems on multi-selection");
+                throw new FastGridViewException("can't set SelectedItems on multi-selection");
 
             UseSelectionIndex = false;
             UpdateSelection();
@@ -667,6 +669,22 @@ namespace FastGrid.FastGrid
                 canvas.Children.Remove(child);
         }
 
+        private void CreateDefaultColumnCellTemplates() {
+            var asList = ItemsSource as IReadOnlyList<object>;
+            if (asList.Count > 0) {
+                var anyEditCreation = false;
+                foreach (var col in Columns.Where(c => c.DataBindingPropertyName != "")) {
+                    var oldEdit = col.CellEditTemplate;
+                    col.CreateDefaultDataTemplate(asList[0]);
+                    if (oldEdit == null && col.CellEditTemplate != null)
+                        anyEditCreation = true;
+                }
+
+                if (anyEditCreation)
+                    _editRow.RecreateEditCells();
+            }
+        }
+
         private void OnItemsSourceChanged() {
             Logger($"fastgrid itemsource set for {Name} {(ItemsSource == null ? "to NULL" : "")}");
             if (ItemsSource == null) {
@@ -682,12 +700,14 @@ namespace FastGrid.FastGrid
 
             // allow only ObservableCollection<T> - fast to iterate + know when elements are added/removed
             if (!(ItemsSource is INotifyCollectionChanged) || !(ItemsSource is IReadOnlyList<object>))
-                throw new Exception("ItemsSource needs to be ObservableCollection<>");
+                throw new FastGridViewException("ItemsSource needs to be ObservableCollection<>");
 
             if (HideAllRowsOnItemsSourceChanged)
                 _rowProvider.HideAllRows();
 
             ClearSelection();
+            CreateDefaultColumnCellTemplates();
+
             _mainDataHolder.SetSource(ItemsSource);
             _drawController.SetSource(ItemsSource);
 
@@ -986,7 +1006,7 @@ namespace FastGrid.FastGrid
             if (UseSelectionIndex) {
                 var rowIdx = ObjectToRowIndex(row.RowObject, TopRowIndex);
                 if (rowIdx < 0)
-                    throw new Exception($"fastgrid {Name}: Can't find row");
+                    throw new FastGridViewException($"fastgrid {Name}: Can't find row");
                 if (AllowMultipleSelection) {
                     var copy = SelectedIndexes.ToList();
                     if (!copy.Contains(rowIdx))
@@ -1014,7 +1034,7 @@ namespace FastGrid.FastGrid
             if (UseSelectionIndex) {
                 var rowIdx = ObjectToRowIndex(row.RowObject, TopRowIndex);
                 if (rowIdx < 0)
-                    throw new Exception($"fastgrid {Name}: Can't find row");
+                    throw new FastGridViewException($"fastgrid {Name}: Can't find row");
                 if (AllowMultipleSelection)
                     SelectedIndexes = new ObservableCollection<int> { rowIdx };
                 else
@@ -1027,14 +1047,33 @@ namespace FastGrid.FastGrid
             }
         }
 
-        internal void OnMouseLeftButtonDown(FastGridViewRow row, MouseButtonEventArgs eventArgs) {
+
+        private void TryEditCell(FastGridViewRow row, FastGridViewColumn col) {
+            if (col == null || col.IsReadOnly || col.CellEditTemplate == null) {
+                // can't edit this cell
+                if (_editRow.IsEditing)
+                    _editRow.CommitEdit();
+                return;
+            }
+
+            // here, i know the colum is editable
+            _editRow.BeginEdit(row, col);
+        }
+
+        private void TryEditCell(FastGridViewRow row, double left) {
+            var col = _editRow. LeftToColumn(left);
+            TryEditCell(row, col);
+        }
+
+        internal void OnMouseLeftButtonDown(FastGridViewRow row, MouseButtonEventArgs args) {
             if (row.IsSelected && !AllowMultipleSelection)
                 // optimization - avoid draw when nothing happened
                 return;
 
+            var wasSelected = row.IsSelected;
             row.IsSelected = true;
-            var ctrl = (eventArgs.KeyModifiers & ModifierKeys.Control) != 0;
-            var shift = (eventArgs.KeyModifiers & ModifierKeys.Shift) != 0;
+            var ctrl = (args.KeyModifiers & ModifierKeys.Control) != 0;
+            var shift = (args.KeyModifiers & ModifierKeys.Shift) != 0;
             if (shift)
                 SelectShiftAdd(row);
             else if (ctrl)
@@ -1042,6 +1081,32 @@ namespace FastGrid.FastGrid
             else 
                 SelectSet(row);
             PostponeUpdateUI();
+
+            if (CanEdit()) {
+                var pos = args.GetPosition(row);
+                if (EditWithClick()) {
+                    TryEditCell(row, pos.X + HorizontalOffset);
+                } else if (EditWithCurrentCellClick()) {
+                    if (wasSelected)
+                        TryEditCell(row, pos.X + HorizontalOffset );
+                    else if (_editRow.IsEditing)
+                        _editRow.CommitEdit();
+                } else if (_editRow.IsEditing)
+                    // user was editing , and now clicked elsewhere, but the edit will happen manually
+                    _editRow.CommitEdit();
+            }
+        }
+
+        internal void RaiseCellEditBegin(CellEditBeginArgs args) {
+            CellEditBegin?.Invoke(this, args);
+        }
+
+        internal void RaiseCellEditEnded(CellEditEndedArgs args) {
+            CellEditEnded?.Invoke(this, args);
+        }
+
+        internal void RaiseCellEditEnding(CellEditEndingArgs args) {
+            CellEditEnding?.Invoke(this, args);
         }
 
         internal void OnMouseRowEnter(FastGridViewRow row) {
@@ -1085,6 +1150,7 @@ namespace FastGrid.FastGrid
 
             horizontalScrollbar.Minimum = 0;
             horizontalScrollbar.Value = 0;
+            DrawController.EditRow.RecreateEditCells();
         }
 
         private void HierarchicalInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1144,6 +1210,7 @@ namespace FastGrid.FastGrid
             _rowProvider.SetHorizontalOffset(HorizontalOffset);
             DrawController.UpdateHorizontalScrollbar();
             DrawController.OnHorizontalOffsetChange();
+            EditRow.HorizontalOffset = HorizontalOffset;
         }
 
         private void OnOffscreenChange() {
@@ -1256,11 +1323,24 @@ namespace FastGrid.FastGrid
 
         public void VerticalScrollToRowIndex(int rowIdx) => _drawController.VerticalScrollToRowIndex(rowIdx);
         public void ScrollToRow(object obj) => _drawController.ScrollToRow(obj);
+        public void EnsureVisible(object obj) => _drawController.EnsureVisible(obj);
 
         internal void OnExpandToggle(object obj) {
             _expandController.ToggleExpanded(obj);
         }
 
+        private void canvas_KeyDown(object sender, KeyEventArgs e) {
+            if (EditWithF2() && e.Key == Key.F2 && GetSelection().Any()) {
+                var obj = GetSelection().First();
+                var row = RowProvider.TryGetRow(obj);
+                var col = _editRow.FirstEditableColumn();
+                if (row != null && col != null) {
+                    // we're editing the first column from this row
+                    EnsureVisible(obj);
+                    TryEditCell(row, col);
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -1275,5 +1355,6 @@ namespace FastGrid.FastGrid
             OnPropertyChanged(propertyName);
             return true;
         }
+
     }
 }

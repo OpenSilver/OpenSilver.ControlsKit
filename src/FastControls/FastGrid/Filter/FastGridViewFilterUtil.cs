@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid.Filter
 {
@@ -116,7 +117,7 @@ namespace FastGrid.FastGrid.Filter
                 return ((ulong)a).ToString();
 
             Debug.Assert(false);
-            throw new Exception($"Not a number: {a}");
+            throw new FastGridViewException($"Not a number: {a}");
         }
 
         // useful so I can sort by number value
@@ -148,7 +149,7 @@ namespace FastGrid.FastGrid.Filter
                 return ((ulong)a);
 
             Debug.Assert(false);
-            throw new Exception($"Not a number: {a}");
+            throw new FastGridViewException($"Not a number: {a}");
         }
 
         private const string FilterNullLabel = "[null]";

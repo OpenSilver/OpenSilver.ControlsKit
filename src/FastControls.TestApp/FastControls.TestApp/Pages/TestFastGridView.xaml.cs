@@ -17,7 +17,7 @@ namespace FastControls.TestApp.Pages
 {
     public partial class TestFastGridView : Page
     {
-        private ObservableCollection<DummyData> _pullouts;
+        private ObservableCollection<DummyData> _dummy;
         public TestFastGridView()
         {
             this.InitializeComponent();
@@ -40,7 +40,7 @@ namespace FastControls.TestApp.Pages
         private int RefIndex(DummyData dummyData)
         {
             int idx = 0;
-            _pullouts.FirstOrDefault(i =>
+            _dummy.FirstOrDefault(i =>
             {
                 if (ReferenceEquals(i, dummyData))
                     return true;
@@ -51,16 +51,16 @@ namespace FastControls.TestApp.Pages
         }
         private async Task TestSimulateInsertionDeletions()
         {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             await Task.Delay(2000);
 
             var rowIdx = 100;
             var newInsertions = 300;
             var delay = 50;
-            var top = _pullouts[rowIdx];
+            var top = _dummy[rowIdx];
             ctrl.ScrollToRow(top);
-            var sel = _pullouts[rowIdx + 1];
+            var sel = _dummy[rowIdx + 1];
             ctrl.SelectedItem = sel;
             await Task.Delay(1000);
 
@@ -73,11 +73,11 @@ namespace FastControls.TestApp.Pages
                 // the idea - in this test, the selection is set via an item
                 var topIdx = RefIndex(top);
                 // this should not affect anything visually
-                _pullouts.Insert(topIdx - 10, newPullouts[i]);
+                _dummy.Insert(topIdx - 10, newPullouts[i]);
                 // this should insert a row, visually
-                _pullouts.Insert(topIdx + 4, newPullouts[i]);
+                _dummy.Insert(topIdx + 4, newPullouts[i]);
                 // this should delete a row, visually
-                _pullouts.RemoveAt(topIdx + 19);
+                _dummy.RemoveAt(topIdx + 19);
                 await Task.Delay(delay);
                 Debug.WriteLine($"insert {i}");
             }
@@ -85,13 +85,13 @@ namespace FastControls.TestApp.Pages
 
         private async Task TestConstantUpdates()
         {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             await Task.Delay(2000);
 
             var rowIdx = 50;
             var maxRows = 25;
-            ctrl.ScrollToRow(_pullouts[rowIdx]);
+            ctrl.ScrollToRow(_dummy[rowIdx]);
             var colOffset = 0;
             var operationIdx = 0;
             for (int i = 0; i < 400; ++i)
@@ -99,7 +99,7 @@ namespace FastControls.TestApp.Pages
                 ctrl.SelectedIndex = rowIdx + (i % maxRows);
                 for (int j = 0; j < 20; ++j)
                 {
-                    var row = _pullouts[rowIdx + ((i + j) % maxRows)];
+                    var row = _dummy[rowIdx + ((i + j) % maxRows)];
                     switch (colOffset)
                     {
                         case 0:
@@ -130,46 +130,46 @@ namespace FastControls.TestApp.Pages
         }
 
         private async Task TestBoundBackground() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             ctrl.RowTemplate = FastGridContentTemplate.BindBackgroundRowTemplate("BgColor");
             await Task.Delay(2000);
 
             // increment the OperatorID of each one
             for (int i = 0; i < 400; ++i) {
-                foreach (var pullout in _pullouts)
+                foreach (var pullout in _dummy)
                     pullout.OperatorRecordId++;
                 await Task.Delay(250);
             }
         }
 
         private async Task TestAddAndRemoveSorted() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(5, offset: 50));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(5, offset: 50));
+            ctrl.ItemsSource = _dummy;
 
             ctrl.SortDescriptors.Add(new FastGridSortDescriptor { Column = ctrl.Columns["OperatorReportLabel"], SortDirection = SortDirection.Descending});
             await Task.Delay(3000);
             var extraPullouts = new MockViewModel().GetDummyByCount(50).ToList();
             for (int i = 0; i < extraPullouts.Count; ++i) {
-                _pullouts.Add(extraPullouts[i]);
+                _dummy.Add(extraPullouts[i]);
                 await Task.Delay(250);
             }
             for (int i = 0; i < extraPullouts.Count; ++i) {
-                _pullouts.Remove(extraPullouts[i]);
+                _dummy.Remove(extraPullouts[i]);
                 await Task.Delay(250);
             }
         }
 
         private async Task TestResortingExistingItems() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(5, offset: 50));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(5, offset: 50));
+            ctrl.ItemsSource = _dummy;
 
             ctrl.SortDescriptors.Add(new FastGridSortDescriptor { Column = ctrl.Columns["OperatorReportLabel"], SortDirection = SortDirection.Descending});
             await Task.Delay(3000);
 
             for (int i = 0; i < 100; ++i) {
-                _pullouts[0].OperatorReportLabel = $"Operator {i}";
-                _pullouts[1].OperatorReportLabel = $"Operator {i+1}";
+                _dummy[0].OperatorReportLabel = $"Operator {i}";
+                _dummy[1].OperatorReportLabel = $"Operator {i+1}";
                 await Task.Delay(250);
             }
         }
@@ -185,8 +185,8 @@ namespace FastControls.TestApp.Pages
                 return BrushCache.Inst.GetByColor(color);
             };
 
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
 
             for (int i = 0; i < 100; ++i) {
                 await Task.Delay(2000);
@@ -196,9 +196,8 @@ namespace FastControls.TestApp.Pages
         }
 
         private void SimpleTest() {
-            //_pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(25));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             ctrl.AllowSortByMultipleColumns = false;
             ctrl.Columns[1].Sort = true;
             ctrl.AllowMultipleSelection = true;
@@ -211,8 +210,8 @@ namespace FastControls.TestApp.Pages
         }
         // the idea - have special data that will generate diverse data for filtering
         private void SimpleTestFilter() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCountForTestingFilter(5000));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCountForTestingFilter(5000));
+            ctrl.ItemsSource = _dummy;
             ctrl.AllowSortByMultipleColumns = false;
 //            ctrl.Columns[1].Sort = true;
 
@@ -224,8 +223,8 @@ namespace FastControls.TestApp.Pages
         }
 
         private void SimpleTestFilterFewItems() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCountForTestingFilter(5));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCountForTestingFilter(5));
+            ctrl.ItemsSource = _dummy;
             ctrl.AllowSortByMultipleColumns = false;
 
             ctrl.SelectionChanged += (s, a) => {
@@ -235,8 +234,8 @@ namespace FastControls.TestApp.Pages
         }
 
         private async Task TestOffscreen() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             for (int i = 0; i < 50; ++i) {
                 await Task.Delay(4000);
                 Canvas.SetLeft(ctrl, (i % 2) == 0 ? -10000 : 0);
@@ -244,8 +243,8 @@ namespace FastControls.TestApp.Pages
         }
 
         private async Task TestChangeColumnOrder() {
-            _pullouts = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            ctrl.ItemsSource = _pullouts;
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
+            ctrl.ItemsSource = _dummy;
             await Task.Delay(3000);
             var idx = 0;
             foreach (var col in ctrl.Columns)
