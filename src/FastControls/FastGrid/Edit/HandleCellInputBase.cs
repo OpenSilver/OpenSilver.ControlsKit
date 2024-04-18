@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenSilver.ControlsKit.Edit
+﻿namespace OpenSilver.ControlsKit.FastGrid.Edit
 {
     internal interface HandleCellInputBase {
         void Subscribe();

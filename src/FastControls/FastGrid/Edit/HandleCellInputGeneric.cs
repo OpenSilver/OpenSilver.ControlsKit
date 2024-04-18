@@ -1,12 +1,10 @@
-﻿using OpenSilver.ControlsKit.FastGrid.Util;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
-namespace OpenSilver.ControlsKit.Edit
+namespace OpenSilver.ControlsKit.FastGrid.Edit
 {
     internal class HandleCellInputGeneric : HandleCellInputBase {
         protected const int DelayBeforeFocusMs = 100;

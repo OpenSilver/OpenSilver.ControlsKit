@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
-using OpenSilver.ControlsKit.FastGrid.Util;
 
-namespace OpenSilver.ControlsKit.Edit
+namespace OpenSilver.ControlsKit.FastGrid.Edit
 {
     internal class HandleCellInputText : HandleCellInputGeneric {
         private TextBox Text => _control as TextBox;

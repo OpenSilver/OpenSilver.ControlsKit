@@ -1,4 +1,4 @@
-﻿namespace OpenSilver.ControlsKit.Edit {
+﻿namespace OpenSilver.ControlsKit.FastGrid.Edit {
     public enum KeyNavigateAction {
         None, Up, 
         // Enter functions as "Down"

@@ -10,8 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Xml.Linq;
 using FastGrid.FastGrid.Expand;
-using OpenSilver.ControlsKit.Edit;
-using OpenSilver.ControlsKit.FastGrid.Row;
+using OpenSilver.ControlsKit.FastGrid.Edit;
 using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid.Data

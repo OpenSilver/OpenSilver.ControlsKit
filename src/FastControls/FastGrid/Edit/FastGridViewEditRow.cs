@@ -1,21 +1,17 @@
-﻿using FastGrid.FastGrid;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
+using FastGrid.FastGrid;
 using FastGrid.FastGrid.Data;
-using FastGrid.FastGrid.Row;
-using OpenSilver.ControlsKit.Edit;
-using OpenSilver.ControlsKit.Edit.Args;
+using OpenSilver.ControlsKit.FastGrid.Edit.Args;
 using OpenSilver.ControlsKit.FastGrid.Util;
 
-namespace OpenSilver.ControlsKit.FastGrid.Row
+namespace OpenSilver.ControlsKit.FastGrid.Edit
 {
     // IMPORTANT: for now, allow edit only in non-hierarchical grids
     internal class FastGridViewEditRow : INotifyPropertyChanged

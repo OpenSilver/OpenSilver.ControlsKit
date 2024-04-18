@@ -18,9 +18,8 @@ using System.Windows.Threading;
 using FastGrid.FastGrid.Data;
 using FastGrid.FastGrid.Filter;
 using OpenSilver;
-using OpenSilver.ControlsKit.Edit;
-using OpenSilver.ControlsKit.Edit.Args;
-using OpenSilver.ControlsKit.FastGrid.Row;
+using OpenSilver.ControlsKit.FastGrid.Edit;
+using OpenSilver.ControlsKit.FastGrid.Edit.Args;
 using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Input;
-using OpenSilver.ControlsKit.Edit;
+using OpenSilver.ControlsKit.FastGrid.Edit;
 
 namespace OpenSilver.ControlsKit.FastGrid.Util
 {

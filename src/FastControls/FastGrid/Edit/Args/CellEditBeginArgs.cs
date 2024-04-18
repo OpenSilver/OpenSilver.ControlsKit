@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OpenSilver.ControlsKit.Edit.Args
+namespace OpenSilver.ControlsKit.FastGrid.Edit.Args
 {
     public class CellEditBeginArgs : EventArgs {
         public Object RowObject;
