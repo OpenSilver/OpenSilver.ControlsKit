@@ -57,7 +57,7 @@ namespace FastGrid.FastGrid.Data
 
         public ItemsControl HeaderControl() {
             if (_headerControl == null) {
-                _headerControl = FastGridUtil.NewHeaderControl();
+                _headerControl = FastGridInternalUtil.NewHeaderControl();
                 _headerControl.SizeChanged += headerControl_SizeChanged;
             }
 
@@ -75,7 +75,7 @@ namespace FastGrid.FastGrid.Data
             Debug.Assert(NeedsColumnGroup());
 
             if (_columnGroupControl == null) {
-                _columnGroupControl = FastGridUtil.NewHeaderControl();
+                _columnGroupControl = FastGridInternalUtil.NewHeaderControl();
             }
 
             return _columnGroupControl;
@@ -124,7 +124,7 @@ namespace FastGrid.FastGrid.Data
             CreateHeader();
             _self.canvas.Children.Add(HeaderBackground());
             _self.canvas.Children.Add(HeaderControl());
-            FastGridUtil.SetLeft(HeaderControl(), FastGridViewDrawController.OUTSIDE_SCREEN);
+            FastGridInternalUtil.SetLeft(HeaderControl(), FastGridViewDrawController.OUTSIDE_SCREEN);
         }
 
 
@@ -431,12 +431,12 @@ namespace FastGrid.FastGrid.Data
             }
 
             var collectionUpdate = NeedsCollectionUpdate;
-            if (_needsRefilter) {
+            if (_needsRefilter ) {
                 _needsRefilter = false;
                 FullReFilter();
             }
 
-            if (_needsFullReSort) {
+            if (_needsFullReSort ) {
                 _needsFullReSort = false;
                 _needsReSort = false;
                 Sort.FullResort();
@@ -734,7 +734,7 @@ namespace FastGrid.FastGrid.Data
         }
 
         internal void HeaderBackgroundColorChanged(SolidColorBrush color) {
-            FastGridUtil.SetControlBackground(HeaderBackground(), color);
+            FastGridInternalUtil.SetControlBackground(HeaderBackground(), color);
         }
 
         internal void GroupHeaderForegroundColorChanged(SolidColorBrush newValue) {
@@ -755,7 +755,7 @@ namespace FastGrid.FastGrid.Data
         internal void GroupHeaderLineBackgroundChanged(SolidColorBrush newValue) {
             if (!NeedsColumnGroup())
                 return;
-            FastGridUtil.SetControlBackground(ColumnGroupBackground(), newValue);
+            FastGridInternalUtil.SetControlBackground(ColumnGroupBackground(), newValue);
         }
 
         internal void GroupHeaderPaddingChanged(Thickness newValue) {

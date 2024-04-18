@@ -9,6 +9,8 @@ using FastGrid.FastGrid;
 
 namespace TestRadComboBox
 {
+    public enum SimpleEnum { Me, You, He, She }
+
     public class DummyData : INotifyPropertyChanged{
         private int operatorRecordId;
         private string operatorReportLabel = "";
@@ -20,6 +22,20 @@ namespace TestRadComboBox
         private DateTime time_ = DateTime.Now;
         private IReadOnlyList<DummyData> _children = new List<DummyData>();
         private bool _editableBool;
+        private SimpleEnum _enumy = SimpleEnum.Me;
+        private DateTime _date = DateTime.Now;
+
+        public SimpleEnum Enumy {
+            get => _enumy;
+            set {
+                if (value == _enumy) {
+                    return;
+                }
+
+                _enumy = value;
+                OnPropertyChanged();
+            }
+        }
 
         // allow tree-like structure
         public IReadOnlyList<DummyData> Children {
@@ -31,8 +47,6 @@ namespace TestRadComboBox
             }
         }
 
-
-        // must match the Operator.ReportLabel
         public string OperatorReportLabel {
             get => operatorReportLabel;
             set {
@@ -106,6 +120,18 @@ namespace TestRadComboBox
             }
         }
 
+        public DateTime Date {
+            get => _date;
+            set {
+                if (value.Equals(_date)) {
+                    return;
+                }
+
+                _date = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string TimeString => Time.ToString("HH:mm");
 
         public Brush BgColor {
@@ -168,6 +194,7 @@ namespace TestRadComboBox
 
         public IEnumerable<DummyData> GetDummyByCount(int count, string prefix = "", int offset = 0) {
             var time = DateTime.Now;
+            var date = DateTime.Now;
             var incrementTimeSecs = 60;
             for (int i = offset; i < count + offset; ++i) {
                 yield return new DummyData {
@@ -178,9 +205,12 @@ namespace TestRadComboBox
                     Password = $"Pass {prefix} {i}",
                     Department = $"Dep {prefix} {i}",
                     City = $"City {prefix} {i}",
-                    Time = time,
+                    Time = time, 
+                    Date = date,
+                    EditableBool = (i % 2) == 0,
                 };
                 time = time.AddSeconds(incrementTimeSecs);
+                date = date.AddDays(-1);
             }
 
         }

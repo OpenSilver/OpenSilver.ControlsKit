@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using FastGrid.FastGrid.Filter;
 using OpenSilver.ControlsKit.FastGrid.DataTemplate;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
@@ -308,12 +309,12 @@ namespace FastGrid.FastGrid
             return dt;
         }
 
-        public FastGridViewColumn CreateDefaultDataTemplate(object o) {
+        public FastGridViewColumn CreateDefaultDataTemplate(object o, bool preferDate = true) {
             Debug.Assert(DataBindingPropertyName != "");
             if (_isDummyCellTemplate)
-                CellTemplate = FastGridViewCellTemplate.Default(o, DataBindingPropertyName);
+                CellTemplate = FastGridViewCellTemplate.Default(o, DataBindingPropertyName, preferDate);
             if (!IsReadOnly && CellEditTemplate == null)
-                CellEditTemplate = FastGridViewCellTemplate.DefaultEdit(o, DataBindingPropertyName);
+                CellEditTemplate = FastGridViewCellTemplate.DefaultEdit(o, DataBindingPropertyName, preferDate);
             return this;
         }
 

@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using DotNetForHtml5.Core;
 using FastGrid.FastGrid.Column;
 using Microsoft.Windows;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
@@ -74,7 +75,7 @@ namespace FastGrid.FastGrid
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     Opacity = 0,
-                    Name = FastGridUtil.EXPANDER_BORDER_NAME,
+                    Name = FastGridInternalUtil.EXPANDER_BORDER_NAME,
                 };
                 var grid = new Grid();
 
@@ -254,13 +255,13 @@ namespace FastGrid.FastGrid
                             fe.ReleaseMouseCapture();
                             fe.RenderTransform = null;
                             sourceColumn.IsDragging = false;
-                            var destColumn = FastGridUtil. FindColumnAtPos(a.GetPosition(null));
+                            var destColumn = FastGridInternalUtil. FindColumnAtPos(a.GetPosition(null));
                             if (destColumn != null && !ReferenceEquals(destColumn, sourceColumn)) {
                                 FastGridView.Logger($"dragging column {sourceColumn.FriendlyName()} complete: over {destColumn.FriendlyName()}");
                                 var sourceDislayIndex = sourceColumn.DisplayIndex;
                                 var destDisplayIndex = destColumn.DisplayIndex;
                                 int minIndex = Math.Min(sourceDislayIndex, destDisplayIndex), maxIndex = Math.Max(sourceDislayIndex, destDisplayIndex);
-                                var fastGrid = FastGridUtil.ColumnToView(fe);
+                                var fastGrid = FastGridInternalUtil.ColumnToView(fe);
                                 var colsToUpdate = fastGrid.Columns.Where(c => c.DisplayIndex >= minIndex && c.DisplayIndex <= maxIndex && !ReferenceEquals(c, sourceColumn)).ToList();
                                 foreach (var c in colsToUpdate)
                                     c.DisplayIndex = sourceDislayIndex > destDisplayIndex ? c.DisplayIndex + 1 : c.DisplayIndex - 1;
@@ -269,7 +270,7 @@ namespace FastGrid.FastGrid
                             return;
                         }
 
-                        var view = FastGridUtil.ColumnToView(fe);
+                        var view = FastGridInternalUtil.ColumnToView(fe);
                         if (sourceColumn.DataBindingPropertyName == "" || !sourceColumn.IsSortable || !view.CanUserSortColumns)
                             return; // we can't sort by this column
 
@@ -302,6 +303,10 @@ namespace FastGrid.FastGrid
                             column.IsDragging = true;
                             fe.CaptureMouse();
                             FastGridView.Logger($"dragging column {column.FriendlyName()}");
+
+                            // simple logic -- as soon as the drags a header column, if he was editing -> auto save
+                            var view = FastGridInternalUtil.ColumnToView(fe);
+                            view.EditRow.AutoCommitEdit();
                         }
 
                         if (column.IsDragging) {
@@ -324,7 +329,7 @@ namespace FastGrid.FastGrid
 
                 grid.Loaded += (s, a) => {
                     var column = ((s as FrameworkElement).DataContext as FastGridViewColumn);
-                    var view = FastGridUtil.ColumnToView(s as FrameworkElement);
+                    var view = FastGridInternalUtil.ColumnToView(s as FrameworkElement);
                     if (column.DataBindingPropertyName == "" || !column.IsFilterable || !view.IsFilteringAllowed)
                         filterButton.Visibility = Visibility.Collapsed;
                     if (!column.IsSortable)
@@ -341,6 +346,10 @@ namespace FastGrid.FastGrid
                     transparentRect.CaptureMouse();
                     a.Handled = true;
                     ((s as FrameworkElement).DataContext as FastGridViewColumn).IsResizingColumn = true;
+
+                    // simple logic -- as soon as the drags a header column, if he was editing -> auto save
+                    var view = FastGridInternalUtil.ColumnToView(s as FrameworkElement);
+                    view.EditRow.AutoCommitEdit();
                 };
                 transparentRect.MouseLeftButtonUp += (s, a) => {
                     mouseDown = false;
@@ -369,7 +378,7 @@ namespace FastGrid.FastGrid
 
                 filterButton.MouseLeftButtonUp += (s, a) => {
                     var self = s as FrameworkElement;
-                    var view = FastGridUtil.TryGetAscendant<FastGridView>(self);
+                    var view = FastGridInternalUtil.TryGetAscendant<FastGridView>(self);
                     if (view != null) {
                         var column = ((s as FrameworkElement).DataContext as FastGridViewColumn);
                         view.EditFilterMousePos = a.GetPosition(view);

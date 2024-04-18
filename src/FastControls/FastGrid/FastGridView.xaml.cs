@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using FastGrid.FastGrid.Data;
 using FastGrid.FastGrid.Filter;
 using OpenSilver;
+using OpenSilver.ControlsKit.Edit;
 using OpenSilver.ControlsKit.Edit.Args;
 using OpenSilver.ControlsKit.FastGrid.Row;
 using OpenSilver.ControlsKit.FastGrid.Util;
@@ -437,8 +438,8 @@ namespace FastGrid.FastGrid
         private void HeaderHeightChanged() {
             _mainDataHolder.HeaderControl().Height = HeaderHeight;
             if (_mainDataHolder.NeedsColumnGroup()) {
-                FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
-                FastGridUtil.SetTop(_mainDataHolder.HeaderBackground(), HeaderHeight);
+                FastGridInternalUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
+                FastGridInternalUtil.SetTop(_mainDataHolder.HeaderBackground(), HeaderHeight);
                 _mainDataHolder.ColumnGroupControl().Height = HeaderHeight;
                 _mainDataHolder.ColumnGroupBackground().Height = HeaderHeight;
             }
@@ -781,7 +782,7 @@ namespace FastGrid.FastGrid
             HorizontalScroll(horizontalScrollbar.Value);
         }
 
-        private void HorizontalScroll(double value, bool updateScrollbarValue = true) {
+        internal void HorizontalScroll(double value, bool updateScrollbarValue = true) {
             value = Math.Max(horizontalScrollbar.Minimum, Math.Min(value, horizontalScrollbar.Maximum));
             if (InstantColumnResize || !IsScrollingHorizontally)
                 HorizontalOffset = value;
@@ -837,7 +838,7 @@ namespace FastGrid.FastGrid
             //_mainDataHolder.HeaderControl().Width = e.NewSize.Width;
             _mainDataHolder.HeaderControl().Height = HeaderHeight;
             if (_mainDataHolder.NeedsColumnGroup()) {
-                FastGridUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
+                FastGridInternalUtil.SetTop(_mainDataHolder.HeaderControl(), HeaderHeight);
                 _mainDataHolder.ColumnGroupControl().Width = e.NewSize.Width;
                 _mainDataHolder.ColumnGroupControl().Height = HeaderHeight;
 
@@ -862,11 +863,11 @@ namespace FastGrid.FastGrid
             horizontalScrollbar.Height = ScrollSize;
             scrollGap.Height = ScrollSize;
             scrollGap.Width = ScrollSize;
-            FastGridUtil.SetLeft(scrollGap, _actualSize.Width - ScrollSize);
-            FastGridUtil.SetTop(scrollGap, _actualSize.Height - ScrollSize);
+            FastGridInternalUtil.SetLeft(scrollGap, _actualSize.Width - ScrollSize);
+            FastGridInternalUtil.SetTop(scrollGap, _actualSize.Height - ScrollSize);
 
-            FastGridUtil.SetLeft(verticalScrollbar, _actualSize.Width - ScrollSize);
-            FastGridUtil.SetTop(horizontalScrollbar, _actualSize.Height - ScrollSize);
+            FastGridInternalUtil.SetLeft(verticalScrollbar, _actualSize.Width - ScrollSize);
+            FastGridInternalUtil.SetTop(horizontalScrollbar, _actualSize.Height - ScrollSize);
 
             // just size, based on which is visible
             UpdateScrollBarsVisibilityAndSize();
@@ -882,20 +883,20 @@ namespace FastGrid.FastGrid
             }
 
             if (showHorizontal != null) {
-                FastGridUtil.SetIsVisible(horizontalScrollbar, showHorizontal.Value);
+                FastGridInternalUtil.SetIsVisible(horizontalScrollbar, showHorizontal.Value);
                 isHorizontalVisible = showHorizontal.Value;
             }
 
             if (showVertical != null) {
-                FastGridUtil.SetIsVisible(verticalScrollbar, showVertical.Value);
+                FastGridInternalUtil.SetIsVisible(verticalScrollbar, showVertical.Value);
                 isVerticalVisible = showVertical.Value;
             }
-            FastGridUtil.SetIsVisible(scrollGap, isHorizontalVisible && isVerticalVisible);
+            FastGridInternalUtil.SetIsVisible(scrollGap, isHorizontalVisible && isVerticalVisible);
 
             var horizontalWidth = canvas.Width - (isVerticalVisible ? ScrollSize : 0);
             var verticalHeight = canvas.Height - (isHorizontalVisible ? ScrollSize : 0);
-            FastGridUtil.SetWidth(horizontalScrollbar, Math.Max(horizontalWidth, 0));
-            FastGridUtil.SetHeight(verticalScrollbar, Math.Max(verticalHeight, 0));
+            FastGridInternalUtil.SetWidth(horizontalScrollbar, Math.Max(horizontalWidth, 0));
+            FastGridInternalUtil.SetHeight(verticalScrollbar, Math.Max(verticalHeight, 0));
         }
 
 
@@ -1048,21 +1049,20 @@ namespace FastGrid.FastGrid
         }
 
 
-        private void TryEditCell(FastGridViewRow row, FastGridViewColumn col) {
+        private void TryEditCell(FastGridViewRow row, FastGridViewColumn col, bool viaClick) {
             if (col == null || col.IsReadOnly || col.CellEditTemplate == null) {
                 // can't edit this cell
-                if (_editRow.IsEditing)
-                    _editRow.CommitEdit();
+                _editRow.AutoCommitEdit();
                 return;
             }
 
             // here, i know the colum is editable
-            _editRow.BeginEdit(row, col);
+            _editRow.BeginEdit(row, col, viaClick);
         }
 
-        private void TryEditCell(FastGridViewRow row, double left) {
+        private void TryEditCell(FastGridViewRow row, double left, bool viaClick) {
             var col = _editRow. LeftToColumn(left);
-            TryEditCell(row, col);
+            TryEditCell(row, col, viaClick);
         }
 
         internal void OnMouseLeftButtonDown(FastGridViewRow row, MouseButtonEventArgs args) {
@@ -1085,15 +1085,15 @@ namespace FastGrid.FastGrid
             if (CanEdit()) {
                 var pos = args.GetPosition(row);
                 if (EditWithClick()) {
-                    TryEditCell(row, pos.X + HorizontalOffset);
+                    TryEditCell(row, pos.X + HorizontalOffset, viaClick: true);
                 } else if (EditWithCurrentCellClick()) {
                     if (wasSelected)
-                        TryEditCell(row, pos.X + HorizontalOffset );
-                    else if (_editRow.IsEditing)
-                        _editRow.CommitEdit();
-                } else if (_editRow.IsEditing)
+                        TryEditCell(row, pos.X + HorizontalOffset, viaClick: true );
+                    else 
+                        _editRow.AutoCommitEdit();
+                } else 
                     // user was editing , and now clicked elsewhere, but the edit will happen manually
-                    _editRow.CommitEdit();
+                    _editRow.AutoCommitEdit();
             }
         }
 
@@ -1141,9 +1141,9 @@ namespace FastGrid.FastGrid
             _rowProvider.RowHeightChanged();
             PostponeUpdateUI();
 
-            FastGridUtil.SetLeft(MainDataHolder.HeaderControl(), 0);
+            FastGridInternalUtil.SetLeft(MainDataHolder.HeaderControl(), 0);
             if (MainDataHolder.NeedsColumnGroup()) 
-                FastGridUtil.SetLeft(MainDataHolder.ColumnGroupControl(), 0);
+                FastGridInternalUtil.SetLeft(MainDataHolder.ColumnGroupControl(), 0);
 
             foreach (var hci in HierarchicalInfos())
                 hci.PropertyChanged += HierarchicalInfo_PropertyChanged;
@@ -1189,6 +1189,9 @@ namespace FastGrid.FastGrid
             if (e.Delta == 0)
                 return;
             Logger($"mouse wheel {e.Delta}");
+
+            // simple logic -- as soon as the user scrolls, if he was editing, we save it
+            _editRow.AutoCommitEdit();
 
             var goUp = e.Delta > 0;
             var maxRowIdx = _expandController.MaxRowIdx();
@@ -1266,6 +1269,8 @@ namespace FastGrid.FastGrid
             var maxRowIdx = _expandController.MaxRowIdx();
             var valueScroll = Math.Min((int)e.NewValue, maxRowIdx);
 
+            // simple logic -- as soon as the user scrolls, if he was editing, we save it
+            _editRow.AutoCommitEdit();
 
             switch (e.ScrollEventType) {
             case ScrollEventType.SmallDecrement:
@@ -1324,6 +1329,7 @@ namespace FastGrid.FastGrid
         public void VerticalScrollToRowIndex(int rowIdx) => _drawController.VerticalScrollToRowIndex(rowIdx);
         public void ScrollToRow(object obj) => _drawController.ScrollToRow(obj);
         public void EnsureVisible(object obj) => _drawController.EnsureVisible(obj);
+        public void EnsureVisible(FastGridViewColumn column) => _drawController.EnsureVisible(column);
 
         internal void OnExpandToggle(object obj) {
             _expandController.ToggleExpanded(obj);
@@ -1337,7 +1343,7 @@ namespace FastGrid.FastGrid
                 if (row != null && col != null) {
                     // we're editing the first column from this row
                     EnsureVisible(obj);
-                    TryEditCell(row, col);
+                    TryEditCell(row, col, viaClick: false);
                 }
             }
         }

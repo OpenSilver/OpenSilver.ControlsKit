@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Xml.Linq;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid.Data
 {
@@ -78,14 +79,14 @@ namespace FastGrid.FastGrid.Data
 
         public void ClearRows() {
             foreach (var row in _rows)
-                FastGridUtil.SetDataContext(row, null, out _);
+                FastGridInternalUtil.SetDataContext(row, null, out _);
             _rows.Clear();
         }
 
 
         public void SetRowOpacity(double value) {
             foreach (var row in _rows.Where(r => r.IsRowVisible))
-                FastGridUtil.SetOpacity(row, value);
+                FastGridInternalUtil.SetOpacity(row, value);
         }
 
         // the idea: when ItemsSource is changed, I want to hide all existing rows first
@@ -102,7 +103,7 @@ namespace FastGrid.FastGrid.Data
             foreach (var row in _rows) {
                 row.Preloaded = false;
                 row.IsRowVisible = false;
-                FastGridUtil.SetLeft(row, -100000);
+                FastGridInternalUtil.SetLeft(row, -100000);
             }
         }
 
@@ -110,14 +111,14 @@ namespace FastGrid.FastGrid.Data
             foreach (var row in _rows) {
                 var visible = row.IsRowVisible;
                 var left = visible ? 0 : -100000;
-                FastGridUtil.SetLeft(row, left);
+                FastGridInternalUtil.SetLeft(row, left);
 
                 if (visible) 
-                    FastGridUtil.SetOpacity(row, 1);
+                    FastGridInternalUtil.SetOpacity(row, 1);
                 else {
                     if (!row.Preloaded) {
                         row.Used = false;
-                        FastGridUtil.SetDataContext(row, null, out _);
+                        FastGridInternalUtil.SetDataContext(row, null, out _);
                     }
                 }
             }
@@ -135,7 +136,7 @@ namespace FastGrid.FastGrid.Data
 
         public void OnOffscreen() {
             foreach (var row in _rows) {
-                FastGridUtil.SetDataContext(row, null, out _);
+                FastGridInternalUtil.SetDataContext(row, null, out _);
                 row.Used = false;
                 row.RowObject = null;
             }

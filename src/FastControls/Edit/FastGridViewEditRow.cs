@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -34,6 +35,11 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
 
         public bool CanEdit(int columnIdx) => TryGetCell(columnIdx) != null;
         public bool IsEditing => _isEditing;
+
+        public int EditRowIdx => _editRowIdx;
+        public int EditColumnIdx => _editColumnIdx;
+
+        public FastGridViewColumn EditColumn => _editColumnIdx >= 0 ? SortedColumns[_editColumnIdx] : null;
 
         public HierarchicalCollectionInfo HierchicalInfo {
             get => _hierchicalInfo;
@@ -91,17 +97,20 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
         }
 
         private void UpdateDataContext(object o) {
-            FastGridUtil.SetDataContext(TryGetCell(_editColumnIdx), o);
+            FastGridInternalUtil.SetDataContext(TryGetCell(_editColumnIdx), o);
 
             if (SetDataContextToAllRow)
                 foreach (var cell in _editCells.Where(cell => cell != null))
-                    FastGridUtil.SetDataContext(cell, o);
+                    FastGridInternalUtil.SetDataContext(cell, o);
         }
 
         internal void RecreateEditCells() {
             var oldCells = _self.canvas.Children.OfType<FastGridViewEditCell>().ToList();
             foreach (var cell in oldCells)
                 _self.canvas.Children.Remove(cell);
+
+            foreach (var old in _editCells)
+                old.UnhandleInput();
 
             _editCells.Clear();
             for (int i = 0; i < SortedColumns.Count; i++) {
@@ -114,10 +123,11 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
                         MaxWidth = double.IsNaN(col.MaxWidth) ? double.MaxValue : col.MaxWidth,
                         Height = _self.RowHeight,
                     };
+                    edit.OnNavigate = Navigate;
                     _editCells.Add(edit);
                     _self.canvas.Children.Add(edit);
-                    FastGridUtil.SetLeft(edit, FastGridViewDrawController.OUTSIDE_SCREEN);
-                    FastGridUtil.SetZIndex(edit, 2000); // on top of anything else
+                    FastGridInternalUtil.SetLeft(edit, FastGridViewDrawController.OUTSIDE_SCREEN);
+                    FastGridInternalUtil.SetZIndex(edit, 2000); // on top of anything else
                 } else 
                     _editCells.Add(null);
             }
@@ -142,8 +152,8 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
             if (_editColumnIdx < 0)
                 return;
             var cell = TryGetCell(_editColumnIdx);
-            FastGridUtil.SetLeft(cell, FastGridViewDrawController.OUTSIDE_SCREEN);
-            FastGridUtil.SetEnabled(cell, false);
+            FastGridInternalUtil.SetLeft(cell, FastGridViewDrawController.OUTSIDE_SCREEN);
+            FastGridInternalUtil.SetEnabled(cell, false);
         }
 
         public FastGridViewColumn LeftToColumn(double left) {
@@ -158,17 +168,84 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
             return null;
         }
 
-        public void BeginEdit(FastGridViewRow row, FastGridViewColumn col) {
-            var colIdx = FastGridUtil.RefIndex(SortedColumns, col);
+        public double ColumnLeft(FastGridViewColumn col) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
+            var colLeft = SortedColumns.Take(colIdx).Sum(c => c.Width);
+            return colLeft;
+        }
+
+        // can be -1 if not found
+        public int PrevEditableColumnIdx(FastGridViewColumn col) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
+            Debug.Assert(colIdx >= 0);
+            for (int i= colIdx -1; i >= 0; --i)
+                if (SortedColumns[i].CellEditTemplate != null)
+                    return i;
+            return -1;
+        }
+        // can be -1 if not found
+        public int NextEditableColumnIdx(FastGridViewColumn col) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
+            Debug.Assert(colIdx >= 0);
+            for (int i= colIdx + 1; i < SortedColumns.Count; ++i)
+                if (SortedColumns[i].CellEditTemplate != null)
+                    return i;
+            return -1;
+        }
+
+        // can be -1 if no editable columns
+        public int MinEditableColumnIdx() {
+            for (int i= 0; i < SortedColumns.Count; ++i)
+                if (SortedColumns[i].CellEditTemplate != null)
+                    return i;
+            return -1;
+        }
+
+        // can be -1 if no editable columns
+        public int MaxEditableColumnIdx() {
+            for (int i= SortedColumns.Count -1; i >= 0; --i)
+                if (SortedColumns[i].CellEditTemplate != null)
+                    return i;
+            return -1;
+        }
+
+        // throws if not available
+        public FastGridViewColumn PrevEditableColumn(FastGridViewColumn col) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
+            Debug.Assert(colIdx >= 0);
+            var prevIdx = PrevEditableColumnIdx(col);
+            return prevIdx >= 0 ? SortedColumns[prevIdx] : throw new FastGridViewException($"no previous editable column, starting from {col.DataBindingPropertyName}");
+        }
+        // throws if not available
+        public FastGridViewColumn NextEditableColumn(FastGridViewColumn col) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
+            Debug.Assert(colIdx >= 0);
+            var nextIdx = NextEditableColumnIdx(col);
+            return nextIdx >= 0 ? SortedColumns[nextIdx] : throw new FastGridViewException($"no next editable column, starting from {col.DataBindingPropertyName}");
+        }
+
+        // can be null if no editable columns
+        public FastGridViewColumn MinEditableColumn() {
+            var idx = MinEditableColumnIdx();
+            return idx >= 0 ? SortedColumns[idx] : null;
+        }
+        // can be null if no editable columns
+        public FastGridViewColumn MaxEditableColumn() {
+            var idx = MaxEditableColumnIdx();
+            return idx >= 0 ? SortedColumns[idx] : null;
+        }
+
+        public void BeginEdit(FastGridViewRow row, FastGridViewColumn col, bool viaClick) {
+            var colIdx = FastGridInternalUtil.RefIndex(SortedColumns, col);
             var colLeft = SortedColumns.Take(colIdx).Sum(c => c.Width);
             var rowTop = Canvas.GetTop(row);
             if (rowTop >= 0)
-                BeginEdit(row.RowObject, row.RowIndex, colIdx, colLeft, rowTop);
+                BeginEdit(row.RowObject, row.RowIndex, colIdx, colLeft, rowTop, viaClick);
         }
 
-        private void BeginEdit(object o, int rowIdx, int columnIdx, double left, double top) {
+        private void BeginEdit(object o, int rowIdx, int columnIdx, double left, double top, bool viaClick) {
             if (_isEditing)
-                CommitEditImpl(keepEditing: true);
+                CommitEditImpl(columnIdx, keepEditing: true);
 
             var cell = TryGetCell(columnIdx);
             if (cell == null)
@@ -189,47 +266,83 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
 
             var args = new CellEditBeginArgs { Row = _editRowIdx, Column = _editColumnIdx, RowObject = _editObject };
             _self.RaiseCellEditBegin(args);
+
+            if (args.Cancel)
+                CancelEditImpl();
+            else 
+                cell.OnGotFocus(viaClick);
+        }
+
+        private void Navigate(KeyNavigateAction action, FastGridViewEditCell sourceCell) {
+            Debug.Assert(ReferenceEquals(sourceCell, TryGetCell(_editColumnIdx)));
+
+            switch (action) {
+                case KeyNavigateAction.Up:
+                case KeyNavigateAction.Down:
+                case KeyNavigateAction.Prev:
+                case KeyNavigateAction.Next:
+                case KeyNavigateAction.NextOrDown:
+                case KeyNavigateAction.PrevOrUp:
+                    _self.DrawController.TryEditScroll(action);
+                    break;
+                case KeyNavigateAction.Escape:
+                    CancelEditImpl();
+                    break;
+                case KeyNavigateAction.None:
+                    break;
+                case KeyNavigateAction.Toggle:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+            }
         }
 
         private void UpdateUI() {
             if (_editColumnIdx < 0)
                 return; // not editing
             var cell = TryGetCell(_editColumnIdx);
-            FastGridUtil.SetEnabled(cell, true);
-            FastGridUtil.SetLeft(cell, _editLeft - HorizontalOffset);
-            FastGridUtil.SetTop(cell, _editTop);
-            FastGridUtil.SetWidth(cell, SortedColumns[_editColumnIdx].Width);
-            FastGridUtil.SetHeight(cell, _self.RowHeight);
+            FastGridInternalUtil.SetEnabled(cell, true);
+            FastGridInternalUtil.SetLeft(cell, _editLeft - HorizontalOffset);
+            FastGridInternalUtil.SetTop(cell, _editTop);
+            FastGridInternalUtil.SetWidth(cell, SortedColumns[_editColumnIdx].Width);
+            FastGridInternalUtil.SetHeight(cell, _self.RowHeight);
+        }
+
+        // helper
+        public void AutoCommitEdit() {
+            if (IsEditing)
+                CommitEdit();
         }
 
         public void CommitEdit() {
-            CommitEditImpl(keepEditing: false);
+            CommitEditImpl(-1, keepEditing: false);
         }
-        private void CommitEditImpl(bool keepEditing) {
+        private void CommitEditImpl(int newColumnIdx, bool keepEditing) {
             var args = new CellEditEndingArgs {Row = _editRowIdx, Column = _editColumnIdx, RowObject = _editObject};
             _self.RaiseCellEditEnding(args);
 
             if (!args.Cancel) {
-                try {
-                    if (_editObject != null)
-                        _editProperty?.SetValue(_editObject, _oldValue);
-                }
-                finally {
+                bool ignoreHide = keepEditing && newColumnIdx == _editColumnIdx;
+                if (!ignoreHide) {
+                    TryGetCell(_editColumnIdx)?.OnLostFocus();
                     HideEditedCell();
-                    if (!keepEditing) {
-                        _isEditing = false;
-                        UpdateDataContext(null);
-                        _editObject = null;
-                        _editProperty = null;
-                        _editColumnIdx = -1;
-                        _self.Focus();
-                    }
+                }
+
+                if (!keepEditing) {
+                    _isEditing = false;
+                    UpdateDataContext(null);
+                    _editObject = null;
+                    _editProperty = null;
+                    _editColumnIdx = -1;
+                    _self.Focus();
                 }
             } else 
                 CancelEditImpl();
         }
 
         public void CancelEdit() {
+            if (!_isEditing)
+                return;
             // communicate to the client that we've been cancelled
             var args = new CellEditEndingArgs { Cancel = true, Row = _editRowIdx, Column = _editColumnIdx, RowObject = _editObject };
             _self.RaiseCellEditEnding(args);
@@ -238,7 +351,7 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
         }
 
         private void CancelEditImpl() {
-            var args = new CellEditEndedArgs();
+            var args = new CellEditEndedArgs { Row = _editRowIdx, Column = _editColumnIdx, RowObject = _editObject };
             _self.RaiseCellEditEnded(args);
 
             try {
@@ -246,6 +359,7 @@ namespace OpenSilver.ControlsKit.FastGrid.Row
             }
             finally {
                 _isEditing = false;
+                TryGetCell(_editColumnIdx)?.OnLostFocus();
                 HideEditedCell();
                 UpdateDataContext(null);
                 _editObject = null;

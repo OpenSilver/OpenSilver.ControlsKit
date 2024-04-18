@@ -203,7 +203,7 @@ namespace FastGrid.FastGrid
 
         private void UpdateCellHeight() {
             foreach (var cell in _cells) 
-                FastGridUtil.SetHeight(cell, RowHeight);
+                FastGridInternalUtil.SetHeight(cell, RowHeight);
         }
 
         internal void UpdateUI() {
@@ -220,7 +220,7 @@ namespace FastGrid.FastGrid
             foreach (var cell in _cells) {
                 var offset = cell.IsCellVisible ? x : -100000;
                 cell.UpdateWidth();
-                FastGridUtil.SetLeft(cell, offset);
+                FastGridInternalUtil.SetLeft(cell, offset);
                 if (cell.IsCellVisible)
                     x += cell.Width;
             }
@@ -249,21 +249,21 @@ namespace FastGrid.FastGrid
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs args) {
-            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            var view = FastGridInternalUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseLeftButtonDown(this, args);
             args.Handled = true;
         }
 
         protected override void OnMouseEnter(MouseEventArgs args) {
             base.OnMouseEnter(args);
-            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            var view = FastGridInternalUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseRowEnter(this);
             args.Handled = true;
         }
 
         protected override void OnMouseLeave(MouseEventArgs args) {
             base.OnMouseLeave(args);
-            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            var view = FastGridInternalUtil.TryGetAscendant<FastGridView>(this);
             view?.OnMouseRowLeave(this);
             args.Handled = true;
         }

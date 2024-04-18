@@ -10,7 +10,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Xml.Linq;
 using FastGrid.FastGrid.Expand;
+using OpenSilver.ControlsKit.Edit;
 using OpenSilver.ControlsKit.FastGrid.Row;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid.Data
 {
@@ -58,6 +60,12 @@ namespace FastGrid.FastGrid.Data
         private Dictionary<int, RowInfo> _visibleHeaders = new Dictionary<int, RowInfo>();
 
         internal int VisibleCount => _visibleCount;
+
+        private Action _postponedUpdateUiAction;
+
+        // for the next UI update to work, even if we're editing
+        // useful when we navigate with keys, and one navigation will actually require us to scroll
+        private bool _forceUpdateUiWhileEditing;
 
         public FastGridViewDrawController(FastGridView self) {
             _self = self;
@@ -173,6 +181,10 @@ namespace FastGrid.FastGrid.Data
             if (!_self.CanUpdateUI())
                 return false;
 
+            if (_self.EditRow.IsEditing && !_forceUpdateUiWhileEditing)
+                // the idea: while editing, the UI remains "frozen", for instance, no filtering and sorting, since a single edit of a value can trigger a resort 
+                return false;
+
             return true;
         }
 
@@ -211,14 +223,14 @@ namespace FastGrid.FastGrid.Data
                     if (tryGetRow == null) {
                         // it's a newly created/bound row - create it outside of what the user sees
                         // once it's fully created + bound, then we can show it visually, and it will be instant
-                        FastGridUtil.SetLeft(row, OUTSIDE_SCREEN);
+                        FastGridInternalUtil.SetLeft(row, OUTSIDE_SCREEN);
                         ++newlyCreatedRowCount;
                     }
 
                     row.RowObject = obj;
                     row.Used = true;
                     row.IsRowVisible = true;
-                    FastGridUtil.SetDataContext(row, obj, out _);
+                    FastGridInternalUtil.SetDataContext(row, obj, out _);
                     row.IsSelected = _self.IsRowSelected(obj, rowIdx);
 
                     ++rowIdx;
@@ -235,15 +247,15 @@ namespace FastGrid.FastGrid.Data
             if (_self.RowBackgroundColorFunc != null) {
                 var color = _self.RowBackgroundColorFunc(row.RowObject, row.RowIndex);
 
-                if (!FastGridUtil.SameColor(color, FastGridUtil.ControlBackground(row.RowContentChild)))
-                    FastGridUtil.SetControlBackground(row.RowContentChild, color);
+                if (!FastGridInternalUtil.SameColor(color, FastGridInternalUtil.ControlBackground(row.RowContentChild)))
+                    FastGridInternalUtil.SetControlBackground(row.RowContentChild, color);
             }
         }
 
         private void DrawHeader(ItemsControl headerCtrl, double y, int indentLevel) {
-            FastGridUtil.SetLeft(headerCtrl, -_self.HorizontalOffset + indentLevel  * FastGridViewRow.WIDTH_PER_INDENT_LEVEL);
-            FastGridUtil.SetTop(headerCtrl, y);
-            FastGridUtil.SetHeight(headerCtrl, _self.RowHeight);
+            FastGridInternalUtil.SetLeft(headerCtrl, -_self.HorizontalOffset + indentLevel  * FastGridViewRow.WIDTH_PER_INDENT_LEVEL);
+            FastGridInternalUtil.SetTop(headerCtrl, y);
+            FastGridInternalUtil.SetHeight(headerCtrl, _self.RowHeight);
         }
 
         public void OnHorizontalOffsetChange() {
@@ -251,9 +263,9 @@ namespace FastGrid.FastGrid.Data
                 var top = Canvas.GetTop(header.HeaderControl);
                 DrawHeader(header.HeaderControl, top, header.IndentLevel);
             }
-            FastGridUtil.SetLeft(_self.MainDataHolder.HeaderControl(), -_self.HorizontalOffset);
+            FastGridInternalUtil.SetLeft(_self.MainDataHolder.HeaderControl(), -_self.HorizontalOffset);
             if (_self.MainDataHolder.NeedsColumnGroup())
-                FastGridUtil.SetLeft(_self.MainDataHolder.ColumnGroupControl(), -_self.HorizontalOffset);
+                FastGridInternalUtil.SetLeft(_self.MainDataHolder.ColumnGroupControl(), -_self.HorizontalOffset);
         }
 
         internal void UpdateHorizontalScrollbar() {
@@ -278,7 +290,7 @@ namespace FastGrid.FastGrid.Data
 
 
             var maxValue = Math.Max(columnsWidth + EXTRA_SIZE - _self.canvas.Width, 0);
-            FastGridUtil.SetMaximum(_self.horizontalScrollbar, maxValue);
+            FastGridInternalUtil.SetMaximum(_self.horizontalScrollbar, maxValue);
             _self.UpdateScrollBarsVisibilityAndSize(showHorizontal: maxValue > 0);
             if (maxValue == 0) {
                 _self.HorizontalOffset = 0;
@@ -295,14 +307,14 @@ namespace FastGrid.FastGrid.Data
                     UpdateHorizontalScrollbar();
                     _self.UpdateScrollBarsVisibilityAndSize(showVertical: false);
                 } else 
-                    FastGridUtil.SetIsVisible(_self.canvas, false);
+                    FastGridInternalUtil.SetIsVisible(_self.canvas, false);
                 return true;
             }
 
             // update horizontal and vertical scrollbar
             _self.UpdateScrollBarsVisibilityAndSize();
 
-            FastGridUtil.SetIsVisible(_self.canvas, true);
+            FastGridInternalUtil.SetIsVisible(_self.canvas, true);
             if (!CanDraw()) {
                 _waitBeforeDrawCount = 0;
                 return false;
@@ -359,14 +371,14 @@ namespace FastGrid.FastGrid.Data
                     row.Columns = ri.DataHolder.Columns;
                     var sameContext = ReferenceEquals(row.DataContext, obj);
                     if (!sameContext) {
-                        FastGridUtil.SetLeft(row, -100000);
+                        FastGridInternalUtil.SetLeft(row, -100000);
                         rowChangeCount++;
                     }
 
                     UpdateRowColor(row);
                     Expander.UpdateExpandRow(row);
-                    FastGridUtil.SetDataContext(row, obj);
-                    FastGridUtil.SetTop(row, y);
+                    FastGridInternalUtil.SetDataContext(row, obj);
+                    FastGridInternalUtil.SetTop(row, y);
                     y += row.RowHeight;
                     row.IsSelected = _self.IsRowSelected(obj, rowIdx);
                     row.HorizontalOffset = _self.HorizontalOffset;
@@ -381,7 +393,7 @@ namespace FastGrid.FastGrid.Data
 
                 var headersToHide = _visibleHeaders.Keys.Except(newVisibleHeaders.Keys);
                 foreach (var id in headersToHide)
-                    FastGridUtil.SetLeft(_visibleHeaders[id].HeaderControl, OUTSIDE_SCREEN);
+                    FastGridInternalUtil.SetLeft(_visibleHeaders[id].HeaderControl, OUTSIDE_SCREEN);
                 _visibleHeaders = newVisibleHeaders;
 
                 // we do the full update only when everything is preloaded
@@ -404,6 +416,9 @@ namespace FastGrid.FastGrid.Data
             catch (Exception e) {
                 Logger($"FATAL: exception in TryUpdateUI {_self.Name} {e}");
             } finally {
+                _forceUpdateUiWhileEditing = false;
+                _postponedUpdateUiAction?.Invoke();
+                _postponedUpdateUiAction = null;
                 _isUpdatingUI = false;
             }
             return rowChangeCount == 0;
@@ -431,7 +446,7 @@ namespace FastGrid.FastGrid.Data
             while (RowProvider.Rows.Count < cacheAhead) {
                 var row = RowProvider.CreateRow(null);
                 row.Used = false;
-                FastGridUtil.SetLeft(row, OUTSIDE_SCREEN);
+                FastGridInternalUtil.SetLeft(row, OUTSIDE_SCREEN);
             }
             try {
 
@@ -441,13 +456,13 @@ namespace FastGrid.FastGrid.Data
                 foreach (var rowIdx in extra) {
                     var obj = Expander.RowIndexToObject(rowIdx);
                     var row = RowProvider.TryGetRow(obj) ?? RowProvider.TryReuseRow(obj) ?? RowProvider.CreateRow(obj);
-                    FastGridUtil.SetLeft(row, OUTSIDE_SCREEN);
+                    FastGridInternalUtil.SetLeft(row, OUTSIDE_SCREEN);
                     row.RowObject = obj;
                     row.RowIndex = -1; // unknown yet
                     row.Used = true;
                     row.Preloaded = true;
                     row.IsRowVisible = false;
-                    FastGridUtil.SetDataContext(row, obj, out _);
+                    FastGridInternalUtil.SetDataContext(row, obj, out _);
                     UpdateRowColor(row);
                     row.IsSelected = _self.IsRowSelected(obj, rowIdx);
                     row.HorizontalOffset = _self.HorizontalOffset;
@@ -524,6 +539,172 @@ namespace FastGrid.FastGrid.Data
             if (rowIdx >= _topRowIndexWhenNotScrolling && rowIdx < _topRowIndexWhenNotScrolling + _visibleCount)
                 return; // already visible
             ScrollToRow(obj);
+        }
+
+        // called ONCE on the first successful UI update
+        public void PostponeUpdateUiAction(Action a) {
+            _postponedUpdateUiAction = a;
+        }
+
+        internal void TryEditScroll(KeyNavigateAction action) {
+            var maxRowIdx = _self.ExpandController.MaxRowIdx();
+            var visibleCount = _self.GuessVisibleRowCount();
+            var rowCount = _self.ExpandController.RowCount();
+
+            switch (action) {
+                case KeyNavigateAction.Up:
+                    if (_self.EditRow.EditRowIdx > 0) {
+                        if (_self.EditRow.EditRowIdx > _topRowIndexWhenNotScrolling) 
+                            OnPostEditScroll(action);
+                        else {
+                            _forceUpdateUiWhileEditing = true;
+                            PostponeUpdateUiAction(() => OnPostEditScroll(action));
+                            _scrollingTopRowIndex = _self.EditRow.EditRowIdx - 1;
+                            PostponeUpdateUI();
+                        }
+                    }
+                    break;
+                case KeyNavigateAction.Down:
+                    if (_self.EditRow.EditRowIdx < rowCount - 1) {
+                        if (_self.EditRow.EditRowIdx < _topRowIndexWhenNotScrolling + visibleCount - 1)
+                            OnPostEditScroll(action);
+                        else {
+                            _forceUpdateUiWhileEditing = true;
+                            PostponeUpdateUiAction(() => OnPostEditScroll(action));
+                            _scrollingTopRowIndex = Math.Max(_self.EditRow.EditRowIdx - visibleCount + 2, 0) ;
+                            PostponeUpdateUI();
+                        }
+                    }
+                    break;
+                case KeyNavigateAction.Prev:
+                    if (_self.EditRow.EditColumnIdx > _self.EditRow.MinEditableColumnIdx()) {
+                        // note: ensuring a column is visible is instant, it doesn't need any extra UpdateUI
+                        var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx));
+                        var col = _self.EditRow.PrevEditableColumn(_self.EditRow.EditColumn)  ;
+                        EnsureVisible(col);
+                        if (row != null )
+                            _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    }
+                    break;
+                case KeyNavigateAction.Next:
+                    if (_self.EditRow.EditColumnIdx < _self.EditRow.MaxEditableColumnIdx()) {
+                        // note: ensuring a column is visible is instant, it doesn't need any extra UpdateUI
+                        var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx));
+                        var col = _self.EditRow.NextEditableColumn(_self.EditRow.EditColumn);
+                        EnsureVisible(col);
+                        if (row != null )
+                            _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    }
+                    break;
+                case KeyNavigateAction.PrevOrUp:
+                    // figure out -> Prev or Up
+                    if (_self.EditRow.EditColumnIdx > _self.EditRow.MinEditableColumnIdx()) {
+                        // note: ensuring a column is visible is instant, it doesn't need any extra UpdateUI
+                        var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx));
+                        var col = _self.EditRow.PrevEditableColumn(_self.EditRow.EditColumn)  ;
+                        EnsureVisible(col);
+                        if (row != null )
+                            _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    } else {
+                        // this is Up + last editable column
+                        if (_self.EditRow.EditRowIdx > 0) {
+                            EnsureVisible(_self.EditRow.MaxEditableColumn());
+                            if (_self.EditRow.EditRowIdx > _topRowIndexWhenNotScrolling)
+                                OnPostEditScroll(action);
+                            else {
+                                _forceUpdateUiWhileEditing = true;
+                                PostponeUpdateUiAction(() => OnPostEditScroll(action));
+                                _scrollingTopRowIndex = _self.EditRow.EditRowIdx - 1;
+                                PostponeUpdateUI();
+                            }
+                        }
+                    }
+                    break;
+                case KeyNavigateAction.NextOrDown:
+                    // figure out -> Next or Down
+                    if (_self.EditRow.EditColumnIdx < _self.EditRow.MaxEditableColumnIdx()) {
+                        // note: ensuring a column is visible is instant, it doesn't need any extra UpdateUI
+                        var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx));
+                        var col = _self.EditRow.NextEditableColumn(_self.EditRow.EditColumn);
+                        EnsureVisible(col);
+                        if (row != null )
+                            _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    } else {
+                        // down + first editable column
+                        if (_self.EditRow.EditRowIdx < rowCount - 1) {
+                            EnsureVisible(_self.EditRow.MinEditableColumn());
+                            if (_self.EditRow.EditRowIdx < _topRowIndexWhenNotScrolling + visibleCount - 1)
+                                OnPostEditScroll(action);
+                            else {
+                                _forceUpdateUiWhileEditing = true;
+                                PostponeUpdateUiAction(() => OnPostEditScroll(action));
+                                _scrollingTopRowIndex = Math.Max(_self.EditRow.EditRowIdx - visibleCount + 2, 0) ;
+                                PostponeUpdateUI();
+                            }
+                        }
+                    }
+                    break;
+
+                case KeyNavigateAction.None:
+                case KeyNavigateAction.Escape:
+                case KeyNavigateAction.Toggle:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+            }
+        }
+
+        internal void EnsureVisible(FastGridViewColumn col) {
+            var colLeft = _self.EditRow.ColumnLeft(col) - _self.HorizontalOffset;
+            var maxWidth = _self.canvas.Width - (_self.verticalScrollbar.IsVisible ? _self.ScrollSize : 0);
+            var isOk = colLeft >= 0 && colLeft + col.Width < maxWidth;
+            if (!isOk) {
+                if (colLeft < 0) 
+                    _self.HorizontalScroll(_self.HorizontalOffset + colLeft);
+                else
+                    _self.HorizontalScroll(_self.HorizontalOffset + colLeft + col.Width - maxWidth);
+            }
+        }
+
+        private void OnPostEditScroll(KeyNavigateAction action) {
+            switch (action) {
+                case KeyNavigateAction.Up: {
+                    var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx - 1));
+                    var col = _self.EditRow.EditColumn;
+                    if (row != null )
+                        _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    break;
+                }
+                case KeyNavigateAction.Down: {
+                    var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx + 1));
+                    var col = _self.EditRow.EditColumn;
+                    if (row != null )
+                        _self.EditRow.BeginEdit(row, col, viaClick: false);
+                }
+                    break;
+
+                case KeyNavigateAction.PrevOrUp: {
+                    var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx - 1));
+                    var col = _self.EditRow.MaxEditableColumn();
+                    if (row != null )
+                        _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    break;
+                }
+                case KeyNavigateAction.NextOrDown: {
+                    var row = RowProvider.TryGetRow(Expander.RowIndexToObject(_self.EditRow.EditRowIdx + 1));
+                    var col = _self.EditRow.MinEditableColumn();
+                    if (row != null )
+                        _self.EditRow.BeginEdit(row, col, viaClick: false);
+                    break;
+                }
+
+                case KeyNavigateAction.Prev: 
+                case KeyNavigateAction.Next: 
+                case KeyNavigateAction.None:
+                case KeyNavigateAction.Escape:
+                case KeyNavigateAction.Toggle:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
+            }
         }
 
     }

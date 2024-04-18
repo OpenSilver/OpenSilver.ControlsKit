@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using FastGrid.FastGrid.Data;
+using OpenSilver.ControlsKit.FastGrid.Util;
 
 namespace FastGrid.FastGrid
 {
@@ -50,7 +51,7 @@ namespace FastGrid.FastGrid
 
         public int GetColumnIndex(FastGridViewColumn column) {
             BuildSortedColumns();
-            var idx = FastGridUtil.RefIndex(_sortedColumns, column);
+            var idx = FastGridInternalUtil.RefIndex(_sortedColumns, column);
             return idx;
         }
 
@@ -87,8 +88,8 @@ namespace FastGrid.FastGrid
         }
 
         public void EnsureExpandColumn() {
-            if (Count > 0 && this[0].UniqueName != FastGridUtil.EXPANDER_COLUMN) 
-                Insert(0, FastGridUtil.NewExpanderColumn());
+            if (Count > 0 && this[0].UniqueName != FastGridInternalUtil.EXPANDER_COLUMN) 
+                Insert(0, FastGridInternalUtil.NewExpanderColumn());
         }
     }
 }

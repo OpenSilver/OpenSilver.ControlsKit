@@ -10,7 +10,8 @@
 
         <local:FastGridView x:Name="ctrl" Width="600" Padding="0" RowHeight="30" FontSize="14" Background="Gray"                            
                             Height="800" 
-                            RightClickAutoSelect="Select"
+                            RightClickAutoSelect="Select" 
+                            EditTriggers="CellClick"
                             >
 
             <local:FastGridView.Columns>
@@ -37,14 +38,27 @@
                                           ToolTipPropertyName="OperatorRecordId"/>
 
 
-                <local:FastGridViewColumn HeaderForeground="Gray" HeaderText="Time" Width="80" 
+                <local:FastGridViewColumn HeaderText="Booly" HeaderForeground="Gray" Width="60" 
                                           IsReadOnly="false" 
-                                          DataBindingPropertyName="Time"/>
+                                          DataBindingPropertyName="EditableBool"/>
 
 
                 <local:FastGridViewColumn HeaderText="User" HeaderForeground="Gray" Width="150" 
                                           IsReadOnly="false" 
                                           DataBindingPropertyName="Username"/>
+
+                <local:FastGridViewColumn HeaderText="Enumy" HeaderForeground="Gray" Width="70" 
+                                          IsReadOnly="false" 
+                                          DataBindingPropertyName="Enumy"/>
+
+                <local:FastGridViewColumn HeaderText="Date" HeaderForeground="Gray" Width="120" 
+                                          IsReadOnly="false" 
+                                          DataBindingPropertyName="Date"/>
+                
+                <local:FastGridViewColumn HeaderForeground="Gray" HeaderText="Time" Width="100" 
+                                          IsReadOnly="false" 
+                                          DataBindingPropertyName="Time"/>
+
 
 
                 <local:FastGridViewColumn HeaderText="Pass" Width="120" HeaderForeground="Gray" IsFilterable="False" IsSortable="False"/>

@@ -29,8 +29,10 @@ namespace FastControls.TestApp.Pages
         }
 
         private void SimpleTest() {
-            //_dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(500));
-            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(25));
+            _dummy = new ObservableCollection<DummyData>(new MockViewModel().GetDummyByCount(125));
+            ctrl.Columns["Date"].CreateDefaultDataTemplate(_dummy[0], preferDate: true);
+            ctrl.Columns["Time"].CreateDefaultDataTemplate(_dummy[0], preferDate: false);
+
             ctrl.ItemsSource = _dummy;
             ctrl.AllowSortByMultipleColumns = false;
             ctrl.Columns[1].Sort = true;

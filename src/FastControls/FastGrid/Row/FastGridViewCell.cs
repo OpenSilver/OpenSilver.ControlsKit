@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using OpenSilver.ControlsKit.FastGrid.Util;
 using Path = System.Windows.Shapes.Path;
 
 namespace FastGrid.FastGrid.Row
@@ -60,17 +61,17 @@ namespace FastGrid.FastGrid.Row
             if (VisualTreeHelper.GetChildrenCount(cp) > 0)
             {
                 var border = VisualTreeHelper.GetChild(cp, 0) as Border;
-                if (border?.Name == FastGridUtil.EXPANDER_BORDER_NAME)
+                if (border?.Name == FastGridInternalUtil.EXPANDER_BORDER_NAME)
                 {
                     // it's the Expander column
                     border.MouseLeftButtonDown += Border_MouseLeftButtonDown;
                 }
             }
 
-            FastGridUtil.SetCustomLayout(cp, true);
-            FastGridUtil.SetHorizontalAlignment(cp, HorizontalAlignment.Stretch);
-            FastGridUtil.SetVerticalAlignment(cp, VerticalAlignment.Stretch);
-            FastGridUtil.SetDataContext(cp, DataContext, out _);
+            FastGridInternalUtil.SetCustomLayout(cp, true);
+            FastGridInternalUtil.SetHorizontalAlignment(cp, HorizontalAlignment.Stretch);
+            FastGridInternalUtil.SetVerticalAlignment(cp, VerticalAlignment.Stretch);
+            FastGridInternalUtil.SetDataContext(cp, DataContext, out _);
 
             SubscribeToTooltip(null);
         }
@@ -120,10 +121,10 @@ namespace FastGrid.FastGrid.Row
             if (cp == null)
                 return;
 
-            FastGridUtil.SetCustomLayout(cp, true);
-            FastGridUtil.SetHorizontalAlignment(cp, HorizontalAlignment.Stretch);
-            FastGridUtil.SetVerticalAlignment(cp, VerticalAlignment.Stretch);
-            FastGridUtil.SetDataContext(cp, DataContext);
+            FastGridInternalUtil.SetCustomLayout(cp, true);
+            FastGridInternalUtil.SetHorizontalAlignment(cp, HorizontalAlignment.Stretch);
+            FastGridInternalUtil.SetVerticalAlignment(cp, VerticalAlignment.Stretch);
+            FastGridInternalUtil.SetDataContext(cp, DataContext);
 
             SubscribeToTooltip(e.OldValue);
         }
@@ -136,8 +137,8 @@ namespace FastGrid.FastGrid.Row
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var row = FastGridUtil.TryGetAscendant<FastGridViewRow>(this);
-            var view = FastGridUtil.TryGetAscendant<FastGridView>(this);
+            var row = FastGridInternalUtil.TryGetAscendant<FastGridViewRow>(this);
+            var view = FastGridInternalUtil.TryGetAscendant<FastGridView>(this);
             view.OnExpandToggle(row.RowObject);
             e.Handled = true;
         }
@@ -163,15 +164,15 @@ namespace FastGrid.FastGrid.Row
             var plus = grid.Children[0] as Path;
             var minus = grid.Children[1] as Rectangle;
 
-            FastGridUtil.SetOpacity(border, canExpand ? 1 : 0);
-            FastGridUtil.SetOpacity(plus, canExpand && !isExpanded ? 1 : 0);
-            FastGridUtil.SetOpacity(minus, canExpand && isExpanded ? 1 : 0);
+            FastGridInternalUtil.SetOpacity(border, canExpand ? 1 : 0);
+            FastGridInternalUtil.SetOpacity(plus, canExpand && !isExpanded ? 1 : 0);
+            FastGridInternalUtil.SetOpacity(minus, canExpand && isExpanded ? 1 : 0);
         }
 
 
         public void UpdateWidth()
         {
-            FastGridUtil.SetWidth(this, _column.Width);
+            FastGridInternalUtil.SetWidth(this, _column.Width);
             // note: I don't really care about Min/MaxWidth -- the column (header) itself deals with that
         }
 
