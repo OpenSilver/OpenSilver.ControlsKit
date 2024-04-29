@@ -105,7 +105,7 @@ namespace OpenSilver.ControlsKit.FastGrid.Edit
             foreach (var cell in oldCells)
                 _self.canvas.Children.Remove(cell);
 
-            foreach (var old in _editCells)
+            foreach (var old in _editCells.Where(cell => cell != null))
                 old.UnhandleInput();
 
             _editCells.Clear();
