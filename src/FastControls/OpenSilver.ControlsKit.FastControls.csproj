@@ -23,7 +23,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="OpenSilver" Version="2.2.0-preview-2024-03-19-145203-df92ea3c" />
+    <PackageReference Include="OpenSilver" Version="2.2.0" />
   </ItemGroup>
 
 

@@ -24,7 +24,7 @@ if /i "%PackageVersion%" EQU "" (
 
 rem If argument 2 is not given, use default value for OpenSilverVersion:
 set "OpenSilverVersion=%~2"
-if not defined OpenSilverVersion set "OpenSilverVersion=2.0.1"
+if not defined OpenSilverVersion set "OpenSilverVersion=2.2.0"
 
 rem Get the current date and time:
 for /F "tokens=2" %%i in ('date /t') do set currentdate=%%i
