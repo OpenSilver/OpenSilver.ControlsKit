@@ -20,19 +20,7 @@
     <Page Include="Pages\FastCheckBox.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\TestFastGridEdit.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\TestFastGridHierarchical.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\TestFastGridViewCodeBehind.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\TestStaggeredPanel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\TestFastGridView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -40,15 +28,10 @@
   <ItemGroup>
     <Compile Include="App.xaml.cs" />
     <Compile Include="MainPage.xaml.cs" />
-    <Compile Include="MockViewModel.cs" />
     <Compile Include="Pages\FastCheckBox.xaml.cs" />
-    <Compile Include="Pages\TestFastGridEdit.xaml.cs" />
-    <Compile Include="Pages\TestFastGridViewCodeBehind.xaml.cs" />
     <Compile Include="Pages\TestStaggeredPanel.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
     <Compile Include="Registry\TreeItem.cs" />
-    <Compile Include="Pages\TestFastGridHierarchical.xaml.cs" />
-    <Compile Include="Pages\TestFastGridView.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,14 +53,6 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\TestStaggeredPanel.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\TestFastGridViewCodeBehind.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\TestFastGridEdit.xaml" />
   </ItemGroup>
 
 </Project>

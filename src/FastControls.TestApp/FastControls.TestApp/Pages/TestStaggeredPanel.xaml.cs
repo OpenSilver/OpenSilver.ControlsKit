@@ -1,5 +1,4 @@
 ﻿using DotNetForHtml5.Core;
-using FastGrid.FastGrid;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
-using TestRadComboBox;
 
 namespace FastControls.TestApp.Pages
 {
