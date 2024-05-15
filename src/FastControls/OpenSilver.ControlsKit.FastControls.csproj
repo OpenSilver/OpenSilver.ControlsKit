@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>OpenSilver.ControlsKit</RootNamespace>
+    <Authors>Userware</Authors>
+    <ProjectUrl>https://www.opensilver.net</ProjectUrl>
+    <Description>The ControlsKit.FastControls is a collection of fast controls that developers can use directly in their OpenSilver projects, to complement the built-in controls.</Description>
+    <Copyright>Copyright (c) 2022, Userware. All rights reserved.</Copyright>
+    <Title>OpenSilver FastControls</Title>
+    <PackageProjectUrl>https://github.com/OpenSilver/OpenSilver.ControlsKit</PackageProjectUrl>
+    <PackageReadmeFile></PackageReadmeFile>
+    <RepositoryUrl>https://github.com/OpenSilver/OpenSilver.ControlsKit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>OpenSilver Controls Xaml</PackageTags>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="OpenSilver" Version="2.2.0" />
+  </ItemGroup>
+
+</Project>

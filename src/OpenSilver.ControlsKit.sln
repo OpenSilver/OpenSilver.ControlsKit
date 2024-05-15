@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSilver.ControlsKit.FastControls", "FastControls\OpenSilver.ControlsKit.FastControls.csproj", "{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSilver.ControlsKit.FastControls.TestApp", "OpenSilver.ControlsKit.FastControls.TestApp", "{757990DC-A1AE-4E39-A086-A6C4FA59B250}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastControls.TestApp", "FastControls.TestApp\FastControls.TestApp\FastControls.TestApp.csproj", "{6EF229A1-0A2A-4452-8E57-88156D2650EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastControls.TestApp.Browser", "FastControls.TestApp\FastControls.TestApp.Browser\FastControls.TestApp.Browser.csproj", "{569ABA81-F8A2-4A3E-9155-555A3EAB0F62}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastControls.TestApp.Simulator", "FastControls.TestApp\FastControls.TestApp.Simulator\FastControls.TestApp.Simulator.csproj", "{B28B4B1C-A738-4D9F-96A7-6DCC231A9928}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSilver.ControlsKit.Controls", "OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj", "{EFAC9728-C7A6-431F-8780-5AE3531B3764}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EF229A1-0A2A-4452-8E57-88156D2650EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EF229A1-0A2A-4452-8E57-88156D2650EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EF229A1-0A2A-4452-8E57-88156D2650EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF229A1-0A2A-4452-8E57-88156D2650EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569ABA81-F8A2-4A3E-9155-555A3EAB0F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569ABA81-F8A2-4A3E-9155-555A3EAB0F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569ABA81-F8A2-4A3E-9155-555A3EAB0F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569ABA81-F8A2-4A3E-9155-555A3EAB0F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B28B4B1C-A738-4D9F-96A7-6DCC231A9928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28B4B1C-A738-4D9F-96A7-6DCC231A9928}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B28B4B1C-A738-4D9F-96A7-6DCC231A9928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28B4B1C-A738-4D9F-96A7-6DCC231A9928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6EF229A1-0A2A-4452-8E57-88156D2650EC} = {757990DC-A1AE-4E39-A086-A6C4FA59B250}
+		{569ABA81-F8A2-4A3E-9155-555A3EAB0F62} = {757990DC-A1AE-4E39-A086-A6C4FA59B250}
+		{B28B4B1C-A738-4D9F-96A7-6DCC231A9928} = {757990DC-A1AE-4E39-A086-A6C4FA59B250}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3095C2CC-DAE8-4223-BF01-AFDDF80767AD}
+	EndGlobalSection
+EndGlobal

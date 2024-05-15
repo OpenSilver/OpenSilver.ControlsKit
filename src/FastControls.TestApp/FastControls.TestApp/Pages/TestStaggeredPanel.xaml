@@ -1,0 +1,18 @@
+﻿<Page
+    x:Class="FastControls.TestApp.Pages.TestStaggeredPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controlskit="clr-namespace:OpenSilver.ControlsKit;assembly=OpenSilver.ControlsKit.Controls"
+    xmlns:local="clr-namespace:FastGrid.FastGrid" 
+    xmlns:fg="clr-namespace:FastGrid" 
+    xmlns:conv="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls">
+    <ScrollViewer>
+        <controlskit:StaggeredPanel DesiredColumnWidth="100" RowSpacing="20" ColumnSpacing="20">
+            <Border Width="100" Height="100" Background="Red"/>
+            <Border Width="100" Height="300" Background="Blue"/>
+            <Border Width="100" Height="200" Background="Green"/>
+            <Border Width="500" Height="300" Background="Yellow"/>
+            <TextBlock Text="Hello World!" x:Name="TextBlock1" Canvas.Left="20" Canvas.Top="30"/>
+        </controlskit:StaggeredPanel>
+    </ScrollViewer>
+</Page>

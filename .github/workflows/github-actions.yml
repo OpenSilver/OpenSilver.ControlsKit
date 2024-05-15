@@ -1,0 +1,59 @@
+name: OpenSilver.ControlsKit Build
+env:
+  next-release-version: '2.0.1'
+  opensilver-package-source: 'https://www.myget.org/F/opensilver/api/v3/index.json'
+  suffix: 'preview'
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      opensilver-version:
+        description: 'OpenSilver package version'
+        default: 'latest'
+        required: true
+jobs:
+  OpenSilver-ControlsKit-Build:
+    #We should not run these steps on the forks by default.
+    if: github.repository_owner == 'OpenSilver'
+    runs-on: windows-latest
+    steps:
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1.3
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4.x
+      - name: Install DotNet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      - name: Clone repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - name: Fill vars
+        id: vars
+        run: |
+          $version = "${{ github.event.inputs.opensilver-version }}"
+          $source = "${{ env.opensilver-package-source }}"
+          if ($version -eq "latest" -or $version -eq "") {
+            $version = nuget list -Source $source -Prerelease | ? { $_ -match "^OpenSilver\s+(.*)" } | ForEach { $_.split(" ")[1] }
+          }
+          echo "Version: $version"
+          echo "opensilver-version=$version" >> $env:GITHUB_OUTPUT
+          echo "package-version=${{ env.next-release-version }}-${{ env.suffix }}-$(date +'%Y-%m-%d-%H%M%S')-${{ env.GITHUB_SHA_SHORT }}" >> $env:GITHUB_OUTPUT
+      - name: Replace OpenSilver PackageVersion
+        run: |
+          sed -i 's/<OpenSilverPackageVersion>[^<]*</<OpenSilverPackageVersion>${{ steps.vars.outputs.opensilver-version }}</g' src\Directory.Build.targets
+      - name: Build the FastControls package
+        working-directory: src\FastControls\build
+        run: |
+          ./build-nuget-package.bat ${{ steps.vars.outputs.package-version }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: FastControls
+          path: src\FastControls\bin\Release\*.nupkg
+      - name: Upload packages to MyGet
+        run: |
+           dotnet nuget push "src\FastControls\bin\Release\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s ${{ secrets.MYGET_PUBLIC_FEED }}
