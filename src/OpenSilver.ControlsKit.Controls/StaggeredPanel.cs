@@ -130,7 +130,7 @@ namespace OpenSilver.ControlsKit
             double availableHeight = availableSize.Height - Padding.Top - Padding.Bottom;
 
             _columnWidth = Math.Min(DesiredColumnWidth, availableWidth);
-            int numColumns = Math.Max(1, (int)Math.Floor(availableWidth / _columnWidth));
+            int numColumns = Math.Max(1, availableWidth == double.PositiveInfinity ? -1 : (int)Math.Floor(availableWidth / _columnWidth));
 
             // adjust for column spacing on all columns expect the first
             double totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
