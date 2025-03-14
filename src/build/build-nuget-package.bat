@@ -21,10 +21,9 @@ if /i "%PackageVersion%" EQU "" (
   set /p PackageVersion="%ESC% Package version:%ESC% "
 )
 
-
 rem If argument 2 is not given, use default value for OpenSilverVersion:
 set "OpenSilverVersion=%~2"
-if not defined OpenSilverVersion set "OpenSilverVersion=2.2.0"
+if not defined OpenSilverVersion set "OpenSilverVersion=3.2.0"
 
 rem Get the current date and time:
 for /F "tokens=2" %%i in ('date /t') do set currentdate=%%i
@@ -48,7 +47,3 @@ echo.
 echo %ESC%[95mPacking %ESC%[0mOpenSilver.ControlsKit.Controls %ESC%[95mNuGet package%ESC%[0m
 echo. 
 nuget.exe pack nuspec\ControlsKit.nuspec -OutputDirectory "output/ControlsKit" -Properties "PackageVersion=%PackageVersion%;Configuration=Release;OpenSilverVersion=%OpenSilverVersion%;RepositoryUrl=https://github.com/OpenSilver/OpenSilver.ControlsKit"
-
-explorer "output\ControlsKit"
-
-pause

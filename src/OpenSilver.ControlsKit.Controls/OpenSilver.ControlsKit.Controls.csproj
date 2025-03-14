@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenSilver" Version="2.2.0" />
+    <PackageReference Include="OpenSilver" Version="3.2.0" />
   </ItemGroup>
 
 </Project>

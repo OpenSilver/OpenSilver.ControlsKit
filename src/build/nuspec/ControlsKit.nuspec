@@ -8,8 +8,8 @@
     <repository type="git" url="$RepositoryUrl$" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>The ControlsKit is a collection of controls that developers can use directly in their OpenSilver projects, to complement the built-in controls.</description>
-    <copyright>Copyright (c) 2023, Userware. All rights reserved.</copyright>
-    <tags>silverlight webassembly csharp xaml wasm dotnet .net C# javascript html html5 blazor mono uwp</tags>
+    <copyright>Copyright (c) 2025, Userware. All rights reserved.</copyright>
+    <tags>silverlight wpf webassembly csharp xaml wasm dotnet .net C# javascript html html5 blazor mono uwp</tags>
     <!-- <iconUrl> is deprecated and replaced by <icon> -->
     <!--<iconUrl>https://opensilver.net/permalinks/images/OpenSilver_logo_128x128.png</iconUrl>-->
     <icon>images\OpenSilver_icon.png</icon>

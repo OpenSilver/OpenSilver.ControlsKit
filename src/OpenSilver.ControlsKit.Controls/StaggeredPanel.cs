@@ -248,10 +248,6 @@ namespace OpenSilver.ControlsKit
             return base.ArrangeOverride(finalSize);
         }
 
-        protected override void INTERNAL_OnAttachedToVisualTree()
-        {
-            base.INTERNAL_OnAttachedToVisualTree();
-        }
         private static void OnDesiredColumnWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var panel = (StaggeredPanel)d;

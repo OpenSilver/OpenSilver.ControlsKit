@@ -11,12 +11,15 @@
 *====================================================================================*/
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using CSHTML5.Internal;
 
 namespace OpenSilver.ControlsKit
 {
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Deprecated. It will be removed in a future release.")]
     public class FastCheckBox : FrameworkElement
     {
         public static readonly DependencyProperty IsCheckedProperty =
@@ -45,7 +48,7 @@ namespace OpenSilver.ControlsKit
                     CallPropertyChangedWhenLoadedIntoVisualTree = WhenToCallPropertyChangedEnum.IfPropertyIsSet
                 });
 
-        private object _checkboxHtmlElementRef;
+        private INTERNAL_HtmlDomElementReference _checkboxHtmlElementRef;
 
         private IDisposable _jsCallbackOnClick;
         private object _labelHtmlElementRef;
@@ -102,7 +105,7 @@ namespace OpenSilver.ControlsKit
                 // Trigger click notifications
                 OnClick(new RoutedEventArgs
                 {
-                    OriginalSource = this
+                    Source = this
                 });
             }));
             // Subscribe to the javascript click event through a simple listener
@@ -111,7 +114,10 @@ namespace OpenSilver.ControlsKit
 
             INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle(
                 "input",
-                _labelHtmlElementRef, this, out _checkboxHtmlElementRef);
+                _labelHtmlElementRef, this, out object checkboxHtmlElementRef);
+
+            _checkboxHtmlElementRef = (INTERNAL_HtmlDomElementReference)checkboxHtmlElementRef;
+
             INTERNAL_HtmlDomManager.SetDomElementAttribute(_checkboxHtmlElementRef, "type", "checkbox");
 
             INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("span", _labelHtmlElementRef, this,
@@ -192,21 +198,21 @@ namespace OpenSilver.ControlsKit
             {
                 checkbox.OnChecked(new RoutedEventArgs
                 {
-                    OriginalSource = checkbox
+                    Source = checkbox
                 });
             }
             else if (newValue == false)
             {
                 checkbox.OnUnchecked(new RoutedEventArgs
                 {
-                    OriginalSource = checkbox
+                    Source = checkbox
                 });
             }
             else
             {
                 checkbox.OnIndeterminate(new RoutedEventArgs
                 {
-                    OriginalSource = checkbox
+                    Source = checkbox
                 });
             }
         }
