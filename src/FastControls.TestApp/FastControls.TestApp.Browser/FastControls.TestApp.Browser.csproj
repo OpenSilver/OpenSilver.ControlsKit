@@ -12,11 +12,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.11" PrivateAssets="all" />
-    <PackageReference Include="OpenSilver.WebAssembly" Version="3.2.0" />
+    <PackageReference Include="OpenSilver.WebAssembly" Version="[$(OpenSilverVersion)]" />
   </ItemGroup>
 
   <PropertyGroup>
-     <DisableImplicitNamespaceImports>True</DisableImplicitNamespaceImports>
+    <DisableImplicitNamespaceImports>True</DisableImplicitNamespaceImports>
   </PropertyGroup>
 
   <ItemGroup>

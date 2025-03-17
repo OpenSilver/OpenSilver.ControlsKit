@@ -26,7 +26,7 @@ jobs:
       - name: Install DotNet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '9.0.102'
       - name: Clone repo
         uses: actions/checkout@v3
         with:
@@ -42,18 +42,15 @@ jobs:
           echo "Version: $version"
           echo "opensilver-version=$version" >> $env:GITHUB_OUTPUT
           echo "package-version=${{ env.next-release-version }}-${{ env.suffix }}-$(date +'%Y-%m-%d-%H%M%S')-${{ env.GITHUB_SHA_SHORT }}" >> $env:GITHUB_OUTPUT
-      - name: Replace OpenSilver PackageVersion
+      - name: Build OpenSilver.ControlsKit package
+        working-directory: src\build
         run: |
-          sed -i 's/<OpenSilverPackageVersion>[^<]*</<OpenSilverPackageVersion>${{ steps.vars.outputs.opensilver-version }}</g' src\Directory.Build.targets
-      - name: Build the FastControls package
-        working-directory: src\FastControls\build
-        run: |
-          ./build-nuget-package.bat ${{ steps.vars.outputs.package-version }}
+          ./build-nuget-package.bat ${{ steps.vars.outputs.package-version }} ${{ steps.vars.outputs.opensilver-version }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: FastControls
-          path: src\FastControls\bin\Release\*.nupkg
+          name: ControlsKit
+          path: src\build\output\ControlsKit\*.nupkg
       - name: Upload packages to MyGet
         run: |
-           dotnet nuget push "src\FastControls\bin\Release\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s ${{ secrets.MYGET_PUBLIC_FEED }}
+           dotnet nuget push "src\build\output\ControlsKit\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s ${{ secrets.MYGET_PUBLIC_FEED }}

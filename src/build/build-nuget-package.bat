@@ -1,49 +1,53 @@
-@echo off
+@ECHO off
 
-IF NOT EXIST "nuspec/ControlsKit.nuspec" (
-echo Wrong working directory. Please navigate to the folder that contains the BAT file before executing it.
-PAUSE
-EXIT
+SETLOCAL
+
+IF "%~1" == "--help" (
+	GOTO :help
 )
 
-rem Define the escape character for colored text
-for /F %%a in ('"prompt $E$S & echo on & for %%b in (1) do rem"') do set "ESC=%%a"
-
-echo. 
-echo %ESC%[95mRestoring NuGet packages%ESC%[0m
-echo. 
-dotnet restore "%~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj"
-dotnet restore "%~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj"
-
-rem If argument 1 is not given, ask for PackageVersion:
-set PackageVersion=%1
-if /i "%PackageVersion%" EQU "" (
-  set /p PackageVersion="%ESC% Package version:%ESC% "
+IF "%~1" == "-h" (
+	GOTO :help
 )
 
-rem If argument 2 is not given, use default value for OpenSilverVersion:
-set "OpenSilverVersion=%~2"
-if not defined OpenSilverVersion set "OpenSilverVersion=3.2.0"
+SET CFG=Release
+SET BUILD_DIR=%~dp0
 
-rem Get the current date and time:
-for /F "tokens=2" %%i in ('date /t') do set currentdate=%%i
-set currenttime=%time%
+REM Define the escape character for colored text
+FOR /F %%a IN ('"prompt $E$S & echo on & for %%b in (1) do rem"') DO SET "ESC=%%a"
 
-rem Create a Version.txt file with the date:
-md temp
-@echo OpenSilver.ControlsKit %PackageVersion% (%currentdate% %currenttime%)> temp/Version.txt
+REM Define the PackageVersion and OpenSilverPkgVersion variables
+IF "%~1" == "" (
+	SET /P PackageVersion="%ESC%[92mOpenSilver.ControlsKit version:%ESC%[0m "
+	SET /P OpenSilverPkgVersion="%ESC%[92mOpenSilver version:%ESC%[0m "
+) ELSE (
+	SET PackageVersion=%1
+	IF "%~2" == "" (
+		SET OpenSilverPkgVersion=%1
+	) ELSE (
+		SET OpenSilverPkgVersion=%2
+	)
+)
 
-echo. 
-echo %ESC%[95mBuilding %ESC%[0m FastControl Release %ESC%[95mconfiguration%ESC%[0m
-echo. 
-msbuild "%~dp0..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
+ECHO. 
+ECHO %ESC%[95mBuilding %ESC%[0mFastControl %CFG% %ESC%[95mconfiguration%ESC%[0m
+ECHO. 
+msbuild "%BUILD_DIR%..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" -p:Configuration=%CFG%;OpenSilverVersion=%OpenSilverPkgVersion% -verbosity:minimal -restore
 
-echo. 
-echo %ESC%[95mBuilding %ESC%[0m Controls Release %ESC%[95mconfiguration%ESC%[0m
-echo. 
-msbuild "%~dp0..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" -p:Configuration=Release -p:DebugSymbols=true -p:Optimize=true -p:GenerateDocumentation=true -clp:ErrorsOnly -restore
+ECHO. 
+ECHO %ESC%[95mBuilding %ESC%[0mControlsKit %CFG% %ESC%[95mconfiguration%ESC%[0m
+ECHO. 
+msbuild "%BUILD_DIR%..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" -p:Configuration=%CFG%;OpenSilverVersion=%OpenSilverPkgVersion% -verbosity:minimal -restore
 
-echo. 
-echo %ESC%[95mPacking %ESC%[0mOpenSilver.ControlsKit.Controls %ESC%[95mNuGet package%ESC%[0m
-echo. 
-nuget.exe pack nuspec\ControlsKit.nuspec -OutputDirectory "output/ControlsKit" -Properties "PackageVersion=%PackageVersion%;Configuration=Release;OpenSilverVersion=%OpenSilverVersion%;RepositoryUrl=https://github.com/OpenSilver/OpenSilver.ControlsKit"
+ECHO. 
+ECHO %ESC%[95mPacking %ESC%[0mOpenSilver.ControlsKit %ESC%[95mNuGet package%ESC%[0m
+ECHO. 
+%BUILD_DIR%\nuget.exe pack %BUILD_DIR%\nuspec\ControlsKit.nuspec -OutputDirectory "%BUILD_DIR%\output\ControlsKit" -Properties "PackageVersion=%PackageVersion%;Configuration=%CFG%;OpenSilverVersion=%OpenSilverPkgVersion%;RepositoryUrl=https://github.com/OpenSilver/OpenSilver.ControlsKit"
+
+EXIT /b
+
+:help
+ECHO [1] OpenSilver.ControlsKit NuGet package Version
+ECHO [2] OpenSilver Version
+
+ENDLOCAL
