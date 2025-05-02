@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" />
+    <ProjectReference Include="..\..\OpenSilver.ControlsKit.FastControls\OpenSilver.ControlsKit.FastControls.csproj" />
     <ProjectReference Include="..\..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" />
   </ItemGroup>
 

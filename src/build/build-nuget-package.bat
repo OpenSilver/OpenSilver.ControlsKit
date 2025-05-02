@@ -32,7 +32,7 @@ IF "%~1" == "" (
 ECHO. 
 ECHO %ESC%[95mBuilding %ESC%[0mFastControl %CFG% %ESC%[95mconfiguration%ESC%[0m
 ECHO. 
-msbuild "%BUILD_DIR%..\FastControls\OpenSilver.ControlsKit.FastControls.csproj" -p:Configuration=%CFG%;OpenSilverVersion=%OpenSilverPkgVersion% -verbosity:minimal -restore
+msbuild "%BUILD_DIR%..\OpenSilver.ControlsKit.FastControls\OpenSilver.ControlsKit.FastControls.csproj" -p:Configuration=%CFG%;OpenSilverVersion=%OpenSilverPkgVersion% -verbosity:minimal -restore
 
 ECHO. 
 ECHO %ESC%[95mBuilding %ESC%[0mControlsKit %CFG% %ESC%[95mconfiguration%ESC%[0m

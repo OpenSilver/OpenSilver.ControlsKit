@@ -27,8 +27,8 @@
     <file src="../../OpenSilver.ControlsKit.Controls/bin/$Configuration$/netstandard2.0/OpenSilver.ControlsKit.Controls.xml" target="lib/netstandard2.0/OpenSilver.ControlsKit.Controls.xml" />
     
     <!-- ControlsKit.FastControls -->
-    <file src="../../FastControls/bin/$Configuration$/netstandard2.0/OpenSilver.ControlsKit.FastControls.dll" target="lib/netstandard2.0/OpenSilver.ControlsKit.FastControls.dll" />
-    <file src="../../FastControls/bin/$Configuration$/netstandard2.0/OpenSilver.ControlsKit.FastControls.xml" target="lib/netstandard2.0/OpenSilver.ControlsKit.FastControls.xml" />
+    <file src="../../OpenSilver.ControlsKit.FastControls/bin/$Configuration$/netstandard2.0/OpenSilver.ControlsKit.FastControls.dll" target="lib/netstandard2.0/OpenSilver.ControlsKit.FastControls.dll" />
+    <file src="../../OpenSilver.ControlsKit.FastControls/bin/$Configuration$/netstandard2.0/OpenSilver.ControlsKit.FastControls.xml" target="lib/netstandard2.0/OpenSilver.ControlsKit.FastControls.xml" />
 
    
     <!-- OpenSilver icon -->
