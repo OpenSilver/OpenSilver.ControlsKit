@@ -12,6 +12,7 @@ namespace FastControls.TestApp.Registry
             {
                 new TreeItem("TestStaggeredPanel", "TestStaggeredPanel"),
                 new TreeItem("FastCheckBox", "FastCheckBox"),
+                new TreeItem("AdaptiveColumnsPanel", "AdaptiveColumnsPanel"),
             };
         }
     }
