@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="FastControls.TestApp.Pages.TestAdaptiveColumnsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controlskit="clr-namespace:OpenSilver.ControlsKit;assembly=OpenSilver.ControlsKit.Controls" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" d:DesignWidth="512" d:DesignHeight="932" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+    <controlskit:AdaptiveColumnsPanel NoColumnsBelowWidth="400" VerticalAlignment="Top">
+        <Border Height="100" CornerRadius="20" Margin="5" Background="#CC505E00">
+            <TextBlock Text="Content 1" HorizontalAlignment="Center" Foreground="White" Margin="0,10,0,0"/>
+        </Border>
+        <Border Height="100" CornerRadius="20" Margin="5" Background="#CC7D0030">
+            <TextBlock Text="Content 2" HorizontalAlignment="Center" Foreground="White" Margin="0,10,0,0"/>
+        </Border>
+        <Border Height="100" CornerRadius="20" Margin="5" Background="#CC00567A">
+            <TextBlock Text="Content 3" HorizontalAlignment="Center" Foreground="White" Margin="0,10,0,0"/>
+        </Border>
+    </controlskit:AdaptiveColumnsPanel>
+</Page>
