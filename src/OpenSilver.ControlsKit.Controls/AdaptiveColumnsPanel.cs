@@ -90,6 +90,10 @@ namespace OpenSilver.ControlsKit
         {
             var children = GetVisibleChildren();
             int count = children.Count;
+            if (count == 0)
+            {
+                return base.ArrangeOverride(finalSize);
+            }
             bool useColumns = ShouldUseColumns(finalSize.Width, count);
 
             if (!useColumns)
