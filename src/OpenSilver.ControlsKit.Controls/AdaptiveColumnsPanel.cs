@@ -54,6 +54,10 @@ namespace OpenSilver.ControlsKit
             double layoutWidth = double.IsNaN(this.Width) ? availableSize.Width : this.Width;
             var children = GetVisibleChildren();
             int count = children.Count;
+            if (count == 0)
+            {
+                return base.MeasureOverride(availableSize);
+            }
 
             bool useColumns = ShouldUseColumns(layoutWidth, count);
 
