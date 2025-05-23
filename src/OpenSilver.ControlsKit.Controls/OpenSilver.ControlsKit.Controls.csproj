@@ -17,7 +17,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Themes\Generic.xaml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <PackageReference Include="OpenSilver" Version="[$(OpenSilverVersion)]" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
 </Project>

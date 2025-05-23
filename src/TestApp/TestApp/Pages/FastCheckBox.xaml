@@ -2,9 +2,9 @@
     x:Class="FastControls.TestApp.Pages.FastCheckBox"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:FastControls.TestApp.Pages"
-    xmlns:fc="clr-namespace:OpenSilver.ControlsKit">
+    xmlns:local="clr-namespace:FastControls.TestApp.Pages">
+    <!--xmlns:fc="clr-namespace:OpenSilver.ControlsKit"-->
     <StackPanel>
-        <fc:FastCheckBox Text="Click Me" Click="OnClick"/>
+        <!--<fc:FastCheckBox Text="Click Me" Click="OnClick"/>-->
     </StackPanel>
 </Page>
