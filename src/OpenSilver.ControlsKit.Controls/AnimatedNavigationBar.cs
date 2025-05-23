@@ -62,7 +62,7 @@ namespace OpenSilver.ControlsKit
             InitializeAnimation();
             BindIndicatorProperties();
 
-            // 디자인모드일 때는 로직을 최소화!
+            // minimize the logic in design time
             if (DesignerProperties.GetIsInDesignMode(this)) return;
 
             if (SelectedItem != null)

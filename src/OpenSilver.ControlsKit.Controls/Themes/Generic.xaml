@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OpenSilver.ControlsKit">
 
-    <!-- 네비게이션 아이템 스타일 -->
+    <!-- Navigation Item Style -->
     <Style TargetType="ListBoxItem" x:Key="AnimatedNavigationBarItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedNavigationBar}, Path=Foreground}"/>
@@ -23,7 +23,7 @@
         </Setter>
     </Style>
 
-    <!-- 기본 아이템 데이터 템플릿 -->
+    <!-- Item Template -->
     <DataTemplate x:Key="DefaultItemTemplate">
         <TextBlock Text="{Binding}"
                    FontWeight="Bold"
@@ -31,7 +31,7 @@
                    Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}"/>
     </DataTemplate>
 
-    <!-- 기본 인디케이터 템플릿 -->
+    <!-- Indicator Template -->
     <DataTemplate x:Key="DefaultIndicatorTemplate">
         <Border Background="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedNavigationBar}, Path=IndicatorBackground}"
                 CornerRadius="{Binding RelativeSource={RelativeSource AncestorType=local:AnimatedNavigationBar}, Path=IndicatorCornerRadius}"
@@ -39,7 +39,7 @@
                 HorizontalAlignment="Stretch"/>
     </DataTemplate>
 
-    <!-- AnimatedNavigationBar 메인 스타일 -->
+    <!-- AnimatedNavigationBar Style -->
     <Style TargetType="local:AnimatedNavigationBar">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
