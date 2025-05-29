@@ -159,20 +159,12 @@ namespace OpenSilver.ControlsKit
 
             for (int i = 0; i < Children.Count; i++)
             {
+                var columnIndex = GetColumnIndex(columnHeights);
+
                 var child = Children[i];
-                child.Measure(new Size(availableWidth, availableHeight));
+                child.Measure(new Size(_columnWidth, availableHeight));
                 var elementSize = child.DesiredSize;
-
-                double newHeight;
-                int heightDefiningColumnIndex;
-                var columnIndex = GetPlacementInformations(columnHeights, elementSize, out newHeight, out heightDefiningColumnIndex);
-                int elementColumnSpan = GetElementColumnSpan(elementSize.Width);
-
-                for (int k = 0; k < elementColumnSpan; ++k)
-                {
-                    columnHeights[columnIndex + k] = newHeight + (itemsPerColumn[columnIndex] > 0 ? RowSpacing : 0);
-                    itemsPerColumn[columnIndex + k]++;
-                }
+                columnHeights[columnIndex] += elementSize.Height + (itemsPerColumn[columnIndex] > 0 ? RowSpacing : 0);
                 itemsPerColumn[columnIndex]++;
             }
 
@@ -190,13 +182,7 @@ namespace OpenSilver.ControlsKit
 
             // adjust for horizontal spacing on all columns expect the first
             double totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
-            #region Explanation for the -0.01 in the if below:
-            // we compare to totalWidth -0.01 because such a small overflow wouldn't be visible and it is still a likely scenario:
-            // If we are Stretched, MeasureOverride will have changed _columnWidth to availableWidth/numColumns, which can be rounded higher than the actual value.
-            // For example, we can end up with 100.16666667, which is higher than the non-rounded value of 100.166666666...
-            // A simplified version of what we actually do, assuming ColumnSpacing is 0, would result in something akin to saying: (availableWidth / numColumns) * numcolumns > availableWidth which does not make sense.
-            #endregion
-            if (totalWidth - 0.01 > finalSize.Width)
+            if (totalWidth > finalSize.Width)
             {
                 numColumns--;
 
@@ -218,31 +204,20 @@ namespace OpenSilver.ControlsKit
 
             for (int i = 0; i < Children.Count; i++)
             {
+                var columnIndex = GetColumnIndex(columnHeights);
 
                 var child = Children[i];
                 var elementSize = child.DesiredSize;
                 double elementHeight = elementSize.Height;
 
-                //get the element's column span:
-                double elementWidth = elementSize.Width;
-                int elementColumnsSpan = Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
-
-                int columnIndex, heightDefiningColumnIndex;
-                double newHeight;
-              
-                columnIndex = GetPlacementInformations(columnHeights, elementSize, out newHeight, out heightDefiningColumnIndex);
-
                 double itemHorizontalOffset = horizontalOffset + (_columnWidth * columnIndex) + (ColumnSpacing * columnIndex);
-                double itemVerticalOffset = columnHeights[heightDefiningColumnIndex] + verticalOffset + (RowSpacing * itemsPerColumn[heightDefiningColumnIndex]);
+                double itemVerticalOffset = columnHeights[columnIndex] + verticalOffset + (RowSpacing * itemsPerColumn[columnIndex]);
 
-                Rect bounds = new Rect(itemHorizontalOffset, itemVerticalOffset, elementWidth, elementHeight);
+                Rect bounds = new Rect(itemHorizontalOffset, itemVerticalOffset, _columnWidth, elementHeight);
                 child.Arrange(bounds);
 
-                for (int k = 0; k < elementColumnsSpan; ++k)
-                {
-                    columnHeights[columnIndex + k] = newHeight;
-                    itemsPerColumn[columnIndex + k]++;
-                }
+                columnHeights[columnIndex] += elementSize.Height;
+                itemsPerColumn[columnIndex]++;
             }
 
             return base.ArrangeOverride(finalSize);
@@ -265,34 +240,6 @@ namespace OpenSilver.ControlsKit
             InvalidateMeasure();
         }
 
-        private int GetElementColumnSpan(double elementWidth)
-        {
-            return Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
-        }
-
-        private int GetPlacementInformations(double[] columnHeights, Size elementSize, out double newHeight, out int heightDefiningColumnIndex)
-        {
-            double elementHeight = elementSize.Height;
-
-            //get the element's column span:
-            double elementWidth = elementSize.Width;
-            int elementColumnSpan = GetElementColumnSpan(elementWidth);
-
-            int columnIndex = 0;
-            if (elementColumnSpan == 1)
-            {
-                columnIndex = GetColumnIndex(columnHeights);
-                newHeight = columnHeights[columnIndex] + elementHeight;
-                heightDefiningColumnIndex = columnIndex;
-            }
-            else
-            {
-                columnIndex = GetColumnIndex(columnHeights, elementColumnSpan, out newHeight, out heightDefiningColumnIndex);
-                newHeight += elementHeight;
-            }
-            return columnIndex;
-        }
-
         private int GetColumnIndex(double[] columnHeights)
         {
             int columnIndex = 0;
@@ -307,65 +254,6 @@ namespace OpenSilver.ControlsKit
             }
 
             return columnIndex;
-        }
-
-        private int GetColumnIndex(double[] columnHeights, int elementColumnSpan, out double bestHeight, out int heightDefiningColumnIndex)
-        {
-            if (columnHeights.Length <= elementColumnSpan)
-            {
-                // there is no option on where to put the element anyway so let's just return 0.
-                bestHeight = columnHeights[0];
-                heightDefiningColumnIndex = 0;
-                return 0;
-            }
-
-            //initialization:
-            int bestIndex = 0;
-            bestHeight = double.MinValue;
-            heightDefiningColumnIndex = 0;
-            for (int i = 0; i < elementColumnSpan; ++i)
-            {
-                if (bestHeight < columnHeights[i])
-                {
-                    bestHeight = columnHeights[i];
-                    heightDefiningColumnIndex = i;
-                }
-            }
-            int lastColumnIndex = columnHeights.Length - elementColumnSpan + 1;
-
-            //we look for the set of columns that will allow us to put the element with the smallest vertical offset:
-            for (int j = 1; j < lastColumnIndex; j++)
-            {
-                //We get the height of the new column to consider:
-                double newHeight = columnHeights[j + elementColumnSpan - 1];
-                if (newHeight > bestHeight)
-                {
-                    //we can exclude any set of columns that include the new column since at best, it won't be as good as what we have already found:
-                    j += elementColumnSpan - 1; // -1 because the loop will also add 1.
-                    continue;
-                }
-
-                //Calculate the height of the current set of columns:
-                //Note: (perf) we could also read the height on j-1 and if that column's height is < bestHeight, it means that column was not the limiting one in the previous loop so no need to recalculate.
-                double currentHeight = double.MinValue;
-                for (int i = 0; i < elementColumnSpan; ++i)
-                {
-                    if (currentHeight < columnHeights[j + i])
-                    {
-                        currentHeight = columnHeights[j + i];
-                        heightDefiningColumnIndex = j + i;
-                    }
-                }
-
-                if (currentHeight < bestHeight)
-                {
-                    bestHeight = currentHeight;
-                    bestIndex = j;
-                }
-
-            }
-
-            return bestIndex;
         }
     }
 }
