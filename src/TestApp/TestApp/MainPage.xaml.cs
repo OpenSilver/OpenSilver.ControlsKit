@@ -54,7 +54,7 @@ namespace FastControls.TestApp
             ContentContainer.Source = uri;
 
             // Scroll to top:
-            ScrollViewer1.ScrollToVerticalOffset(0d);
+            //ScrollViewer1.ScrollToVerticalOffset(0d);
         }
     }
 }

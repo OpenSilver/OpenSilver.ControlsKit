@@ -163,7 +163,7 @@ namespace OpenSilver.ControlsKit
                 var elementSize = child.DesiredSize;
 
                 int elementColumnSpan = GetElementColumnSpan(elementSize.Width);
-                var columnIndex = GetPlacementInformation(columnHeights, elementSize, elementColumnSpan, out double newHeight, out _);
+                var columnIndex = CalculatePlacement(columnHeights, elementSize, elementColumnSpan, out double newHeight, out _);
 
                 for (int k = 0; k < elementColumnSpan && columnIndex + k < numColumns; ++k)
                 {
@@ -221,7 +221,7 @@ namespace OpenSilver.ControlsKit
                 //get the element's column span:
                 double elementWidth = elementSize.Width;
                 int elementColumnSpan = GetElementColumnSpan(elementWidth);
-                int columnIndex = GetPlacementInformation(columnHeights, elementSize, elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex);
+                int columnIndex = CalculatePlacement(columnHeights, elementSize, elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex);
 
                 double itemHorizontalOffset = horizontalOffset + (_columnWidth * columnIndex) + (ColumnSpacing * columnIndex);
                 double itemVerticalOffset = columnHeights[heightDefiningColumnIndex] + verticalOffset + (RowSpacing * itemsPerColumn[heightDefiningColumnIndex]);
@@ -275,7 +275,7 @@ namespace OpenSilver.ControlsKit
             return Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
         }
 
-        private int GetPlacementInformation(double[] columnHeights, Size elementSize, int elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex)
+        private int CalculatePlacement(double[] columnHeights, Size elementSize, int elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex)
         {
             double elementHeight = elementSize.Height;
 
@@ -359,19 +359,21 @@ namespace OpenSilver.ControlsKit
                 //Calculate the height of the current set of columns:
                 //Note: (perf) we could also read the height on j-1 and if that column's height is < bestHeight, it means that column was not the limiting one in the previous loop so no need to recalculate.
                 double currentHeight = double.MinValue;
+                int currentIndex = 0;
                 for (int offset = 0; offset < elementColumnSpan; ++offset)
                 {
                     int index = startIndex + offset;
                     if (currentHeight < columnHeights[index])
                     {
                         currentHeight = columnHeights[index];
-                        heightDefiningColumnIndex = index;
+                        currentIndex = index;
                     }
                 }
 
                 if (currentHeight < bestHeight)
                 {
                     bestHeight = currentHeight;
+                    heightDefiningColumnIndex = currentIndex;
                     bestIndex = startIndex;
                 }
             }
