@@ -18,8 +18,8 @@
 
 using System;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 //using Windows.Foundation;
 //using Windows.UI.Xaml;
 //using Windows.UI.Xaml.Controls;
@@ -38,7 +38,6 @@ namespace OpenSilver.ControlsKit
         /// </summary>
         public StaggeredPanel()
         {
-            //ProgressiveRenderingChunkSize = 1;
             //RegisterPropertyChangedCallback(Panel.HorizontalAlignmentProperty, OnHorizontalAlignmentChanged);
         }
 
@@ -163,15 +162,14 @@ namespace OpenSilver.ControlsKit
                 child.Measure(new Size(availableWidth, availableHeight));
                 var elementSize = child.DesiredSize;
 
-                var columnIndex = GetPlacementInformations(columnHeights, elementSize, out double newHeight, out int heightDefiningColumnIndex);
                 int elementColumnSpan = GetElementColumnSpan(elementSize.Width);
+                var columnIndex = GetPlacementInformations(columnHeights, elementSize, elementColumnSpan, out double newHeight, out _);
 
                 for (int k = 0; k < elementColumnSpan; ++k)
                 {
                     columnHeights[columnIndex + k] = newHeight + (itemsPerColumn[columnIndex] > 0 ? RowSpacing : 0);
                     itemsPerColumn[columnIndex + k]++;
                 }
-                itemsPerColumn[columnIndex]++;
             }
 
             double desiredHeight = columnHeights.Max();
@@ -223,16 +221,13 @@ namespace OpenSilver.ControlsKit
 
                 //get the element's column span:
                 double elementWidth = elementSize.Width;
-                int elementColumnsSpan = Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
-
-                int columnIndex;
-
-                columnIndex = GetPlacementInformations(columnHeights, elementSize, out double newHeight, out int heightDefiningColumnIndex);
+                int elementColumnsSpan = GetElementColumnSpan(elementWidth);
+                int columnIndex = GetPlacementInformations(columnHeights, elementSize, elementColumnsSpan, out double newHeight, out int heightDefiningColumnIndex);
 
                 double itemHorizontalOffset = horizontalOffset + (_columnWidth * columnIndex) + (ColumnSpacing * columnIndex);
                 double itemVerticalOffset = columnHeights[heightDefiningColumnIndex] + verticalOffset + (RowSpacing * itemsPerColumn[heightDefiningColumnIndex]);
 
-                Rect bounds = new Rect(itemHorizontalOffset, itemVerticalOffset, elementWidth, elementHeight);
+                var bounds = new Rect(itemHorizontalOffset, itemVerticalOffset, elementWidth, elementHeight);
                 child.Arrange(bounds);
 
                 for (int k = 0; k < elementColumnsSpan; ++k)
@@ -267,15 +262,11 @@ namespace OpenSilver.ControlsKit
             return Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
         }
 
-        private int GetPlacementInformations(double[] columnHeights, Size elementSize, out double newHeight, out int heightDefiningColumnIndex)
+        private int GetPlacementInformations(double[] columnHeights, Size elementSize, int elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex)
         {
             double elementHeight = elementSize.Height;
 
-            //get the element's column span:
-            double elementWidth = elementSize.Width;
-            int elementColumnSpan = GetElementColumnSpan(elementWidth);
-
-            int columnIndex = 0;
+            int columnIndex;
             if (elementColumnSpan == 1)
             {
                 columnIndex = GetColumnIndex(columnHeights);
