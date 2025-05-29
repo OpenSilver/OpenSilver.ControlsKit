@@ -132,7 +132,7 @@ namespace OpenSilver.ControlsKit
             int numColumns = Math.Max(1, availableWidth == double.PositiveInfinity ? -1 : (int)Math.Floor(availableWidth / _columnWidth));
 
             // adjust for column spacing on all columns expect the first
-            double totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
+            double totalWidth = GetTotalWidth(numColumns);
             if (totalWidth > availableWidth)
             {
                 numColumns--;
@@ -163,9 +163,9 @@ namespace OpenSilver.ControlsKit
                 var elementSize = child.DesiredSize;
 
                 int elementColumnSpan = GetElementColumnSpan(elementSize.Width);
-                var columnIndex = GetPlacementInformations(columnHeights, elementSize, elementColumnSpan, out double newHeight, out _);
+                var columnIndex = GetPlacementInformation(columnHeights, elementSize, elementColumnSpan, out double newHeight, out _);
 
-                for (int k = 0; k < elementColumnSpan; ++k)
+                for (int k = 0; k < elementColumnSpan && columnIndex + k < numColumns; ++k)
                 {
                     columnHeights[columnIndex + k] = newHeight + (itemsPerColumn[columnIndex] > 0 ? RowSpacing : 0);
                     itemsPerColumn[columnIndex + k]++;
@@ -185,7 +185,7 @@ namespace OpenSilver.ControlsKit
             int numColumns = Math.Max(1, (int)Math.Floor(finalSize.Width / _columnWidth));
 
             // adjust for horizontal spacing on all columns expect the first
-            double totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
+            double totalWidth = GetTotalWidth(numColumns);
             #region Explanation for the -0.01 in the if below:
             // we compare to totalWidth -0.01 because such a small overflow wouldn't be visible and it is still a likely scenario:
             // If we are Stretched, MeasureOverride will have changed _columnWidth to availableWidth/numColumns, which can be rounded higher than the actual value.
@@ -197,7 +197,7 @@ namespace OpenSilver.ControlsKit
                 numColumns--;
 
                 // Need to recalculate the totalWidth for a correct horizontal offset
-                totalWidth = _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
+                totalWidth = GetTotalWidth(numColumns);
             }
 
             if (HorizontalAlignment == HorizontalAlignment.Right)
@@ -214,23 +214,31 @@ namespace OpenSilver.ControlsKit
 
             for (int i = 0; i < Children.Count; i++)
             {
-
-                var child = Children[i];
+                var child = Children[i] as FrameworkElement;
                 var elementSize = child.DesiredSize;
                 double elementHeight = elementSize.Height;
 
                 //get the element's column span:
                 double elementWidth = elementSize.Width;
-                int elementColumnsSpan = GetElementColumnSpan(elementWidth);
-                int columnIndex = GetPlacementInformations(columnHeights, elementSize, elementColumnsSpan, out double newHeight, out int heightDefiningColumnIndex);
+                int elementColumnSpan = GetElementColumnSpan(elementWidth);
+                int columnIndex = GetPlacementInformation(columnHeights, elementSize, elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex);
 
                 double itemHorizontalOffset = horizontalOffset + (_columnWidth * columnIndex) + (ColumnSpacing * columnIndex);
                 double itemVerticalOffset = columnHeights[heightDefiningColumnIndex] + verticalOffset + (RowSpacing * itemsPerColumn[heightDefiningColumnIndex]);
 
+                if (child.HorizontalAlignment == HorizontalAlignment.Right)
+                {
+                    itemHorizontalOffset += GetTotalWidth(elementColumnSpan) - elementWidth;
+                }
+                else if (child.HorizontalAlignment == HorizontalAlignment.Center)
+                {
+                    itemHorizontalOffset += (GetTotalWidth(elementColumnSpan) - elementWidth) / 2;
+                }
+
                 var bounds = new Rect(itemHorizontalOffset, itemVerticalOffset, elementWidth, elementHeight);
                 child.Arrange(bounds);
 
-                for (int k = 0; k < elementColumnsSpan; ++k)
+                for (int k = 0; k < elementColumnSpan && columnIndex + k < numColumns; ++k)
                 {
                     columnHeights[columnIndex + k] = newHeight;
                     itemsPerColumn[columnIndex + k]++;
@@ -238,6 +246,11 @@ namespace OpenSilver.ControlsKit
             }
 
             return base.ArrangeOverride(finalSize);
+        }
+
+        private double GetTotalWidth(int numColumns)
+        {
+            return _columnWidth + ((numColumns - 1) * (_columnWidth + ColumnSpacing));
         }
 
         private static void OnDesiredColumnWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -262,7 +275,7 @@ namespace OpenSilver.ControlsKit
             return Math.Max(1, (int)Math.Ceiling((elementWidth - _columnWidth) / (_columnWidth + ColumnSpacing)) + 1);
         }
 
-        private int GetPlacementInformations(double[] columnHeights, Size elementSize, int elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex)
+        private int GetPlacementInformation(double[] columnHeights, Size elementSize, int elementColumnSpan, out double newHeight, out int heightDefiningColumnIndex)
         {
             double elementHeight = elementSize.Height;
 
@@ -301,16 +314,24 @@ namespace OpenSilver.ControlsKit
         {
             if (columnHeights.Length <= elementColumnSpan)
             {
-                // there is no option on where to put the element anyway so let's just return 0.
                 bestHeight = columnHeights[0];
                 heightDefiningColumnIndex = 0;
+                for (int i = 1; i < columnHeights.Length; i++)
+                {
+                    if (columnHeights[i] > bestHeight)
+                    {
+                        heightDefiningColumnIndex = i;
+                        bestHeight = columnHeights[i];
+                    }
+                }
                 return 0;
             }
 
-            //initialization:
             int bestIndex = 0;
             bestHeight = double.MinValue;
             heightDefiningColumnIndex = 0;
+
+            // Initialize bestHeight using the first valid span
             for (int i = 0; i < elementColumnSpan; ++i)
             {
                 if (bestHeight < columnHeights[i])
@@ -319,38 +340,40 @@ namespace OpenSilver.ControlsKit
                     heightDefiningColumnIndex = i;
                 }
             }
-            int lastColumnIndex = columnHeights.Length - elementColumnSpan + 1;
+
+            int maxStartIndex = columnHeights.Length - elementColumnSpan;
 
             //we look for the set of columns that will allow us to put the element with the smallest vertical offset:
-            for (int j = 1; j < lastColumnIndex; j++)
+            for (int startIndex = 1; startIndex <= maxStartIndex; ++startIndex)
             {
                 //We get the height of the new column to consider:
-                double newHeight = columnHeights[j + elementColumnSpan - 1];
-                if (newHeight > bestHeight)
+                double newColumnHeight = columnHeights[startIndex + elementColumnSpan - 1];
+
+                if (newColumnHeight > bestHeight)
                 {
                     //we can exclude any set of columns that include the new column since at best, it won't be as good as what we have already found:
-                    j += elementColumnSpan - 1; // -1 because the loop will also add 1.
+                    startIndex += elementColumnSpan - 1; // -1 because the loop will also add 1.
                     continue;
                 }
 
                 //Calculate the height of the current set of columns:
                 //Note: (perf) we could also read the height on j-1 and if that column's height is < bestHeight, it means that column was not the limiting one in the previous loop so no need to recalculate.
                 double currentHeight = double.MinValue;
-                for (int i = 0; i < elementColumnSpan; ++i)
+                for (int offset = 0; offset < elementColumnSpan; ++offset)
                 {
-                    if (currentHeight < columnHeights[j + i])
+                    int index = startIndex + offset;
+                    if (currentHeight < columnHeights[index])
                     {
-                        currentHeight = columnHeights[j + i];
-                        heightDefiningColumnIndex = j + i;
+                        currentHeight = columnHeights[index];
+                        heightDefiningColumnIndex = index;
                     }
                 }
 
                 if (currentHeight < bestHeight)
                 {
                     bestHeight = currentHeight;
-                    bestIndex = j;
+                    bestIndex = startIndex;
                 }
-
             }
 
             return bestIndex;
