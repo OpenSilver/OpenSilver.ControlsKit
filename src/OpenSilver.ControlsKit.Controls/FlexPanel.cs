@@ -78,15 +78,15 @@ namespace OpenSilver.ControlsKit
 
                 foreach (UIElement child in Children)
                 {
-                    // 1. 자식 Panel에게 부모(당신의 커스텀 Panel)가 제공하는 availableSize를 전달하여 측정하게 합니다.
-                    // 이때, 자식 Panel은 자신의 내부 로직에 따라 자신의 DesiredSize를 계산할 것입니다.
-                    // 예를 들어, 자식 Panel도 자신의 자식들의 크기를 합산하거나, Stretch 동작을 하거나 할 것입니다.
+                    // 1. Pass the availableSize provided by the parent (your custom Panel) to the child Panel for measurement.
+                    // At this point, the child Panel will calculate its own DesiredSize according to its internal logic.
+                    // For example, the child Panel may sum up the sizes of its own children or perform Stretch behavior.
                     child.Measure (constraint);
 
-                    // 2. 자식 Panel의 DesiredSize를 얻습니다.
-                    // 이 DesiredSize는 자식 Panel이 원하는 '최소한의 크기'입니다.
-                    // Width나 Height 속성이 NaN인 경우에도 DesiredSize는 유효한 값을 가집니다.
-                    // 예를 들어, 자식 Panel 안에 TextBlock이 있다면, TextBlock의 크기에 따라 DesiredSize가 계산됩니다.
+                    // 2. Get the DesiredSize of the child Panel.
+                    // This DesiredSize is the 'minimum size' that the child Panel wants.
+                    // Even when Width or Height properties are NaN, DesiredSize will have valid values.
+                    // For example, if there is a TextBlock inside the child Panel, the DesiredSize will be calculated based on the TextBlock's size.
 
 
                     Size childDesiredSize = child.DesiredSize;
@@ -105,15 +105,15 @@ namespace OpenSilver.ControlsKit
 
             foreach (UIElement child in Children)
             {
-                // 1. 자식 Panel에게 부모(당신의 커스텀 Panel)가 제공하는 availableSize를 전달하여 측정하게 합니다.
-                // 이때, 자식 Panel은 자신의 내부 로직에 따라 자신의 DesiredSize를 계산할 것입니다.
-                // 예를 들어, 자식 Panel도 자신의 자식들의 크기를 합산하거나, Stretch 동작을 하거나 할 것입니다.
+                // 1. Pass the availableSize provided by the parent (your custom Panel) to the child Panel for measurement.
+                // At this point, the child Panel will calculate its own DesiredSize according to its internal logic.
+                // For example, the child Panel may sum up the sizes of its own children or perform Stretch behavior.
                 child.Measure (constraint);
 
-                // 2. 자식 Panel의 DesiredSize를 얻습니다.
-                // 이 DesiredSize는 자식 Panel이 원하는 '최소한의 크기'입니다.
-                // Width나 Height 속성이 NaN인 경우에도 DesiredSize는 유효한 값을 가집니다.
-                // 예를 들어, 자식 Panel 안에 TextBlock이 있다면, TextBlock의 크기에 따라 DesiredSize가 계산됩니다.
+                // 2. Get the DesiredSize of the child Panel.
+                // This DesiredSize is the 'minimum size' that the child Panel wants.
+                // Even when Width or Height properties are NaN, DesiredSize will have valid values.
+                // For example, if there is a TextBlock inside the child Panel, the DesiredSize will be calculated based on the TextBlock's size.
 
 
                 Size childDesiredSize = child.DesiredSize;
@@ -224,23 +224,23 @@ namespace OpenSilver.ControlsKit
                 UIElement firstElement = this.Children[0];
                 UIElement lastElement = this.Children[childrenCount - 1];
 
-                totalWidth = totalWidth - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // 실제 컨트롤 Width
+                totalWidth = totalWidth - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // Actual control width
 
-                var temp = finalSize.Width - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // 전체 크기에서 첫번째와 마지막 컨트롤 뺀 크기
+                var temp = finalSize.Width - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // Total size minus first and last control sizes
 
-                var temp2 = temp - totalWidth;  // 실제 남는 공간
+                var temp2 = temp - totalWidth;  // Actual remaining space
                 spacing = temp2 / (childrenCount - 1);
             }
             else if (Justify == JustifyContent.SpaceAround)
             {
-                var temp = finalSize.Width - totalWidth; // 남는 공간
+                var temp = finalSize.Width - totalWidth; // Remaining space
 
                 xOffset = temp / (childrenCount * 2);
                 spacing = xOffset * 2;
             }
             else if (Justify == JustifyContent.SpaceEvenly)
             {
-                var temp = finalSize.Width - totalWidth; // 남는 공간
+                var temp = finalSize.Width - totalWidth; // Remaining space
 
                 xOffset = temp / (childrenCount + 1);
                 spacing = xOffset;
