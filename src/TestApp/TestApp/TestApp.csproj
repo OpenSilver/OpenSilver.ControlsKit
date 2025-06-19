@@ -17,6 +17,9 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\FlexPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TestAnimatedSegmentedControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -34,6 +37,7 @@
   <ItemGroup>
     <Compile Include="App.xaml.cs" />
     <Compile Include="MainPage.xaml.cs" />
+    <Compile Include="Pages\FlexPanel.xaml.cs" />
     <Compile Include="Pages\TestAnimatedSegmentedControl.xaml.cs" />
     <Compile Include="Pages\FastCheckBox.xaml.cs" />
     <Compile Include="Pages\AdaptiveColumnsPanel.xaml.cs" />

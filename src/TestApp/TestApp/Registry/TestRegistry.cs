@@ -14,6 +14,7 @@ namespace FastControls.TestApp.Registry
                 new TreeItem("FastCheckBox", "FastCheckBox"),
                 new TreeItem("AdaptiveColumnsPanel", "AdaptiveColumnsPanel"),
                 new TreeItem("TestAnimatedSegmentedControl", "TestAnimatedSegmentedControl"),
+                new TreeItem("FlexPanel", "FlexPanel"),
             };
         }
     }
