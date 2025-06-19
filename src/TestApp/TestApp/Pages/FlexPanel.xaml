@@ -545,14 +545,5 @@
             </TabItem>
         </TabControl>
 
-        <!--  Footer  -->
-        <TextBlock
-            Margin="0,32,0,16"
-            HorizontalAlignment="Center"
-            FontSize="13"
-            FontStyle="Italic"
-            Foreground="#6B7280"
-            Text="✨ Built with AnimatedNavigationBar from OpenSilver.ControlsKit" />
-
     </StackPanel>
 </Page>
