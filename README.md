@@ -127,3 +127,94 @@ Example of usage:
 </Page>
 
 ```
+
+
+## FlexPanel
+
+**FlexPanel** is a layout panel similar to `StackPanel`, but with additional control over how children are spaced and aligned. It supports a layout model inspired by CSS Flexbox, making it easier to create clean, consistent UIs without extra nesting or manual margin tweaking.
+
+#### Key features
+
+- **Orientation**  
+  Arrange children in a `Horizontal` or `Vertical` layout using the `Orientation` property, just like with `StackPanel`.
+
+- **Justify**  
+  Controls how space is distributed along the main axis. Options include:
+  - `Start`
+  - `Center`
+  - `End`
+  - `SpaceBetween`
+  - `SpaceAround`
+  - `SpaceEvenly`
+  - `SpaceAuto`
+
+- **Align**  
+  Controls alignment along the cross axis.  
+  Unlike `StackPanel`, where you typically set `HorizontalAlignment` or `VerticalAlignment` on each child, `FlexPanel` allows you to control all children’s alignment from the panel itself using the `Align` property.
+
+- **Simplified layout**  
+  Ideal for toolbars, button groups, or dashboards where you want consistent spacing and alignment without relying on `Grid` or setting margins manually.
+
+#### Things to know
+
+- **Child `Margin` is currently ignored**  
+  Spacing is handled entirely by the panel based on the `Justify` setting. Margins set on individual children will not affect layout.
+
+- **Children are arranged using their natural `DesiredSize`**  
+  There is currently no support for stretching or shrinking children to fill space (no equivalent of `flex-grow` or `flex-shrink`).
+
+- **No wrapping support**  
+  Children are arranged in a single row or column only. If you need wrapping behavior, use a `WrapPanel` instead.
+
+- **Simplified alignment options**  
+  `Align` currently supports only `Start`, `Center`, and `End`. More advanced options like `baseline` or `stretch` are not implemented yet.
+
+- **AddHeight property**  
+  Adds extra vertical space to the layout, useful when additional height is needed beyond what the children require.
+
+This panel is useful in scenarios where `StackPanel` is too limited, but using a `Grid` would add unnecessary complexity.
+
+![Screenshot of the FlexPanel](docs/images/FlexPanel_Screenshot1.png)
+
+Example of usage:
+
+```xml
+<Page
+    x:Class="TestApp.TestFlexPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controlskit="clr-namespace:OpenSilver.ControlsKit;assembly=OpenSilver.ControlsKit.Controls">
+
+    <StackPanel Orientation="Vertical">
+
+        <TextBlock Style="{StaticResource SubTitleStyle}" Text="??????? Justify - SpaceAround" />
+        <controlskit:FlexPanel Justify="SpaceAround" Orientation="Vertical">
+            <Grid Width="50" Height="50" Background="Red" />
+            <Grid Width="50" Height="50" Background="Green" />
+            <Grid Width="50" Height="50" Background="Blue" />
+        </controlskit:FlexPanel>
+            
+        <TextBlock Style="{StaticResource SubTitleStyle}" Text="????????? Justify - SpaceAuto" />
+        <controlskit:FlexPanel Justify="SpaceAuto" Orientation="Vertical">
+            <Grid Width="50" Height="50" Background="Red" />
+            <Grid Width="50" Height="50" Background="Green" />
+            <Grid Width="50" Height="50" Background="Blue" />
+        </controlskit:FlexPanel>
+            
+        <TextBlock Style="{StaticResource SubTitleStyle}" Text="???????? Justify - SpaceEvenly" />
+        <controlskit:FlexPanel Align="Center" Justify="SpaceEvenly" Orientation="Vertical">
+            <Grid Width="50" Height="50" ackground="Red" />
+            <Grid Width="50" Height="50" Background="Green" />
+            <Grid Width="50" Height="50" Background="Blue" />
+        </controlskit:FlexPanel>
+
+        <TextBlock Style="{StaticResource SubTitleStyle}" Text="??????? Justify - SpaceBetween" />
+        <controlskit:FlexPanel Align="Center" Justify="SpaceBetween" Orientation="Vertical">
+            <Grid Width="50" Height="50" Background="Red" />
+            <Grid Width="50" Height="50" Background="Blue" />
+        </controlskit:FlexPanel>
+
+    </StackPanel>
+</Page>
+
+```
