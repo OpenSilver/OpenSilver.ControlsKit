@@ -1,0 +1,676 @@
+﻿<Page
+    x:Class="TestApp.Pages.TestSmartButtonControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OpenSilver.ControlsKit.Controls;assembly=OpenSilver.ControlsKit.Controls">
+
+
+    <Page.Resources>
+        <!-- Modern Icon Geometries -->
+        <Geometry x:Key="MicrosoftIcon">M1,1H11V11H1V1M13,1H23V11H13V1M1,13H11V23H1V13M13,13H23V23H13V13</Geometry>
+        <Geometry x:Key="AppleIcon">M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.19 17.41,12.63C17.44,15.65 20.06,16.66 20.09,16.67C20.06,16.74 19.67,18.11 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z</Geometry>
+        <Geometry x:Key="GoogleIcon">M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z</Geometry>
+        <Geometry x:Key="GitHubIcon">M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z</Geometry>
+        <Geometry x:Key="LinkedInIcon">M20.447,20.452H16.893V14.883C16.893,13.555 16.866,11.846 15.041,11.846C13.188,11.846 12.905,13.291 12.905,14.785V20.452H9.351V9H12.765V10.561H12.811C13.288,9.661 14.448,8.711 16.181,8.711C19.782,8.711 20.448,11.081 20.448,14.166V20.452H20.447ZM5.337,7.433C4.193,7.433 3.274,6.507 3.274,5.368C3.274,4.23 4.194,3.305 5.337,3.305C6.477,3.305 7.401,4.23 7.401,5.368C7.401,6.507 6.476,7.433 5.337,7.433ZM7.119,20.452H3.555V9H7.119V20.452ZM22.225,0H1.771C0.792,0 0,0.774 0,1.729V22.271C0,23.227 0.792,24 1.771,24H22.222C23.2,24 24,23.227 24,22.271V1.729C24,0.774 23.2,0 22.222,0H22.225Z</Geometry>
+        <Geometry x:Key="VisualStudioIcon">M17,8.5L12.25,12.32L17,16V8.5M4.7,18.4L2,16.7V7.7L5,6.7L9.3,10.03L18,2L22,4.5V20L17,22L9.34,14.66L4.7,18.4M5,14L6.86,12.28L5,10.5V14Z</Geometry>
+        <Geometry x:Key="SearchIcon">M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z</Geometry>
+        <Geometry x:Key="HeartIcon">M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z</Geometry>
+        <Geometry x:Key="DownloadIcon">M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z</Geometry>
+        <Geometry x:Key="WarningIcon">M13,14H11V9H13M13,18H11V16H13M1,21H23L12,2L1,21Z</Geometry>
+        <Geometry x:Key="CheckIcon">M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z
+        </Geometry>
+
+        <!-- Harmonious Color Palette -->
+        <!-- Primary Blue System -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#4F46E5"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#4338CA"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#E0E7FF"/>
+
+        <!-- Secondary Colors (Muted tones) -->
+        <SolidColorBrush x:Key="SuccessBrush" Color="#059669"/>
+        <SolidColorBrush x:Key="SuccessHoverBrush" Color="#047857"/>
+        <SolidColorBrush x:Key="SuccessLightBrush" Color="#D1FAE5"/>
+
+        <SolidColorBrush x:Key="WarningBrush" Color="#D97706"/>
+        <SolidColorBrush x:Key="WarningHoverBrush" Color="#B45309"/>
+        <SolidColorBrush x:Key="WarningLightBrush" Color="#FEF3C7"/>
+
+        <SolidColorBrush x:Key="HeartBrush" Color="#E91E63"/>
+        <SolidColorBrush x:Key="HeartHoverBrush" Color="#C2185B"/>
+        <SolidColorBrush x:Key="HeartLightBrush" Color="#FCE4EC"/>
+
+        <SolidColorBrush x:Key="SecondaryBrush" Color="#7C3AED"/>
+        <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#6D28D9"/>
+        <SolidColorBrush x:Key="SecondaryLightBrush" Color="#EDE9FE"/>
+
+        <SolidColorBrush x:Key="DownloadBrush" Color="#0891B2"/>
+        <SolidColorBrush x:Key="DownloadHoverBrush" Color="#0E7490"/>
+        <SolidColorBrush x:Key="DownloadLightBrush" Color="#CFFAFE"/>
+
+        <SolidColorBrush x:Key="SlateBrush" Color="#475569"/>
+        <SolidColorBrush x:Key="SlateHoverBrush" Color="#334155"/>
+        <SolidColorBrush x:Key="SlateLightBrush" Color="#F1F5F9"/>
+
+        <!-- Brand Colors (Subtle) -->
+        <SolidColorBrush x:Key="MicrosoftBrush" Color="#0078D4"/>
+        <SolidColorBrush x:Key="AppleBrush" Color="#1D1D1F"/>
+        <SolidColorBrush x:Key="GoogleBrush" Color="#34A853"/>
+        <SolidColorBrush x:Key="GitHubBrush" Color="#24292F"/>
+        <SolidColorBrush x:Key="LinkedInBrush" Color="#0A66C2"/>
+        <SolidColorBrush x:Key="VisualStudioBrush" Color="#5C2D91"/>
+
+        <!-- Neutral Colors -->
+        <SolidColorBrush x:Key="Gray50" Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="Gray100" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="Gray200" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="Gray300" Color="#CBD5E1"/>
+        <SolidColorBrush x:Key="Gray400" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="Gray500" Color="#64748B"/>
+        <SolidColorBrush x:Key="Gray600" Color="#475569"/>
+        <SolidColorBrush x:Key="Gray700" Color="#334155"/>
+        <SolidColorBrush x:Key="Gray800" Color="#1E293B"/>
+
+        <!-- Section Styles -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray800}"/>
+            <Setter Property="Margin" Value="0,8,0,20"/>
+        </Style>
+
+        <Style x:Key="SectionStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+
+        <Style x:Key="CategoryBadgeStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="12,4"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="CategoryTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource Gray50}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel Margin="24" MaxWidth="1200">
+
+                <!-- Hero Section -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,48">
+                    <TextBlock Text="SmartButton" FontSize="32" FontWeight="Bold" 
+                              Foreground="{StaticResource Gray800}" 
+                              HorizontalAlignment="Center"/>
+                    <Border Background="{StaticResource PrimaryBrush}" 
+                           CornerRadius="20" Padding="16,8">
+                        <TextBlock Text="OpenSilver.ControlsKit" 
+                                  Foreground="White" FontWeight="Bold" FontSize="14"
+                                  HorizontalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Two Column Layout -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column -->
+                    <StackPanel Grid.Column="0">
+
+                        <!-- Tech Brands -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="TECH BRANDS"/>
+                                </Border>
+                                <TextBlock Text="Technology Leaders" Style="{StaticResource SectionHeaderStyle}"/>
+                                <StackPanel>
+                                    <local:SmartButton ButtonText="Microsoft" FontSize="15"
+                                                     IconGeometry="{StaticResource MicrosoftIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48" Margin="0,0,0,12"
+                                                     Background="{StaticResource MicrosoftBrush}" 
+                                                     HoverBackground="#106EBE"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+
+                                    <local:SmartButton ButtonText="Apple" FontSize="15"
+                                                     IconGeometry="{StaticResource AppleIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48" Margin="0,0,0,12"
+                                                     Background="{StaticResource AppleBrush}" 
+                                                     HoverBackground="#424245"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+
+                                    <local:SmartButton ButtonText="Google" FontSize="15"
+                                                     IconGeometry="{StaticResource GoogleIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48"
+                                                     Background="{StaticResource GoogleBrush}" 
+                                                     HoverBackground="#2D8E47"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Basic Buttons (Following original design) -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="BASIC COMPONENTS"/>
+                                </Border>
+                                <TextBlock Text="Basic Buttons" Style="{StaticResource SectionHeaderStyle}"/>
+                                <StackPanel>
+                                    <!-- Default button without corner radius -->
+                                    <local:SmartButton ButtonText="Default Button" FontSize="15"
+                                                     Width="280" Height="40" Margin="0,0,0,10" />
+
+                                    <!-- Rounded corner button -->
+                                    <local:SmartButton ButtonText="Rounded Corner Button" FontSize="15"
+                                                     CornerRadius="20" Width="280" Height="40" Margin="0,0,0,10"
+                                                     Background="{StaticResource PrimaryBrush}" 
+                                                     HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                                     Foreground="White"/>
+
+                                    <!-- Shadow button -->
+                                    <local:SmartButton ButtonText="Shadow Button" FontSize="15"
+                                                     HasShadow="True" Width="280" Height="40"
+                                                     CornerRadius="5"
+                                                     Background="{StaticResource SuccessBrush}" 
+                                                     HoverBackground="{StaticResource SuccessHoverBrush}"
+                                                     Foreground="White"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Color Variations -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="COLOR SYSTEM"/>
+                                </Border>
+                                <TextBlock Text="Modern Color Palette" Style="{StaticResource SectionHeaderStyle}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <local:SmartButton ButtonText="Search" FontSize="13"
+                                                     IconGeometry="{StaticResource SearchIcon}"
+                                                     Grid.Column="0" Grid.Row="0"
+                                                     Background="{StaticResource PrimaryBrush}"
+                                                     HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                                     Foreground="White" IconBrush="White"
+                                                     Width="130" Height="40" Margin="0,0,6,8"
+                                                     CornerRadius="5"/>
+
+                                    <local:SmartButton ButtonText="Success" FontSize="13"
+                                                     IconGeometry="{StaticResource CheckIcon}"
+                                                     Grid.Column="1" Grid.Row="0"
+                                                     Background="{StaticResource SuccessBrush}"
+                                                     HoverBackground="{StaticResource SuccessHoverBrush}"
+                                                     Foreground="White" IconBrush="White"
+                                                     Width="130" Height="40" Margin="6,0,0,8"
+                                                     CornerRadius="5"/>
+
+                                    <local:SmartButton ButtonText="Warning" FontSize="13"
+                                                     IconGeometry="{StaticResource WarningIcon}"
+                                                     Grid.Column="0" Grid.Row="1"
+                                                     Background="{StaticResource WarningBrush}"
+                                                     HoverBackground="{StaticResource WarningHoverBrush}"
+                                                     Foreground="White" IconBrush="White"
+                                                     Width="130" Height="40" Margin="0,0,6,8"
+                                                     CornerRadius="5"/>
+
+                                    <local:SmartButton ButtonText="Like" FontSize="13"
+                                                     IconGeometry="{StaticResource HeartIcon}"
+                                                     Grid.Column="1" Grid.Row="1"
+                                                     Background="{StaticResource HeartBrush}"
+                                                     HoverBackground="{StaticResource HeartHoverBrush}"
+                                                     Foreground="White" IconBrush="White"
+                                                     Width="130" Height="40" Margin="6,0,0,8"
+                                                     CornerRadius="5"/>
+
+                                    <local:SmartButton ButtonText="Download" FontSize="13"
+                                                     IconGeometry="{StaticResource DownloadIcon}"
+                                                     Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                                                     Background="{StaticResource DownloadBrush}"
+                                                     HoverBackground="{StaticResource DownloadHoverBrush}"
+                                                     Foreground="White" IconBrush="White"
+                                                     Width="266" Height="40"
+                                                     CornerRadius="5"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Right Column -->
+                    <StackPanel Grid.Column="2">
+
+                        <!-- Developer Tools -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="DEVELOPER TOOLS"/>
+                                </Border>
+                                <TextBlock Text="Development Platforms" Style="{StaticResource SectionHeaderStyle}"/>
+                                <StackPanel>
+                                    <local:SmartButton ButtonText="GitHub" FontSize="15"
+                                                     IconGeometry="{StaticResource GitHubIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48" Margin="0,0,0,12"
+                                                     Background="{StaticResource GitHubBrush}"
+                                                     HoverBackground="#32383F"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+
+                                    <local:SmartButton ButtonText="Visual Studio" FontSize="15"
+                                                     IconGeometry="{StaticResource VisualStudioIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48" Margin="0,0,0,12"
+                                                     Background="{StaticResource VisualStudioBrush}"
+                                                     HoverBackground="#68217A"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+
+                                    <local:SmartButton ButtonText="LinkedIn" FontSize="15"
+                                                     IconGeometry="{StaticResource LinkedInIcon}"
+                                                     IconSize="20"
+                                                     Width="280" Height="48"
+                                                     Background="{StaticResource LinkedInBrush}"
+                                                     HoverBackground="#004182"
+                                                     Foreground="White" IconBrush="White"
+                                                     CornerRadius="8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Icon Positions -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="ICON LAYOUTS"/>
+                                </Border>
+                                <TextBlock Text="Icon Positions" Style="{StaticResource SectionHeaderStyle}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <local:SmartButton ButtonText="Left Icon" 
+                                                     IconGeometry="{StaticResource MicrosoftIcon}"
+                                                     IconPosition="Left" IconSize="16"
+                                                     Grid.Column="0" Grid.Row="0"
+                                                     Width="130" Height="40" Margin="0,0,6,10"
+                                                     CornerRadius="5"
+                                                     Background="{StaticResource MicrosoftBrush}"
+                                                     HoverBackground="#106EBE"
+                                                     Foreground="White" IconBrush="White"/>
+
+                                    <local:SmartButton ButtonText="Right Icon" 
+                                                     IconGeometry="{StaticResource MicrosoftIcon}"
+                                                     IconPosition="Right" IconSize="16"
+                                                     Grid.Column="1" Grid.Row="0"
+                                                     Width="130" Height="40" Margin="6,0,0,10"
+                                                     CornerRadius="5"
+                                                     Background="{StaticResource MicrosoftBrush}"
+                                                     HoverBackground="#106EBE"
+                                                     Foreground="White" IconBrush="White"/>
+
+                                    <local:SmartButton ButtonText="Top Icon" 
+                                                     IconGeometry="{StaticResource MicrosoftIcon}"
+                                                     IconPosition="Top" IconSize="20"
+                                                     Grid.Column="0" Grid.Row="1"
+                                                     Width="130" Height="60" Margin="0,0,6,0"
+                                                     CornerRadius="5"
+                                                     Background="{StaticResource MicrosoftBrush}"
+                                                     HoverBackground="#106EBE"
+                                                     Foreground="White" IconBrush="White"/>
+
+                                    <local:SmartButton ButtonText="Bottom Icon" 
+                                                     IconGeometry="{StaticResource MicrosoftIcon}"
+                                                     IconPosition="Bottom" IconSize="20"
+                                                     Grid.Column="1" Grid.Row="1"
+                                                     Width="130" Height="60" Margin="6,0,0,0"
+                                                     CornerRadius="5"
+                                                     Background="{StaticResource MicrosoftBrush}"
+                                                     HoverBackground="#106EBE"
+                                                     Foreground="White" IconBrush="White"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Interactive States -->
+                        <Border Style="{StaticResource SectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="INTERACTIVE STATES"/>
+                                </Border>
+                                <TextBlock Text="Hover/Press Effects" Style="{StaticResource SectionHeaderStyle}"/>
+                                <StackPanel>
+                                    <local:SmartButton ButtonText="Sign in with GitHub" 
+                                                     IconGeometry="{StaticResource GitHubIcon}"
+                                                     Background="White" BorderBrush="{StaticResource Gray300}" BorderThickness="1"
+                                                     Foreground="{StaticResource Gray700}" IconBrush="{StaticResource GitHubBrush}"
+                                                     HoverBackground="{StaticResource GitHubBrush}"
+                                                     HoverForeground="White" HoverIconBrush="White"
+                                                     Width="280" Height="44" Margin="0,0,0,12"
+                                                     CornerRadius="8"/>
+
+                                    <local:SmartButton ButtonText="Install Visual Studio" 
+                                                     IconGeometry="{StaticResource VisualStudioIcon}"
+                                                     Background="{StaticResource VisualStudioBrush}"
+                                                     HoverBackground="#68217A"
+                                                     Foreground="White" IconBrush="White"
+                                                     PressedScale="0.98"
+                                                     Width="280" Height="44" Margin="0,0,0,16"
+                                                     CornerRadius="8"/>
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <local:SmartButton IconGeometry="{StaticResource SearchIcon}"
+                                                         DisplayMode="IconOnly" IconSize="20"
+                                                         Width="56" Height="56" Margin="0,0,12,0"
+                                                         CornerRadius="28"
+                                                         Background="{StaticResource PrimaryBrush}"
+                                                         HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                                         IconBrush="White" HasShadow="True"/>
+
+                                        <local:SmartButton ButtonText="Continue with Google" 
+                                                         IconGeometry="{StaticResource GoogleIcon}"
+                                                         Background="White" BorderBrush="{StaticResource Gray300}" BorderThickness="1"
+                                                         Foreground="{StaticResource Gray700}" IconBrush="{StaticResource GoogleBrush}"
+                                                         HoverBackground="{StaticResource Gray50}"
+                                                         Width="200" Height="56"
+                                                         CornerRadius="8"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Full Width Sections -->
+
+                <!-- Display Modes -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="DISPLAY MODES"/>
+                        </Border>
+                        <TextBlock Text="Display Modes" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <local:SmartButton ButtonText="Text Only" 
+                                             DisplayMode="TextOnly"
+                                             CornerRadius="5"
+                                             Width="120" Height="40" Margin="10"
+                                             Background="{StaticResource PrimaryBrush}" 
+                                             HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                             Foreground="White"/>
+
+                            <local:SmartButton IconGeometry="{StaticResource SearchIcon}"
+                                            DisplayMode="IconOnly" IconSize="24"
+                                            Width="50" Height="50" Margin="10"
+                                            CornerRadius="25" HasShadow="True"
+                                            Background="{StaticResource PrimaryBrush}"
+                                            HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                            IconBrush="White"/>
+
+                            <local:SmartButton ButtonText="Icon and Text" 
+                                            CornerRadius="5"
+                                            IconGeometry="{StaticResource SearchIcon}"
+                                            DisplayMode="IconAndText" IconSize="18"
+                                            Width="180" Height="40" Margin="10"
+                                            Background="{StaticResource PrimaryBrush}" 
+                                            HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                            Foreground="White" IconBrush="White"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Custom Hover/Press Effects -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="CUSTOM EFFECTS"/>
+                        </Border>
+                        <TextBlock Text="Custom Hover/Press Effects" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <local:SmartButton ButtonText="Custom Hover" 
+                                             CornerRadius="5"
+                                             Background="{StaticResource PrimaryLightBrush}"
+                                             HoverBackground="{StaticResource PrimaryBrush}"
+                                             HoverForeground="White"
+                                             Foreground="{StaticResource PrimaryBrush}"
+                                             Width="160" Height="40" Margin="10"/>
+
+                            <local:SmartButton ButtonText="Press Effect" 
+                                             CornerRadius="5"
+                                             Background="{StaticResource SuccessLightBrush}"
+                                             PressedBackground="{StaticResource SuccessBrush}"
+                                             PressedForeground="White"
+                                             PressedScale="0.9"
+                                             Foreground="{StaticResource SuccessBrush}"
+                                             Width="160" Height="40" Margin="10"/>
+
+                            <local:SmartButton ButtonText="Icon Color Change" 
+                                             CornerRadius="5"
+                                             IconGeometry="{StaticResource HeartIcon}"
+                                             Background="{StaticResource HeartLightBrush}"
+                                             IconBrush="{StaticResource HeartBrush}"
+                                             HoverIconBrush="White"
+                                             HoverBackground="{StaticResource HeartBrush}"
+                                             Foreground="{StaticResource HeartBrush}"
+                                             HoverForeground="White"
+                                             Width="180" Height="40" Margin="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Various Sizes and Shapes -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="SIZES &amp; SHAPES"/>
+                        </Border>
+                        <TextBlock Text="Various Sizes and Shapes" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <local:SmartButton ButtonText="Small" 
+                                             IconGeometry="{StaticResource GitHubIcon}"
+                                             Width="100" Height="30" Margin="10"
+                                             FontSize="11" IconSize="12"
+                                             Background="{StaticResource GitHubBrush}"
+                                             HoverBackground="#32383F"
+                                             Foreground="White" IconBrush="White"/>
+
+                            <local:SmartButton ButtonText="Medium" 
+                                             IconGeometry="{StaticResource SearchIcon}"
+                                             Width="140" Height="40" Margin="10"
+                                             FontSize="14" IconSize="16"
+                                             Background="{StaticResource PrimaryBrush}"
+                                             HoverBackground="{StaticResource PrimaryHoverBrush}"
+                                             Foreground="White" IconBrush="White"/>
+
+                            <local:SmartButton ButtonText="Large" 
+                                             IconGeometry="{StaticResource DownloadIcon}"
+                                             Width="180" Height="50" Margin="10"
+                                             FontSize="16" IconSize="20"
+                                             Background="{StaticResource SuccessBrush}"
+                                             HoverBackground="{StaticResource SuccessHoverBrush}"
+                                             Foreground="White" IconBrush="White"/>
+
+                            <local:SmartButton ButtonText="Round" 
+                                             IconGeometry="{StaticResource AppleIcon}"
+                                             Width="60" Height="60" Margin="10"
+                                             CornerRadius="30" HasShadow="True"
+                                             Background="{StaticResource AppleBrush}"
+                                             HoverBackground="#424245"
+                                             Foreground="White" IconBrush="White"
+                                             IconPosition="Top" IconMargin="0 5 0 0" FontSize="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Padding and Spacing Settings -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="SPACING"/>
+                        </Border>
+                        <TextBlock Text="Padding and Spacing Settings" Style="{StaticResource SectionHeaderStyle}"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <local:SmartButton ButtonText="Wide Padding Button" 
+                                             IconGeometry="{StaticResource VisualStudioIcon}"
+                                             ContentPadding="20,10,20,10"
+                                             IconTextSpacing="15"
+                                             Width="220" Height="50" Margin="10"
+                                             Background="{StaticResource VisualStudioBrush}"
+                                             HoverBackground="#68217A"
+                                             Foreground="White" IconBrush="White"/>
+
+
+                            <local:SmartButton ButtonText="Icon Margin" 
+                                             IconGeometry="{StaticResource HeartIcon}"
+                                             IconMargin="5,0,10,0"
+                                             TextMargin="10,0,5,0"
+                                             Width="160" Height="40" Margin="10"
+                                             Background="{StaticResource HeartBrush}"
+                                             HoverBackground="{StaticResource HeartHoverBrush}"
+                                             Foreground="White" IconBrush="White"/>
+
+                            <local:SmartButton ButtonText="Compact Button" 
+                                             IconGeometry="{StaticResource LinkedInIcon}"
+                                             ContentPadding="5,2,5,2"
+                                             IconTextSpacing="5"
+                                             Width="140" Height="30" Margin="10"
+                                             Background="{StaticResource LinkedInBrush}"
+                                             HoverBackground="#1085D1"
+                                             Foreground="White" IconBrush="White"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Real Usage Examples -->
+                <Border Style="{StaticResource SectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="REAL EXAMPLES"/>
+                        </Border>
+                        <TextBlock Text="Real Usage Examples" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <!-- Toolbar Style -->
+                        <StackPanel Margin="0,0,0,20">
+                            <TextBlock Text="Toolbar Style:" FontWeight="Bold" Margin="0,0,0,10" 
+                                      Foreground="{StaticResource Gray600}" FontSize="14"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <local:SmartButton IconGeometry="{StaticResource LinkedInIcon}"
+                                                 DisplayMode="IconOnly" IconSize="16" ContentPadding="0"
+                                                 Width="35" Height="35" Margin="2"
+                                                 Background="Transparent" BorderBrush="{StaticResource Gray400}"
+                                                 IconBrush="{StaticResource Gray600}"
+                                                 HoverBackground="{StaticResource Gray200}"/>
+
+                                <local:SmartButton IconGeometry="{StaticResource GitHubIcon}"
+                                                 DisplayMode="IconOnly" IconSize="12" ContentPadding="0"
+                                                 Width="35" Height="35" Margin="2"
+                                                 Background="Transparent" BorderBrush="{StaticResource Gray400}"
+                                                 IconBrush="{StaticResource Gray600}"
+                                                 HoverBackground="{StaticResource Gray200}"/>
+
+                                <local:SmartButton IconGeometry="{StaticResource VisualStudioIcon}"
+                                                 DisplayMode="IconOnly" IconSize="16" ContentPadding="0"
+                                                 Width="35" Height="35" Margin="2"
+                                                 Background="Transparent" BorderBrush="{StaticResource Gray400}"
+                                                 IconBrush="{StaticResource Gray600}"
+                                                 HoverBackground="{StaticResource Gray200}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Margin="0,0,0,20">
+                            <TextBlock Text="Action Buttons:" FontWeight="Bold" Margin="0,0,0,10" 
+                                      Foreground="{StaticResource Gray600}" FontSize="14"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <local:SmartButton ButtonText="Save" 
+                                                 IconGeometry="{StaticResource DownloadIcon}"
+                                                 Background="{StaticResource SuccessBrush}"
+                                                 HoverBackground="{StaticResource SuccessHoverBrush}"
+                                                 Foreground="White" IconBrush="White"
+                                                 Width="100" Height="35" Margin="5"
+                                                 CornerRadius="3" HasShadow="True"/>
+
+                                <local:SmartButton ButtonText="Cancel" 
+                                                 Background="{StaticResource Gray400}"
+                                                 HoverBackground="{StaticResource Gray500}"
+                                                 Foreground="White"
+                                                 Width="100" Height="35" Margin="5"
+                                                 CornerRadius="3"/>
+
+                                <local:SmartButton ButtonText="Delete" 
+                                                 IconGeometry="{StaticResource HeartIcon}"
+                                                 Background="{StaticResource HeartBrush}"
+                                                 HoverBackground="{StaticResource HeartHoverBrush}"
+                                                 Foreground="White" IconBrush="White"
+                                                 Width="100" Height="35" Margin="5"
+                                                 CornerRadius="3" HasShadow="True"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Social Button Style -->
+                        <StackPanel>
+                            <TextBlock Text="Social Button Style:" FontWeight="Bold" Margin="0,0,0,10" 
+                                      Foreground="{StaticResource Gray600}" FontSize="14"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <local:SmartButton ButtonText="Like" 
+                                                 IconGeometry="{StaticResource HeartIcon}"
+                                                 Background="White" BorderBrush="{StaticResource Gray300}"
+                                                 Foreground="{StaticResource Gray600}" IconBrush="{StaticResource Gray600}"
+                                                 HoverBackground="{StaticResource HeartLightBrush}"
+                                                 HoverForeground="{StaticResource HeartBrush}"
+                                                 HoverIconBrush="{StaticResource HeartBrush}"
+                                                 Width="120" Height="40" Margin="5"
+                                                 CornerRadius="20" HasShadow="True"/>
+
+                                <local:SmartButton ButtonText="Download" 
+                                                 IconGeometry="{StaticResource DownloadIcon}"
+                                                 Background="White" BorderBrush="{StaticResource Gray300}"
+                                                 Foreground="{StaticResource Gray600}" IconBrush="{StaticResource Gray600}"
+                                                 HoverBackground="{StaticResource PrimaryLightBrush}"
+                                                 HoverForeground="{StaticResource PrimaryBrush}"
+                                                 HoverIconBrush="{StaticResource PrimaryBrush}"
+                                                 Width="140" Height="40" Margin="5"
+                                                 CornerRadius="20" HasShadow="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
