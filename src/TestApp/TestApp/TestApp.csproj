@@ -29,6 +29,9 @@
     <Page Include="Pages\AdaptiveColumnsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TestSmartButtonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TestStaggeredPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -41,6 +44,7 @@
     <Compile Include="Pages\TestAnimatedSegmentedControl.xaml.cs" />
     <Compile Include="Pages\FastCheckBox.xaml.cs" />
     <Compile Include="Pages\AdaptiveColumnsPanel.xaml.cs" />
+    <Compile Include="Pages\TestSmartButtonControl.xaml.cs" />
     <Compile Include="Pages\TestStaggeredPanel.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
     <Compile Include="Registry\TreeItem.cs" />
