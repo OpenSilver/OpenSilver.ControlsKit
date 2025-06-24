@@ -3,9 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controlskit="clr-namespace:OpenSilver.ControlsKit;assembly=OpenSilver.ControlsKit.Controls"
-    xmlns:local="clr-namespace:TestApp.Pages">
+    xmlns:local="clr-namespace:TestApp.Pages"
+    Background="#F9FAFB">
     <Page.Resources>
-
         <!--  Common Title Style  -->
         <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18" />
@@ -21,529 +21,384 @@
             <Setter Property="Foreground" Value="#374151" />
             <Setter Property="Margin" Value="0,0,0,12" />
         </Style>
+
+        <Style x:Key="HorizontalBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="Height" Value="70" />
+        </Style>
+
+        <Style x:Key="VeritlcalBorder" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="Width" Value="70" />
+            <Setter Property="Height" Value="250" />
+        </Style>
+
+        <!--  색상 리소스  -->
+        <Color x:Key="AccentColor">#0078D4</Color>
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+        <SolidColorBrush x:Key="ComboBoxBackgroundBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#E5E7EB" />
+        <SolidColorBrush x:Key="ComboBoxFocusedBorderBrush" Color="{StaticResource AccentColor}" />
+        <SolidColorBrush x:Key="ComboBoxMouseOverBrush" Color="#F3F9FF" />
+
+        <Style x:Key="FlunetTextBox" TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border
+                            Width="{TemplateBinding Width}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{StaticResource ComboBoxBackgroundBrush}"
+                            BorderBrush="{StaticResource ComboBoxBorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Margin="0"
+                                VerticalAlignment="Center"
+                                BorderThickness="0" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FluentComboBox" TargetType="ComboBox">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid Width="{TemplateBinding Width}">
+                            <Border
+                                x:Name="Border"
+                                Width="{TemplateBinding Width}"
+                                Background="{StaticResource ComboBoxBackgroundBrush}"
+                                BorderBrush="{StaticResource ComboBoxBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <Grid>
+                                    <ContentPresenter
+                                        x:Name="ContentSite"
+                                        Margin="8,0,24,0"
+                                        VerticalAlignment="Center"
+                                        Content="{TemplateBinding SelectionBoxItem}"
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+
+                                    <Path
+                                        x:Name="Arrow"
+                                        Margin="0,0,8,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Data="M 0 0 L 4 4 L 8 0 Z"
+                                        Fill="{TemplateBinding Foreground}" />
+                                </Grid>
+                            </Border>
+
+                            <Popup
+                                x:Name="Popup"
+                                Focusable="False"
+                                IsOpen="{TemplateBinding IsDropDownOpen}"
+                                Placement="Bottom">
+                                <Border
+                                    Background="White"
+                                    BorderBrush="{StaticResource ComboBoxBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <ItemsPresenter />
+                                </Border>
+                            </Popup>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#F3F9FF" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Unfocused" />
+                                    <VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                To="#6366F1" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
-    <StackPanel Margin="32">
+    <Border
+        Padding="10"
+        BorderBrush="#2d2d2d"
+        BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <!--  Title  -->
+            <TextBlock
+                Margin="0,24,0,24"
+                HorizontalAlignment="Center"
+                FontSize="48"
+                FontWeight="Bold"
+                Foreground="#1b3275"
+                Text="🚀 FlexPanel Showcase" />
 
-        <!--  Title  -->
-        <TextBlock
-            Margin="0,0,0,24"
-            HorizontalAlignment="Center"
-            FontSize="28"
-            FontWeight="Bold"
-            Foreground="#1F2A44"
-            Text="🚀 FlexPanel Showcase" />
-        <TabControl>
-            <TabItem Header="Horizontal">
-                <TabItem.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="BorderThickness" Value="1" />
-                        <Setter Property="BorderBrush" Value="Black" />
-                        <Setter Property="Height" Value="70" />
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="1.5*" />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Style x:Key="PanelArea" TargetType="Border">
+                        <Setter Property="Padding" Value="10" />
+                        <Setter Property="Background" Value="#F9FAFB" />
+                        <Setter Property="CornerRadius" Value="5" />
+                        <Setter Property="BorderBrush" Value="#6366F1" />
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect
+                                    BlurRadius="6"
+                                    Direction="270"
+                                    Opacity="0.2"
+                                    ShadowDepth="2" />
+                            </Setter.Value>
+                        </Setter>
                     </Style>
-                </TabItem.Resources>
-                <StackPanel Margin="32">
-                    <!--  Algin  -->
-                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="📐 Algin" />
-
-                    <!--  Algin - Start  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="↖️ Algin - Start" />
-                        <Border>
+                </Grid.Resources>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Border Margin="0,0,12,0" Style="{StaticResource PanelArea}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Style="{StaticResource SectionTitleStyle}" Text="⚙️ Control Panel" />
                             <controlskit:FlexPanel
-                                Align="Start"
-                                Justify="Start"
+                                AlignItems="Stretch"
+                                JustifyContent="Start"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <controlskit:FlexPanel.Resources>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Label">
+                                                    <StackPanel Background="{TemplateBinding Background}">
+                                                        <TextBlock
+                                                            Margin="0,0,0,5"
+                                                            FontSize="14"
+                                                            Text="{TemplateBinding Tag}" />
+                                                        <ContentPresenter Width="{TemplateBinding Width}" />
+                                                    </StackPanel>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </controlskit:FlexPanel.Resources>
+                                <controlskit:FlexPanel
+                                    x:Name="flexPanel_layout"
+                                    Height="400"
+                                    AlignItems="Stretch"
+                                    JustifyContent="SpaceBetween"
+                                    Orientation="Vertical">
+                                    <Label Tag="Direction">
+                                        <ComboBox SelectionChanged="OnDirectionSelectionItemChanged" Style="{StaticResource FluentComboBox}">
+                                            <ComboBoxItem Content="Horizontal" IsSelected="True" />
+                                            <ComboBoxItem Content="Vertical" />
+                                        </ComboBox>
+                                    </Label>
+
+                                    <Label Tag="Spacing Content">
+                                        <TextBox
+                                            Style="{StaticResource FlunetTextBox}"
+                                            Text="0.0"
+                                            TextChanged="OnSpacingTextChanged" />
+                                    </Label>
+                                    <Label Tag="Justify Content">
+                                        <ComboBox SelectionChanged="OnJustifySelectionItemChanged" Style="{StaticResource FluentComboBox}">
+                                            <ComboBoxItem Content="Start" />
+                                            <ComboBoxItem Content="Center" IsSelected="True" />
+                                            <ComboBoxItem Content="End" />
+                                            <ComboBoxItem Content="SpaceAround" />
+                                            <ComboBoxItem Content="SpaceEvenly" />
+                                            <ComboBoxItem Content="SpaceBetween" />
+                                        </ComboBox>
+                                    </Label>
+
+                                    <Label Tag="Align Items">
+                                        <ComboBox SelectionChanged="OnAlignItemsSelectionItemChanged" Style="{StaticResource FluentComboBox}">
+                                            <ComboBoxItem Content="Start" />
+                                            <ComboBoxItem Content="Center" IsSelected="True" />
+                                            <ComboBoxItem Content="End" />
+                                            <ComboBoxItem Content="Stretch" />
+                                        </ComboBox>
+                                    </Label>
+
+                                    <Label Tag="Align Content">
+                                        <ComboBox SelectionChanged="OnAlignContentSelectionItemChanged" Style="{StaticResource FluentComboBox}">
+                                            <ComboBoxItem Content="Start" />
+                                            <ComboBoxItem Content="Center" IsSelected="True" />
+                                            <ComboBoxItem Content="End" />
+                                            <ComboBoxItem Content="SpaceAround" />
+                                            <ComboBoxItem Content="SpaceEvenly" />
+                                            <ComboBoxItem Content="SpaceBetween" />
+                                        </ComboBox>
+                                    </Label>
+
+                                    <Label Tag="Grow">
+                                        <Label.ToolTip>
+                                            <TextBlock FontSize="12" TextWrapping="Wrap">
+                                                <TextBlock.Inlines>
+                                                    <Run Text="Only Justify &amp; Align 'Start'" />
+                                                    <Run Text="Grow values are applied to each item separated by commas. If a value is not specified, it is automatically set to 0." />
+                                                </TextBlock.Inlines>
+                                            </TextBlock>
+                                        </Label.ToolTip>
+                                        <TextBox
+                                            Style="{StaticResource FlunetTextBox}"
+                                            Text="0.0"
+                                            TextChanged="OnGrowTextChanged" />
+                                    </Label>
+                                </controlskit:FlexPanel>
+                            </controlskit:FlexPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                <Border
+                    Grid.Column="1"
+                    Background="#F0F4F8"
+                    Style="{StaticResource PanelArea}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitleStyle}" Text="⚙️ Live Preview" />
+                        <Border
+                            Height="300"
+                            BorderBrush="#CBD5E1"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <Border.Effect>
+                                <DropShadowEffect
+                                    BlurRadius="6"
+                                    Direction="270"
+                                    Opacity="0.2"
+                                    ShadowDepth="2" />
+                            </Border.Effect>
+                            <controlskit:FlexPanel
+                                x:Name="flexPanel"
+                                AlignContent="Center"
+                                AlignItems="Center"
+                                JustifyContent="Center"
                                 Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
+                                <controlskit:FlexPanel.Resources>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Width" Value="100" />
+                                        <Setter Property="Foreground" Value="White" />
+                                        <Setter Property="Height" Value="100" />
+                                        <Setter Property="FontSize" Value="24" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect
+                                                    BlurRadius="6"
+                                                    Direction="270"
+                                                    Opacity="0.2"
+                                                    ShadowDepth="2" />
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border
+                                                        Width="{TemplateBinding Width}"
+                                                        Height="{TemplateBinding Height}"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="5">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </controlskit:FlexPanel.Resources>
+                                <!--<Button Content="1">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#ee4249" />
+                                            <GradientStop Offset="1.0" Color="#dd2b70" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>
+                                <Button Content="2">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#1ebf5f" />
+                                            <GradientStop Offset="1.0" Color="#089c67" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>
+                                <Button Content="3">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#3d7af4" />
+                                            <GradientStop Offset="0.5" Color="#4564ee" />
+                                            <GradientStop Offset="1.0" Color="#4b52e8" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>
+                                <Button Content="4">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#ee4249" />
+                                            <GradientStop Offset="1.0" Color="#dd2b70" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>
+                                <Button Content="5">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#1ebf5f" />
+                                            <GradientStop Offset="1.0" Color="#089c67" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>
+                                <Button Content="6">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                            <GradientStop Offset="0" Color="#3d7af4" />
+                                            <GradientStop Offset="0.5" Color="#4564ee" />
+                                            <GradientStop Offset="1.0" Color="#4b52e8" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                </Button>-->
+                                <Button Background="#EF5350" Content="1" />
+                                <Button Background="#34D399" Content="2" />
+                                <Button Background="#6366F1" Content="3" />
+                                <Button Background="#FBBF24" Content="4" />
+                                <Button Background="#2DD4BF" Content="5" />
+                                <Button Background="#64748B" Content="6" />
                             </controlskit:FlexPanel>
                         </Border>
                     </StackPanel>
+                </Border>
+            </Grid>
 
-                    <!--  Algin - Center  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="🔲 Algin - Center" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="Start"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Algin - End  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="↘️ Algin - End" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="End"
-                                Justify="Start"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify  -->
-                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="📏 Justify Style" />
-
-                    <!--  Justify - Start  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜⬜⬜ Justify - Start" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="Start"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - Center  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜🟦⬜ Justify - Center" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="Center"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - End  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜⬜⬜🟦 Justify - End" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="End"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - SpaceAround  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜🟦⬜🟦⬜ Justify - SpaceAround" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="SpaceAround"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - SpaceAuto  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜⬜🟦⬜🟦⬜⬜ Justify - SpaceAuto" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="SpaceAuto"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - SpaceEvenly  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜🟦⬜🟦 Justify - SpaceEvenly" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="SpaceEvenly"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Green" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-
-                    <!--  Justify - SpaceBetween  -->
-                    <StackPanel Margin="12">
-                        <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜⬜⬜🟦 Justify - SpaceBetween" />
-                        <Border>
-                            <controlskit:FlexPanel
-                                Align="Center"
-                                Justify="SpaceBetween"
-                                Orientation="Horizontal">
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Red" />
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Blue" />
-                            </controlskit:FlexPanel>
-                        </Border>
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-            <TabItem Header="Vertical">
-                <TabItem.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="BorderThickness" Value="1" />
-                        <Setter Property="BorderBrush" Value="Black" />
-                        <Setter Property="Width" Value="70" />
-                        <Setter Property="Height" Value="200" />
-                    </Style>
-                </TabItem.Resources>
-                <StackPanel Margin="32">
-                    <!--  Algin  -->
-                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="📐 Algin" />
-
-                    <controlskit:FlexPanel Justify="SpaceAuto" Orientation="Horizontal">
-                        <!--  Algin - Start  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="↖️ Algin - Start" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Start"
-                                    Justify="Start"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!--  Algin - Center  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="🔲 Algin - Center" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="Start"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!--  Algin - End  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="↘️ Algin - End" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="End"
-                                    Justify="Start"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-                    </controlskit:FlexPanel>
-
-                    <!--  Justify  -->
-                    <TextBlock Style="{StaticResource SectionTitleStyle}" Text="📏 Justify Style" />
-                    <controlskit:FlexPanel Justify="SpaceAuto" Orientation="Horizontal">
-                        <!--  Justify - Start  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜⬜⬜ Justify - Start" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="Start"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!--  Justify - Center  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜🟦⬜ Justify - Center" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="Center"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!--  Justify - End  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜⬜⬜🟦 Justify - End" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="End"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-                    </controlskit:FlexPanel>
-                    <controlskit:FlexPanel Justify="SpaceAuto" Orientation="Horizontal">
-                        <!--  Justify - SpaceAround  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜🟦⬜🟦⬜ Justify - SpaceAround" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="SpaceAround"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!--  Justify - SpaceAuto  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="⬜⬜🟦⬜🟦⬜⬜ Justify - SpaceAuto" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="SpaceAuto"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-
-                    </controlskit:FlexPanel>
-                    <controlskit:FlexPanel Justify="SpaceAuto" Orientation="Horizontal">
-                        <!--  Justify - SpaceEvenly  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜🟦⬜🟦 Justify - SpaceEvenly" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="SpaceEvenly"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Green" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-                        <!--  Justify - SpaceBetween  -->
-                        <StackPanel Margin="12">
-                            <TextBlock Style="{StaticResource SubTitleStyle}" Text="🟦⬜⬜⬜🟦 Justify - SpaceBetween" />
-                            <Border>
-                                <controlskit:FlexPanel
-                                    Align="Center"
-                                    Justify="SpaceBetween"
-                                    Orientation="Vertical">
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Red" />
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Background="Blue" />
-                                </controlskit:FlexPanel>
-                            </Border>
-                        </StackPanel>
-                    </controlskit:FlexPanel>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
-
-    </StackPanel>
+        </Grid>
+    </Border>
 </Page>

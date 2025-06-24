@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,359 +13,331 @@ namespace OpenSilver.ControlsKit
         Center,
         SpaceBetween,
         SpaceAround,
-        SpaceEvenly,
-        SpaceAuto
+        SpaceEvenly
     }
 
     public enum AlignContent
     {
         Start,
         Center,
-        End
+        End,
+        SpaceBetween,
+        SpaceAround,
+        SpaceEvenly
     }
 
-    public class FlexPanel : Panel
+    public enum AlignItems
+    {
+        Start,
+        Center,
+        End,
+        Stretch
+    }
+
+    public partial class FlexPanel : Panel
     {
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue (OrientationProperty); }
-            set { SetValue (OrientationProperty, value); }
+            get => (Orientation)GetValue (OrientationProperty);
+            set => SetValue (OrientationProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Orientation.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty OrientationProperty =
-            DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (FlexPanel), new PropertyMetadata (Orientation.Horizontal, PropertyChangedCallback));
+            DependencyProperty.Register (nameof (Orientation), typeof (Orientation), typeof (FlexPanel),
+                new FrameworkPropertyMetadata (Orientation.Horizontal, FrameworkPropertyMetadataOptions.AffectsArrange));
 
-
-        public JustifyContent Justify
+        public JustifyContent JustifyContent
         {
-            get { return (JustifyContent)GetValue (JustifyProperty); }
-            set { SetValue (JustifyProperty, value); }
+            get => (JustifyContent)GetValue (JustifyContentProperty);
+            set => SetValue (JustifyContentProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Justify.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty JustifyProperty =
-            DependencyProperty.Register ("Justify", typeof (JustifyContent), typeof (FlexPanel), new PropertyMetadata (JustifyContent.Center, PropertyChangedCallback));
+        public static readonly DependencyProperty JustifyContentProperty =
+            DependencyProperty.Register (nameof (JustifyContent), typeof (JustifyContent), typeof (FlexPanel),
+                new FrameworkPropertyMetadata (JustifyContent.Start, FrameworkPropertyMetadataOptions.AffectsArrange));
 
-        public AlignContent Align
+        public AlignContent AlignContent
         {
-            get { return (AlignContent)GetValue (AlignProperty); }
-            set { SetValue (AlignProperty, value); }
+            get => (AlignContent)GetValue (AlignContentProperty);
+            set => SetValue (AlignContentProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Justify.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty AlignProperty =
-            DependencyProperty.Register ("Align", typeof (AlignContent), typeof (FlexPanel), new PropertyMetadata (AlignContent.Center, PropertyChangedCallback));
+        public static readonly DependencyProperty AlignContentProperty =
+            DependencyProperty.Register (nameof (AlignContent), typeof (AlignContent), typeof (FlexPanel),
+                new FrameworkPropertyMetadata (AlignContent.Start, FrameworkPropertyMetadataOptions.AffectsArrange));
 
-        public double AddHeight
+        public AlignItems AlignItems
         {
-            get { return (double)GetValue (AddHeightProperty); }
-            set { SetValue (AddHeightProperty, value); }
+            get => (AlignItems)GetValue (AlignItemsProperty);
+            set => SetValue (AlignItemsProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for AddHeight.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty AddHeightProperty =
-            DependencyProperty.Register ("AddHeight", typeof (double), typeof (FlexPanel), new PropertyMetadata (0.0, PropertyChangedCallback));
-
-        protected override Size MeasureOverride(Size constraint)
+        public static readonly DependencyProperty AlignItemsProperty =
+            DependencyProperty.Register (nameof (AlignItems), typeof (AlignItems), typeof (FlexPanel),
+                new FrameworkPropertyMetadata (AlignItems.Start, FrameworkPropertyMetadataOptions.AffectsArrange));
+        public double Spacing
         {
-            if (this.Children.Count == 0)
-                return base.MeasureOverride (constraint);
+            get => (double)GetValue (SpacingProperty);
+            set => SetValue (SpacingProperty, value);
+        }
 
+        public static readonly DependencyProperty SpacingProperty =
+            DependencyProperty.Register (nameof (Spacing), typeof (double), typeof (FlexPanel),
+                new FrameworkPropertyMetadata (0.0, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
 
-            if (Orientation == Orientation.Horizontal)
-            {
-                double totalDesiredWidth = 0;
-                double maxDesiredHeight = 0;
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            bool isHorizontal = Orientation == Orientation.Horizontal;
+            double maxPrimary = isHorizontal ? availableSize.Width : availableSize.Height;
 
-                foreach (UIElement child in Children)
-                {
-                    // 1. Pass the availableSize provided by the parent (your custom Panel) to the child Panel for measurement.
-                    // At this point, the child Panel will calculate its own DesiredSize according to its internal logic.
-                    // For example, the child Panel may sum up the sizes of its own children or perform Stretch behavior.
-                    child.Measure (constraint);
+            double panelPrimary = 0;
+            double panelCross = 0;
 
-                    // 2. Get the DesiredSize of the child Panel.
-                    // This DesiredSize is the 'minimum size' that the child Panel wants.
-                    // Even when Width or Height properties are NaN, DesiredSize will have valid values.
-                    // For example, if there is a TextBlock inside the child Panel, the DesiredSize will be calculated based on the TextBlock's size.
+            double curPrimary = 0;
+            double curCross = 0;
 
-
-                    Size childDesiredSize = child.DesiredSize;
-
-                    totalDesiredWidth += childDesiredSize.Width;
-                    maxDesiredHeight = Math.Max (maxDesiredHeight, childDesiredSize.Height);
-                }
-                return new Size (
-                                    double.IsPositiveInfinity (constraint.Width) ? totalDesiredWidth : Math.Min (totalDesiredWidth, constraint.Width),
-                                    double.IsPositiveInfinity (constraint.Height) ? maxDesiredHeight + AddHeight : Math.Min (maxDesiredHeight, constraint.Height) + AddHeight
-                                );
-            }
-
-            double totalDesiredHeight = 0;
-            double maxDesiredWidth = 0;
+            bool disableSpacing = IsSpacingDisabledForJustify ();
 
             foreach (UIElement child in Children)
             {
-                // 1. Pass the availableSize provided by the parent (your custom Panel) to the child Panel for measurement.
-                // At this point, the child Panel will calculate its own DesiredSize according to its internal logic.
-                // For example, the child Panel may sum up the sizes of its own children or perform Stretch behavior.
-                child.Measure (constraint);
+                child.Measure (availableSize);
+                var desired = child.DesiredSize;
+                double childPrimary = isHorizontal ? desired.Width : desired.Height;
+                double childCross = isHorizontal ? desired.Height : desired.Width;
 
-                // 2. Get the DesiredSize of the child Panel.
-                // This DesiredSize is the 'minimum size' that the child Panel wants.
-                // Even when Width or Height properties are NaN, DesiredSize will have valid values.
-                // For example, if there is a TextBlock inside the child Panel, the DesiredSize will be calculated based on the TextBlock's size.
+                double spacing = (!disableSpacing && curPrimary > 0) ? Spacing : 0;
 
-
-                Size childDesiredSize = child.DesiredSize;
-
-                maxDesiredWidth = Math.Max (maxDesiredWidth, childDesiredSize.Width);
-                totalDesiredHeight += childDesiredSize.Height;
+                if (curPrimary + childPrimary + spacing > maxPrimary && curPrimary > 0)
+                {
+                    panelPrimary = Math.Max (panelPrimary, curPrimary);
+                    panelCross += curCross;
+                    curPrimary = childPrimary;
+                    curCross = childCross;
+                }
+                else
+                {
+                    curPrimary += childPrimary + spacing;
+                    curCross = Math.Max (curCross, childCross);
+                }
             }
-            return new Size (
-                                double.IsPositiveInfinity (constraint.Width) ? maxDesiredWidth : Math.Min (maxDesiredWidth, constraint.Width),
-                                double.IsPositiveInfinity (constraint.Height) ? totalDesiredHeight + AddHeight : Math.Min (totalDesiredHeight, constraint.Height) + AddHeight
-                            );
 
+            panelPrimary = Math.Max (panelPrimary, curPrimary);
+            panelCross += curCross;
+
+            return isHorizontal ? new Size (panelPrimary, panelCross) : new Size (panelCross, panelPrimary);
         }
 
-        private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.OldValue == e.NewValue)
-                return;
-            try
-            {
-                var FlexPanel = ((FlexPanel)d);
-
-                FlexPanel.InvalidateMeasure ();
-                FlexPanel.InvalidateArrange ();
-            }
-            catch (Exception ex)
-            {
-
-            }
-        }
         protected override Size ArrangeOverride(Size finalSize)
         {
-            Arrange (finalSize);
-            return finalSize;
-        }
+            bool isHorizontal = Orientation == Orientation.Horizontal;
+            double maxPrimary = isHorizontal ? finalSize.Width : finalSize.Height;
 
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-        {
-            base.OnRenderSizeChanged (sizeInfo);
-            Arrange (this.RenderSize);
-        }
+            var lines = new List<List<UIElement>> ();
+            var lineSizes = new List<Size> ();
 
+            double curPrimary = 0;
+            double curCross = 0;
+            var curLine = new List<UIElement> ();
 
-        private void Arrange(Size finalSize)
-        {
-            if (Children.Count == 0)
-                return;
+            bool disableSpacing = JustifyContent == JustifyContent.SpaceBetween ||
+                                  JustifyContent == JustifyContent.SpaceAround ||
+                                  JustifyContent == JustifyContent.SpaceEvenly;
 
-            if (Children.Count == 1)
+            // 1. Line construction: Group child elements into lines based on available primary size.
+            foreach (UIElement child in Children)
             {
-                FrameworkElement child = (FrameworkElement)this.Children[0];
-                child.Arrange (new Rect (0, 0, child.DesiredSize.Width, child.DesiredSize.Height));
-                if (Align == AlignContent.Start)
+                var desired = child.DesiredSize;
+                double childPrimary = isHorizontal ? desired.Width : desired.Height;
+                double childCross = isHorizontal ? desired.Height : desired.Width;
+
+                double spacing = (!disableSpacing && curPrimary > 0) ? Spacing : 0;
+
+                if (curPrimary + childPrimary + spacing > maxPrimary && curPrimary > 0)
                 {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Top);
+                    lines.Add (curLine);
+                    lineSizes.Add (isHorizontal ? new Size (curPrimary, curCross) : new Size (curCross, curPrimary));
+
+                    curLine = new List<UIElement> { child };
+                    curPrimary = childPrimary;
+                    curCross = childCross;
                 }
-                else if (Align == AlignContent.Center)
+                else
                 {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Center);
+                    curLine.Add (child);
+                    curPrimary += childPrimary + spacing;
+                    curCross = Math.Max (curCross, childCross);
                 }
-                else if (Align == AlignContent.End)
+            }
+
+            if (curLine.Count > 0)
+            {
+                lines.Add (curLine);
+                lineSizes.Add (isHorizontal ? new Size (curPrimary, curCross) : new Size (curCross, curPrimary));
+            }
+
+            // 2. Handle AlignContent: Calculate spacing between lines based on remaining cross size.
+            double totalCrossSize = lineSizes.Sum (sz => isHorizontal ? sz.Height : sz.Width);
+            double remainingCross = (isHorizontal ? finalSize.Height : finalSize.Width) - totalCrossSize;
+
+            double crossOffsetBase = 0;
+            double crossSpacing = 0;
+
+            switch (AlignContent)
+            {
+                case AlignContent.Start:
+                    crossOffsetBase = 0;
+                    crossSpacing = 0;
+                    break;
+                case AlignContent.Center:
+                    crossOffsetBase = remainingCross / 2;
+                    crossSpacing = 0;
+                    break;
+                case AlignContent.End:
+                    crossOffsetBase = remainingCross;
+                    crossSpacing = 0;
+                    break;
+                case AlignContent.SpaceBetween:
+                    crossSpacing = lines.Count > 1 ? remainingCross / (lines.Count - 1) : 0;
+                    break;
+                case AlignContent.SpaceAround:
+                    crossSpacing = lines.Count > 0 ? remainingCross / lines.Count : 0;
+                    crossOffsetBase = crossSpacing / 2;
+                    break;
+                case AlignContent.SpaceEvenly:
+                    crossSpacing = lines.Count > 0 ? remainingCross / (lines.Count + 1) : 0;
+                    crossOffsetBase = crossSpacing;
+                    break;
+            }
+
+            // 3. Arrange each line: Position and space items within each line based on JustifyContent.
+            double crossPos = crossOffsetBase;
+
+            foreach (var (line, lineSize) in lines.Zip (lineSizes, Tuple.Create))
+            {
+                double totalPrimary = line.Sum (child => isHorizontal ? child.DesiredSize.Width : child.DesiredSize.Height);
+                double totalFlexGrow = line.Sum (child => GetGrow (child));
+
+                double remainingPrimary = maxPrimary - totalPrimary - (disableSpacing ? 0 : Spacing * (line.Count - 1));
+
+                double spacingBetweenChildren = 0;
+                double primaryOffset = 0;
+
+                if (disableSpacing)
                 {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Bottom);
+                    switch (JustifyContent)
+                    {
+                        case JustifyContent.SpaceBetween:
+                            spacingBetweenChildren = line.Count > 1 ? remainingPrimary / (line.Count - 1) : 0;
+                            primaryOffset = 0;
+                            break;
+                        case JustifyContent.SpaceAround:
+                            spacingBetweenChildren = line.Count > 0 ? remainingPrimary / line.Count : 0;
+                            primaryOffset = spacingBetweenChildren / 2;
+                            break;
+                        case JustifyContent.SpaceEvenly:
+                            spacingBetweenChildren = line.Count > 0 ? remainingPrimary / (line.Count + 1) : 0;
+                            primaryOffset = spacingBetweenChildren;
+                            break;
+                    }
                 }
-
-                if (Justify == JustifyContent.Start)
+                else
                 {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Left);
-                }
-                else if (Justify == JustifyContent.Center)
-                {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                }
-                else if (Justify == JustifyContent.End)
-                {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Right);
-                }
+                    spacingBetweenChildren = Spacing;
 
-                return;
-            }
-
-            if (Orientation == Orientation.Horizontal)
-            {
-                Make (finalSize);
-                return;
-            }
-            VerticalMake (finalSize);
-            return;
-        }
-
-
-        private Size Make(Size finalSize)
-        {
-            int childrenCount = this.Children.Count;
-            double totalWidth = 0.0;
-            double maxWidth = 0.0;
-            for (int i = 0; i < childrenCount; i++)
-            {
-                UIElement child = this.Children[i];
-                totalWidth += child.DesiredSize.Width;
-                maxWidth = maxWidth > child.DesiredSize.Width ? maxWidth : child.DesiredSize.Width;
-            }
-            double xOffset = 0;
-            double spacing = 0;
-            double remainWidth = finalSize.Width - (maxWidth * childrenCount);
-            if (Justify == JustifyContent.SpaceBetween)
-            {
-                UIElement firstElement = this.Children[0];
-                UIElement lastElement = this.Children[childrenCount - 1];
-
-                totalWidth = totalWidth - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // Actual control width
-
-                var temp = finalSize.Width - (firstElement.DesiredSize.Width + lastElement.DesiredSize.Width); // Total size minus first and last control sizes
-
-                var temp2 = temp - totalWidth;  // Actual remaining space
-                spacing = temp2 / (childrenCount - 1);
-            }
-            else if (Justify == JustifyContent.SpaceAround)
-            {
-                var temp = finalSize.Width - totalWidth; // Remaining space
-
-                xOffset = temp / (childrenCount * 2);
-                spacing = xOffset * 2;
-            }
-            else if (Justify == JustifyContent.SpaceEvenly)
-            {
-                var temp = finalSize.Width - totalWidth; // Remaining space
-
-                xOffset = temp / (childrenCount + 1);
-                spacing = xOffset;
-            }
-            else if (Justify == JustifyContent.SpaceAuto)
-            {
-                spacing = maxWidth / 2;
-                xOffset = (remainWidth - (spacing * (childrenCount - 1))) / 2;
-            }
-            else if (Justify == JustifyContent.Start)
-            {
-                xOffset = 0;
-            }
-            else if (Justify == JustifyContent.Center)
-            {
-                xOffset = (finalSize.Width - (maxWidth * childrenCount)) / 2;
-            }
-            else if (Justify == JustifyContent.End)
-            {
-                xOffset = finalSize.Width - (maxWidth * childrenCount);
-            }
-
-            for (int i = 0; i < childrenCount; i++)
-            {
-                FrameworkElement child = (FrameworkElement)this.Children[i];
-
-                Rect childRect = new Rect (xOffset, 0, child.DesiredSize.Width, finalSize.Height);
-
-                child.Arrange (childRect);
-
-                if (Align == AlignContent.Start)
-                {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Top);
-                }
-                else if (Align == AlignContent.Center)
-                {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Center);
-                }
-                else if (Align == AlignContent.End)
-                {
-                    child.SetValue (VerticalAlignmentProperty, VerticalAlignment.Bottom);
+                    switch (JustifyContent)
+                    {
+                        case JustifyContent.Start:
+                            primaryOffset = 0;
+                            break;
+                        case JustifyContent.Center:
+                            primaryOffset = remainingPrimary / 2;
+                            break;
+                        case JustifyContent.End:
+                            primaryOffset = remainingPrimary;
+                            break;
+                    }
                 }
 
-                xOffset += child.DesiredSize.Width + spacing;
-            }
-            return finalSize;
-        }
+                // 4. Arrange items within the line: Compute actual position and size for each child element.
 
-        private Size VerticalMake(Size finalSize)
-        {
-            int childrenCount = this.Children.Count;
-            double totalHeight = 0.0;
-            double maxHeight = 0.0;
+                double curPrimaryPos = primaryOffset;
 
-            for (int i = 0; i < childrenCount; i++)
-            {
-                UIElement child = this.Children[i];
-                totalHeight += child.DesiredSize.Height;
-                maxHeight = maxHeight > child.DesiredSize.Height ? maxHeight : child.DesiredSize.Height;
-            }
-
-            double yOffset = 0;
-            double spacing = 0;
-            double remainHeight = finalSize.Height - (maxHeight * childrenCount);
-
-            if (Justify == JustifyContent.SpaceBetween)
-            {
-                spacing = remainHeight / (childrenCount - 1);
-            }
-            else if (Justify == JustifyContent.SpaceAround)
-            {
-                spacing = remainHeight / (childrenCount * 2);
-                yOffset = spacing;
-                spacing = spacing * 2;
-            }
-            else if (Justify == JustifyContent.SpaceEvenly)
-            {
-                spacing = remainHeight / (childrenCount + 1);
-                yOffset = spacing;
-            }
-            else if (Justify == JustifyContent.SpaceAuto)
-            {
-                spacing = maxHeight / 2;
-                yOffset = (remainHeight - (spacing * (childrenCount - 1))) / 2;
-            }
-            else if (Justify == JustifyContent.Start)
-            {
-                yOffset = 0;
-            }
-            else if (Justify == JustifyContent.Center)
-            {
-                yOffset = (finalSize.Height - (maxHeight * childrenCount)) / 2;
-            }
-            else if (Justify == JustifyContent.End)
-            {
-                yOffset = finalSize.Height - (maxHeight * childrenCount);
-            }
-
-            for (int i = 0; i < childrenCount; i++)
-            {
-                FrameworkElement child = (FrameworkElement)this.Children[i];
-
-                Rect childRect = new Rect (0, yOffset, finalSize.Width, child.DesiredSize.Height);
-
-                child.Arrange (childRect);
-
-                if (Align == AlignContent.Start)
+                foreach (var child in line)
                 {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Left);
-                }
-                else if (Align == AlignContent.Center)
-                {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                }
-                else if (Align == AlignContent.End)
-                {
-                    child.SetValue (HorizontalAlignmentProperty, HorizontalAlignment.Right);
+                    var desired = child.DesiredSize;
+                    double childPrimary = isHorizontal ? desired.Width : desired.Height;
+                    double childCross = isHorizontal ? desired.Height : desired.Width;
+
+                    // Apply flex-grow:
+                    // Only applies when JustifyContent is Start, Center, or End.
+                    // Distributes remaining space proportionally based on Grow value.
+
+                    if (totalFlexGrow > 0 &&
+                        (JustifyContent == JustifyContent.Start ||
+                         JustifyContent == JustifyContent.Center ||
+                         JustifyContent == JustifyContent.End))
+                    {
+                        double flexGrow = GetGrow (child);
+                        double extra = remainingPrimary * (flexGrow / totalFlexGrow);
+                        childPrimary += extra;
+                    }
+                    
+                    double crossAlignOffset = AlignItems switch
+                    {
+                        AlignItems.Start => 0,
+                        AlignItems.Center => ((isHorizontal ? lineSize.Height : lineSize.Width) - childCross) / 2,
+                        AlignItems.End => ((isHorizontal ? lineSize.Height : lineSize.Width) - childCross),
+                        AlignItems.Stretch => 0,
+                        _ => 0
+                    };
+                    if(IsSpacingDisabledForJustify () && IsSpacingDisabledForAlignContent())
+                    {
+                        crossAlignOffset = 0;
+                    }
+                    double x, y, w, h;
+
+                    if (isHorizontal)
+                    {
+                        x = curPrimaryPos;
+                        y = crossPos + crossAlignOffset;
+                        w = childPrimary;
+                        h = (AlignItems == AlignItems.Stretch) ? finalSize.Height : desired.Height;
+                    }
+                    else
+                    {
+                        x = crossPos + crossAlignOffset;
+                        y = curPrimaryPos;
+                        w = (AlignItems == AlignItems.Stretch) ? finalSize.Width : desired.Width;
+                        h = childPrimary;
+                    }
+
+                    child.Arrange (new Rect (x, y, w, h));
+                    curPrimaryPos += childPrimary + spacingBetweenChildren;
                 }
 
-                yOffset += child.DesiredSize.Height + spacing;
+                crossPos += (isHorizontal ? lineSize.Height : lineSize.Width) + crossSpacing;
             }
 
             return finalSize;
+        }
+        // Check if spacing should be ignored for JustifyContent modes
+        // like SpaceBetween, SpaceAround, or SpaceEvenly.
+
+        private bool IsSpacingDisabledForJustify()
+        {
+            return JustifyContent == JustifyContent.SpaceBetween
+                || JustifyContent == JustifyContent.SpaceAround
+                || JustifyContent == JustifyContent.SpaceEvenly;
+        }
+
+        // Check if spacing should be ignored for AlignContent modes
+        // like SpaceBetween, SpaceAround, or SpaceEvenly.
+
+        private bool IsSpacingDisabledForAlignContent()
+        {
+            return AlignContent == AlignContent.SpaceBetween
+                || AlignContent == AlignContent.SpaceAround
+                || AlignContent == AlignContent.SpaceEvenly;
         }
     }
 }
