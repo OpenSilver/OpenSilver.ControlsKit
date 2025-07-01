@@ -97,7 +97,7 @@ namespace OpenSilver.ControlsKit.Controls
     /// A customizable button control with icon support, hover effects, press animations, and flexible layout options.
     /// Provides advanced styling capabilities including shadows, custom colors for different states, and smooth visual transitions.
     /// </summary>
-    public class SmartButton : Button
+    public class ExtendedButton : Button
     {
         #region Private Fields
         private Border _rootBorder;
@@ -120,175 +120,175 @@ namespace OpenSilver.ControlsKit.Controls
         /// Identifies the <see cref="CornerRadius"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(SmartButton),
+            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(ExtendedButton),
                 new PropertyMetadata(new CornerRadius(0), OnCornerRadiusChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconGeometry"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconGeometryProperty =
-            DependencyProperty.Register(nameof(IconGeometry), typeof(Geometry), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconGeometry), typeof(Geometry), typeof(ExtendedButton),
                 new PropertyMetadata(null, OnIconGeometryChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconPosition"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconPositionProperty =
-            DependencyProperty.Register(nameof(IconPosition), typeof(IconPosition), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconPosition), typeof(IconPosition), typeof(ExtendedButton),
                 new PropertyMetadata(IconPosition.Left, OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconAlignment"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconAlignmentProperty =
-            DependencyProperty.Register(nameof(IconAlignment), typeof(ContentAlignment), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconAlignment), typeof(ContentAlignment), typeof(ExtendedButton),
                 new PropertyMetadata(ContentAlignment.Center, OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextAlignment"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TextAlignmentProperty =
-            DependencyProperty.Register(nameof(TextAlignment), typeof(ContentAlignment), typeof(SmartButton),
+            DependencyProperty.Register(nameof(TextAlignment), typeof(ContentAlignment), typeof(ExtendedButton),
                 new PropertyMetadata(ContentAlignment.Center, OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="DisplayMode"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty DisplayModeProperty =
-            DependencyProperty.Register(nameof(DisplayMode), typeof(DisplayMode), typeof(SmartButton),
+            DependencyProperty.Register(nameof(DisplayMode), typeof(DisplayMode), typeof(ExtendedButton),
                 new PropertyMetadata(DisplayMode.IconAndText, OnDisplayModeChanged));
 
         /// <summary>
         /// Identifies the <see cref="HasShadow"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HasShadowProperty =
-            DependencyProperty.Register(nameof(HasShadow), typeof(bool), typeof(SmartButton),
+            DependencyProperty.Register(nameof(HasShadow), typeof(bool), typeof(ExtendedButton),
                 new PropertyMetadata(false, OnShadowChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconSize"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconSizeProperty =
-            DependencyProperty.Register(nameof(IconSize), typeof(double), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconSize), typeof(double), typeof(ExtendedButton),
                 new PropertyMetadata(16.0, OnIconSizeChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconBrushProperty =
-            DependencyProperty.Register(nameof(IconBrush), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconBrush), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(new SolidColorBrush(Colors.Black), OnIconBrushChanged));
 
         /// <summary>
         /// Identifies the <see cref="HoverBackground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HoverBackgroundProperty =
-            DependencyProperty.Register(nameof(HoverBackground), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(HoverBackground), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="HoverBorderBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HoverBorderBrushProperty =
-            DependencyProperty.Register(nameof(HoverBorderBrush), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(HoverBorderBrush), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="HoverForeground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HoverForegroundProperty =
-            DependencyProperty.Register(nameof(HoverForeground), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(HoverForeground), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="HoverIconBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty HoverIconBrushProperty =
-            DependencyProperty.Register(nameof(HoverIconBrush), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(HoverIconBrush), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="PressedBackground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedBackgroundProperty =
-            DependencyProperty.Register(nameof(PressedBackground), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedBackground), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="PressedBorderBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedBorderBrushProperty =
-            DependencyProperty.Register(nameof(PressedBorderBrush), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedBorderBrush), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="PressedForeground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedForegroundProperty =
-            DependencyProperty.Register(nameof(PressedForeground), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedForeground), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="PressedIconBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedIconBrushProperty =
-            DependencyProperty.Register(nameof(PressedIconBrush), typeof(Brush), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedIconBrush), typeof(Brush), typeof(ExtendedButton),
                 new PropertyMetadata(null));
 
         /// <summary>
         /// Identifies the <see cref="AnimationDuration"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AnimationDurationProperty =
-            DependencyProperty.Register(nameof(AnimationDuration), typeof(TimeSpan), typeof(SmartButton),
+            DependencyProperty.Register(nameof(AnimationDuration), typeof(TimeSpan), typeof(ExtendedButton),
                 new PropertyMetadata(TimeSpan.FromMilliseconds(150)));
 
         /// <summary>
         /// Identifies the <see cref="IconMargin"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconMarginProperty =
-            DependencyProperty.Register(nameof(IconMargin), typeof(Thickness), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconMargin), typeof(Thickness), typeof(ExtendedButton),
                 new PropertyMetadata(new Thickness(0), OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextMargin"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TextMarginProperty =
-            DependencyProperty.Register(nameof(TextMargin), typeof(Thickness), typeof(SmartButton),
+            DependencyProperty.Register(nameof(TextMargin), typeof(Thickness), typeof(ExtendedButton),
                 new PropertyMetadata(new Thickness(0), OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ButtonText"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ButtonTextProperty =
-            DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(SmartButton),
+            DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(ExtendedButton),
                 new PropertyMetadata("", OnButtonTextChanged));
 
         /// <summary>
         /// Identifies the <see cref="IconTextSpacing"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconTextSpacingProperty =
-            DependencyProperty.Register(nameof(IconTextSpacing), typeof(double), typeof(SmartButton),
+            DependencyProperty.Register(nameof(IconTextSpacing), typeof(double), typeof(ExtendedButton),
                 new PropertyMetadata(8.0, OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="ContentPadding"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ContentPaddingProperty =
-            DependencyProperty.Register(nameof(ContentPadding), typeof(Thickness), typeof(SmartButton),
+            DependencyProperty.Register(nameof(ContentPadding), typeof(Thickness), typeof(ExtendedButton),
                 new PropertyMetadata(new Thickness(12, 6, 12, 6), OnLayoutPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="PressedScale"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedScaleProperty =
-            DependencyProperty.Register(nameof(PressedScale), typeof(double), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedScale), typeof(double), typeof(ExtendedButton),
                 new PropertyMetadata(1.0));
 
         /// <summary>
         /// Identifies the <see cref="PressedOffset"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty PressedOffsetProperty =
-            DependencyProperty.Register(nameof(PressedOffset), typeof(Point), typeof(SmartButton),
+            DependencyProperty.Register(nameof(PressedOffset), typeof(Point), typeof(ExtendedButton),
                 new PropertyMetadata(new Point(0, 0)));
 
         #endregion
@@ -550,14 +550,14 @@ namespace OpenSilver.ControlsKit.Controls
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SmartButton"/> class.
+        /// Initializes a new instance of the <see cref="ExtendedButton"/> class.
         /// </summary>
-        public SmartButton()
+        public ExtendedButton()
         {
-            DefaultStyleKey = typeof(SmartButton);
+            DefaultStyleKey = typeof(ExtendedButton);
             InitializeTransforms();
             SetupEventHandlers();
-            Loaded += SmartButton_Loaded;
+            Loaded += ExtendedButton_Loaded;
 
             Cursor = Cursors.Hand;
         }
@@ -583,7 +583,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void SmartButton_Loaded(object sender, RoutedEventArgs e)
+        private void ExtendedButton_Loaded(object sender, RoutedEventArgs e)
         {
             if (!_templateApplied)
             {
@@ -1116,7 +1116,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnCornerRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button && button._rootBorder != null)
+            if (d is ExtendedButton button && button._rootBorder != null)
             {
                 button._rootBorder.CornerRadius = (CornerRadius)e.NewValue;
             }
@@ -1129,7 +1129,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnIconGeometryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button && button._iconPath != null)
+            if (d is ExtendedButton button && button._iconPath != null)
             {
                 button._iconPath.Data = (Geometry)e.NewValue;
                 button.UpdateLayout();
@@ -1143,7 +1143,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button)
+            if (d is ExtendedButton button)
             {
                 button.UpdateLayout();
             }
@@ -1156,7 +1156,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button)
+            if (d is ExtendedButton button)
             {
                 button.UpdateLayout();
             }
@@ -1169,7 +1169,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnShadowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button)
+            if (d is ExtendedButton button)
             {
                 button.UpdateShadow();
             }
@@ -1182,7 +1182,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnIconSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button && button._iconPath != null)
+            if (d is ExtendedButton button && button._iconPath != null)
             {
                 var size = (double)e.NewValue;
                 button._iconPath.Width = size;
@@ -1197,7 +1197,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnIconBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button && button._iconPath != null)
+            if (d is ExtendedButton button && button._iconPath != null)
             {
                 button._iconPath.Fill = (Brush)e.NewValue;
             }
@@ -1210,7 +1210,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <param name="e">The dependency property changed event arguments.</param>
         private static void OnButtonTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is SmartButton button && button._textBlock != null)
+            if (d is ExtendedButton button && button._textBlock != null)
             {
                 button._textBlock.Text = e.NewValue?.ToString() ?? "";
             }

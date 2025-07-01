@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="TestApp.Pages.TestSmartButtonControl"
+    x:Class="TestApp.Pages.TestExtendedButtonControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:OpenSilver.ControlsKit.Controls;assembly=OpenSilver.ControlsKit.Controls">
@@ -17,8 +17,8 @@
         <Geometry x:Key="HeartIcon">M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z</Geometry>
         <Geometry x:Key="DownloadIcon">M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z</Geometry>
         <Geometry x:Key="WarningIcon">M13,14H11V9H13M13,18H11V16H13M1,21H23L12,2L1,21Z</Geometry>
-        <Geometry x:Key="CheckIcon">M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z
-        </Geometry>
+        <Geometry x:Key="CheckIcon">M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z</Geometry>
+        <Geometry x:Key="DeleteIcon">M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M9,8H11V17H9V8M13,8H15V17H13V8Z</Geometry>
 
         <!-- Harmonious Color Palette -->
         <!-- Primary Blue System -->
@@ -50,6 +50,10 @@
         <SolidColorBrush x:Key="SlateBrush" Color="#475569"/>
         <SolidColorBrush x:Key="SlateHoverBrush" Color="#334155"/>
         <SolidColorBrush x:Key="SlateLightBrush" Color="#F1F5F9"/>
+
+        <SolidColorBrush x:Key="DeleteBrush" Color="#DC2626"/>
+        <SolidColorBrush x:Key="DeleteHoverBrush" Color="#B91C1C"/>
+        <SolidColorBrush x:Key="DeleteLightBrush" Color="#FEE2E2"/>
 
         <!-- Brand Colors (Subtle) -->
         <SolidColorBrush x:Key="MicrosoftBrush" Color="#0078D4"/>
@@ -108,7 +112,7 @@
 
                 <!-- Hero Section -->
                 <StackPanel HorizontalAlignment="Center" Margin="0,0,0,48">
-                    <TextBlock Text="SmartButton" FontSize="32" FontWeight="Bold" 
+                    <TextBlock Text="ExtendedButton" FontSize="32" FontWeight="Bold" 
                               Foreground="{StaticResource Gray800}" 
                               HorizontalAlignment="Center"/>
                     <Border Background="{StaticResource PrimaryBrush}" 
@@ -138,7 +142,7 @@
                                 </Border>
                                 <TextBlock Text="Technology Leaders" Style="{StaticResource SectionHeaderStyle}"/>
                                 <StackPanel>
-                                    <local:SmartButton ButtonText="Microsoft" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Microsoft" FontSize="15"
                                                      IconGeometry="{StaticResource MicrosoftIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48" Margin="0,0,0,12"
@@ -147,7 +151,7 @@
                                                      Foreground="White" IconBrush="White"
                                                      CornerRadius="8"/>
 
-                                    <local:SmartButton ButtonText="Apple" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Apple" FontSize="15"
                                                      IconGeometry="{StaticResource AppleIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48" Margin="0,0,0,12"
@@ -156,7 +160,7 @@
                                                      Foreground="White" IconBrush="White"
                                                      CornerRadius="8"/>
 
-                                    <local:SmartButton ButtonText="Google" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Google" FontSize="15"
                                                      IconGeometry="{StaticResource GoogleIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48"
@@ -177,18 +181,18 @@
                                 <TextBlock Text="Basic Buttons" Style="{StaticResource SectionHeaderStyle}"/>
                                 <StackPanel>
                                     <!-- Default button without corner radius -->
-                                    <local:SmartButton ButtonText="Default Button" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Default Button" FontSize="15"
                                                      Width="280" Height="40" Margin="0,0,0,10" />
 
                                     <!-- Rounded corner button -->
-                                    <local:SmartButton ButtonText="Rounded Corner Button" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Rounded Corner Button" FontSize="15"
                                                      CornerRadius="20" Width="280" Height="40" Margin="0,0,0,10"
                                                      Background="{StaticResource PrimaryBrush}" 
                                                      HoverBackground="{StaticResource PrimaryHoverBrush}"
                                                      Foreground="White"/>
 
                                     <!-- Shadow button -->
-                                    <local:SmartButton ButtonText="Shadow Button" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Shadow Button" FontSize="15"
                                                      HasShadow="True" Width="280" Height="40"
                                                      CornerRadius="5"
                                                      Background="{StaticResource SuccessBrush}" 
@@ -216,7 +220,7 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <local:SmartButton ButtonText="Search" FontSize="13"
+                                    <local:ExtendedButton ButtonText="Search" FontSize="13"
                                                      IconGeometry="{StaticResource SearchIcon}"
                                                      Grid.Column="0" Grid.Row="0"
                                                      Background="{StaticResource PrimaryBrush}"
@@ -225,7 +229,7 @@
                                                      Width="130" Height="40" Margin="0,0,6,8"
                                                      CornerRadius="5"/>
 
-                                    <local:SmartButton ButtonText="Success" FontSize="13"
+                                    <local:ExtendedButton ButtonText="Success" FontSize="13"
                                                      IconGeometry="{StaticResource CheckIcon}"
                                                      Grid.Column="1" Grid.Row="0"
                                                      Background="{StaticResource SuccessBrush}"
@@ -234,7 +238,7 @@
                                                      Width="130" Height="40" Margin="6,0,0,8"
                                                      CornerRadius="5"/>
 
-                                    <local:SmartButton ButtonText="Warning" FontSize="13"
+                                    <local:ExtendedButton ButtonText="Warning" FontSize="13"
                                                      IconGeometry="{StaticResource WarningIcon}"
                                                      Grid.Column="0" Grid.Row="1"
                                                      Background="{StaticResource WarningBrush}"
@@ -243,7 +247,7 @@
                                                      Width="130" Height="40" Margin="0,0,6,8"
                                                      CornerRadius="5"/>
 
-                                    <local:SmartButton ButtonText="Like" FontSize="13"
+                                    <local:ExtendedButton ButtonText="Like" FontSize="13"
                                                      IconGeometry="{StaticResource HeartIcon}"
                                                      Grid.Column="1" Grid.Row="1"
                                                      Background="{StaticResource HeartBrush}"
@@ -252,7 +256,7 @@
                                                      Width="130" Height="40" Margin="6,0,0,8"
                                                      CornerRadius="5"/>
 
-                                    <local:SmartButton ButtonText="Download" FontSize="13"
+                                    <local:ExtendedButton ButtonText="Download" FontSize="13"
                                                      IconGeometry="{StaticResource DownloadIcon}"
                                                      Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
                                                      Background="{StaticResource DownloadBrush}"
@@ -276,7 +280,7 @@
                                 </Border>
                                 <TextBlock Text="Development Platforms" Style="{StaticResource SectionHeaderStyle}"/>
                                 <StackPanel>
-                                    <local:SmartButton ButtonText="GitHub" FontSize="15"
+                                    <local:ExtendedButton ButtonText="GitHub" FontSize="15"
                                                      IconGeometry="{StaticResource GitHubIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48" Margin="0,0,0,12"
@@ -285,7 +289,7 @@
                                                      Foreground="White" IconBrush="White"
                                                      CornerRadius="8"/>
 
-                                    <local:SmartButton ButtonText="Visual Studio" FontSize="15"
+                                    <local:ExtendedButton ButtonText="Visual Studio" FontSize="15"
                                                      IconGeometry="{StaticResource VisualStudioIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48" Margin="0,0,0,12"
@@ -294,7 +298,7 @@
                                                      Foreground="White" IconBrush="White"
                                                      CornerRadius="8"/>
 
-                                    <local:SmartButton ButtonText="LinkedIn" FontSize="15"
+                                    <local:ExtendedButton ButtonText="LinkedIn" FontSize="15"
                                                      IconGeometry="{StaticResource LinkedInIcon}"
                                                      IconSize="20"
                                                      Width="280" Height="48"
@@ -323,7 +327,7 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <local:SmartButton ButtonText="Left Icon" 
+                                    <local:ExtendedButton ButtonText="Left Icon" FontSize="12"
                                                      IconGeometry="{StaticResource MicrosoftIcon}"
                                                      IconPosition="Left" IconSize="16"
                                                      Grid.Column="0" Grid.Row="0"
@@ -333,7 +337,7 @@
                                                      HoverBackground="#106EBE"
                                                      Foreground="White" IconBrush="White"/>
 
-                                    <local:SmartButton ButtonText="Right Icon" 
+                                    <local:ExtendedButton ButtonText="Right Icon" FontSize="12" 
                                                      IconGeometry="{StaticResource MicrosoftIcon}"
                                                      IconPosition="Right" IconSize="16"
                                                      Grid.Column="1" Grid.Row="0"
@@ -343,7 +347,7 @@
                                                      HoverBackground="#106EBE"
                                                      Foreground="White" IconBrush="White"/>
 
-                                    <local:SmartButton ButtonText="Top Icon" 
+                                    <local:ExtendedButton ButtonText="Top Icon" FontSize="14" 
                                                      IconGeometry="{StaticResource MicrosoftIcon}"
                                                      IconPosition="Top" IconSize="20"
                                                      Grid.Column="0" Grid.Row="1"
@@ -353,7 +357,7 @@
                                                      HoverBackground="#106EBE"
                                                      Foreground="White" IconBrush="White"/>
 
-                                    <local:SmartButton ButtonText="Bottom Icon" 
+                                    <local:ExtendedButton ButtonText="Bottom Icon" FontSize="14" 
                                                      IconGeometry="{StaticResource MicrosoftIcon}"
                                                      IconPosition="Bottom" IconSize="20"
                                                      Grid.Column="1" Grid.Row="1"
@@ -374,7 +378,7 @@
                                 </Border>
                                 <TextBlock Text="Hover/Press Effects" Style="{StaticResource SectionHeaderStyle}"/>
                                 <StackPanel>
-                                    <local:SmartButton ButtonText="Sign in with GitHub" 
+                                    <local:ExtendedButton ButtonText="Sign in with GitHub"  FontSize="14" 
                                                      IconGeometry="{StaticResource GitHubIcon}"
                                                      Background="White" BorderBrush="{StaticResource Gray300}" BorderThickness="1"
                                                      Foreground="{StaticResource Gray700}" IconBrush="{StaticResource GitHubBrush}"
@@ -383,7 +387,7 @@
                                                      Width="280" Height="44" Margin="0,0,0,12"
                                                      CornerRadius="8"/>
 
-                                    <local:SmartButton ButtonText="Install Visual Studio" 
+                                    <local:ExtendedButton ButtonText="Install Visual Studio" FontSize="14"  
                                                      IconGeometry="{StaticResource VisualStudioIcon}"
                                                      Background="{StaticResource VisualStudioBrush}"
                                                      HoverBackground="#68217A"
@@ -393,7 +397,7 @@
                                                      CornerRadius="8"/>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <local:SmartButton IconGeometry="{StaticResource SearchIcon}"
+                                        <local:ExtendedButton IconGeometry="{StaticResource SearchIcon}"
                                                          DisplayMode="IconOnly" IconSize="20"
                                                          Width="56" Height="56" Margin="0,0,12,0"
                                                          CornerRadius="28"
@@ -401,7 +405,7 @@
                                                          HoverBackground="{StaticResource PrimaryHoverBrush}"
                                                          IconBrush="White" HasShadow="True"/>
 
-                                        <local:SmartButton ButtonText="Continue with Google" 
+                                        <local:ExtendedButton ButtonText="Continue with Google" FontSize="14" 
                                                          IconGeometry="{StaticResource GoogleIcon}"
                                                          Background="White" BorderBrush="{StaticResource Gray300}" BorderThickness="1"
                                                          Foreground="{StaticResource Gray700}" IconBrush="{StaticResource GoogleBrush}"
@@ -425,7 +429,7 @@
                         </Border>
                         <TextBlock Text="Display Modes" Style="{StaticResource SectionHeaderStyle}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <local:SmartButton ButtonText="Text Only" 
+                            <local:ExtendedButton ButtonText="Text Only" FontSize="13"  
                                              DisplayMode="TextOnly"
                                              CornerRadius="5"
                                              Width="120" Height="40" Margin="10"
@@ -433,7 +437,7 @@
                                              HoverBackground="{StaticResource PrimaryHoverBrush}"
                                              Foreground="White"/>
 
-                            <local:SmartButton IconGeometry="{StaticResource SearchIcon}"
+                            <local:ExtendedButton IconGeometry="{StaticResource SearchIcon}"
                                             DisplayMode="IconOnly" IconSize="24"
                                             Width="50" Height="50" Margin="10"
                                             CornerRadius="25" HasShadow="True"
@@ -441,7 +445,7 @@
                                             HoverBackground="{StaticResource PrimaryHoverBrush}"
                                             IconBrush="White"/>
 
-                            <local:SmartButton ButtonText="Icon and Text" 
+                            <local:ExtendedButton ButtonText="Icon and Text" FontSize="14"   
                                             CornerRadius="5"
                                             IconGeometry="{StaticResource SearchIcon}"
                                             DisplayMode="IconAndText" IconSize="18"
@@ -461,7 +465,7 @@
                         </Border>
                         <TextBlock Text="Custom Hover/Press Effects" Style="{StaticResource SectionHeaderStyle}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <local:SmartButton ButtonText="Custom Hover" 
+                            <local:ExtendedButton ButtonText="Custom Hover" FontSize="12"   
                                              CornerRadius="5"
                                              Background="{StaticResource PrimaryLightBrush}"
                                              HoverBackground="{StaticResource PrimaryBrush}"
@@ -469,7 +473,7 @@
                                              Foreground="{StaticResource PrimaryBrush}"
                                              Width="160" Height="40" Margin="10"/>
 
-                            <local:SmartButton ButtonText="Press Effect" 
+                            <local:ExtendedButton ButtonText="Press Effect" FontSize="12"    
                                              CornerRadius="5"
                                              Background="{StaticResource SuccessLightBrush}"
                                              PressedBackground="{StaticResource SuccessBrush}"
@@ -478,7 +482,7 @@
                                              Foreground="{StaticResource SuccessBrush}"
                                              Width="160" Height="40" Margin="10"/>
 
-                            <local:SmartButton ButtonText="Icon Color Change" 
+                            <local:ExtendedButton ButtonText="Icon Color Change" FontSize="12"    
                                              CornerRadius="5"
                                              IconGeometry="{StaticResource HeartIcon}"
                                              Background="{StaticResource HeartLightBrush}"
@@ -500,7 +504,7 @@
                         </Border>
                         <TextBlock Text="Various Sizes and Shapes" Style="{StaticResource SectionHeaderStyle}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <local:SmartButton ButtonText="Small" 
+                            <local:ExtendedButton ButtonText="Small" 
                                              IconGeometry="{StaticResource GitHubIcon}"
                                              Width="100" Height="30" Margin="10"
                                              FontSize="11" IconSize="12"
@@ -508,7 +512,7 @@
                                              HoverBackground="#32383F"
                                              Foreground="White" IconBrush="White"/>
 
-                            <local:SmartButton ButtonText="Medium" 
+                            <local:ExtendedButton ButtonText="Medium" 
                                              IconGeometry="{StaticResource SearchIcon}"
                                              Width="140" Height="40" Margin="10"
                                              FontSize="14" IconSize="16"
@@ -516,7 +520,7 @@
                                              HoverBackground="{StaticResource PrimaryHoverBrush}"
                                              Foreground="White" IconBrush="White"/>
 
-                            <local:SmartButton ButtonText="Large" 
+                            <local:ExtendedButton ButtonText="Large" 
                                              IconGeometry="{StaticResource DownloadIcon}"
                                              Width="180" Height="50" Margin="10"
                                              FontSize="16" IconSize="20"
@@ -524,7 +528,7 @@
                                              HoverBackground="{StaticResource SuccessHoverBrush}"
                                              Foreground="White" IconBrush="White"/>
 
-                            <local:SmartButton ButtonText="Round" 
+                            <local:ExtendedButton ButtonText="Round" 
                                              IconGeometry="{StaticResource AppleIcon}"
                                              Width="60" Height="60" Margin="10"
                                              CornerRadius="30" HasShadow="True"
@@ -544,7 +548,7 @@
                         </Border>
                         <TextBlock Text="Padding and Spacing Settings" Style="{StaticResource SectionHeaderStyle}"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <local:SmartButton ButtonText="Wide Padding Button" 
+                            <local:ExtendedButton ButtonText="Wide Padding Button" FontSize="12"  
                                              IconGeometry="{StaticResource VisualStudioIcon}"
                                              ContentPadding="20,10,20,10"
                                              IconTextSpacing="15"
@@ -554,7 +558,7 @@
                                              Foreground="White" IconBrush="White"/>
 
 
-                            <local:SmartButton ButtonText="Icon Margin" 
+                            <local:ExtendedButton ButtonText="Icon Margin" FontSize="12"  
                                              IconGeometry="{StaticResource HeartIcon}"
                                              IconMargin="5,0,10,0"
                                              TextMargin="10,0,5,0"
@@ -563,7 +567,7 @@
                                              HoverBackground="{StaticResource HeartHoverBrush}"
                                              Foreground="White" IconBrush="White"/>
 
-                            <local:SmartButton ButtonText="Compact Button" 
+                            <local:ExtendedButton ButtonText="Compact Button" FontSize="12"  
                                              IconGeometry="{StaticResource LinkedInIcon}"
                                              ContentPadding="5,2,5,2"
                                              IconTextSpacing="5"
@@ -589,21 +593,21 @@
                             <TextBlock Text="Toolbar Style:" FontWeight="Bold" Margin="0,0,0,10" 
                                       Foreground="{StaticResource Gray600}" FontSize="14"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <local:SmartButton IconGeometry="{StaticResource LinkedInIcon}"
+                                <local:ExtendedButton IconGeometry="{StaticResource LinkedInIcon}"
                                                  DisplayMode="IconOnly" IconSize="16" ContentPadding="0"
                                                  Width="35" Height="35" Margin="2"
                                                  Background="Transparent" BorderBrush="{StaticResource Gray400}"
                                                  IconBrush="{StaticResource Gray600}"
                                                  HoverBackground="{StaticResource Gray200}"/>
 
-                                <local:SmartButton IconGeometry="{StaticResource GitHubIcon}"
+                                <local:ExtendedButton IconGeometry="{StaticResource GitHubIcon}"
                                                  DisplayMode="IconOnly" IconSize="12" ContentPadding="0"
                                                  Width="35" Height="35" Margin="2"
                                                  Background="Transparent" BorderBrush="{StaticResource Gray400}"
                                                  IconBrush="{StaticResource Gray600}"
                                                  HoverBackground="{StaticResource Gray200}"/>
 
-                                <local:SmartButton IconGeometry="{StaticResource VisualStudioIcon}"
+                                <local:ExtendedButton IconGeometry="{StaticResource VisualStudioIcon}"
                                                  DisplayMode="IconOnly" IconSize="16" ContentPadding="0"
                                                  Width="35" Height="35" Margin="2"
                                                  Background="Transparent" BorderBrush="{StaticResource Gray400}"
@@ -617,7 +621,7 @@
                             <TextBlock Text="Action Buttons:" FontWeight="Bold" Margin="0,0,0,10" 
                                       Foreground="{StaticResource Gray600}" FontSize="14"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <local:SmartButton ButtonText="Save" 
+                                <local:ExtendedButton ButtonText="Save" 
                                                  IconGeometry="{StaticResource DownloadIcon}"
                                                  Background="{StaticResource SuccessBrush}"
                                                  HoverBackground="{StaticResource SuccessHoverBrush}"
@@ -625,17 +629,17 @@
                                                  Width="100" Height="35" Margin="5"
                                                  CornerRadius="3" HasShadow="True"/>
 
-                                <local:SmartButton ButtonText="Cancel" 
+                                <local:ExtendedButton ButtonText="Cancel" 
                                                  Background="{StaticResource Gray400}"
                                                  HoverBackground="{StaticResource Gray500}"
                                                  Foreground="White"
                                                  Width="100" Height="35" Margin="5"
                                                  CornerRadius="3"/>
 
-                                <local:SmartButton ButtonText="Delete" 
-                                                 IconGeometry="{StaticResource HeartIcon}"
-                                                 Background="{StaticResource HeartBrush}"
-                                                 HoverBackground="{StaticResource HeartHoverBrush}"
+                                <local:ExtendedButton ButtonText="Delete" 
+                                                 IconGeometry="{StaticResource DeleteIcon}"
+                                                 Background="{StaticResource DeleteBrush}"
+                                                 HoverBackground="{StaticResource DeleteHoverBrush}"
                                                  Foreground="White" IconBrush="White"
                                                  Width="100" Height="35" Margin="5"
                                                  CornerRadius="3" HasShadow="True"/>
@@ -647,7 +651,7 @@
                             <TextBlock Text="Social Button Style:" FontWeight="Bold" Margin="0,0,0,10" 
                                       Foreground="{StaticResource Gray600}" FontSize="14"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <local:SmartButton ButtonText="Like" 
+                                <local:ExtendedButton ButtonText="Like" 
                                                  IconGeometry="{StaticResource HeartIcon}"
                                                  Background="White" BorderBrush="{StaticResource Gray300}"
                                                  Foreground="{StaticResource Gray600}" IconBrush="{StaticResource Gray600}"
@@ -657,7 +661,7 @@
                                                  Width="120" Height="40" Margin="5"
                                                  CornerRadius="20" HasShadow="True"/>
 
-                                <local:SmartButton ButtonText="Download" 
+                                <local:ExtendedButton ButtonText="Download" 
                                                  IconGeometry="{StaticResource DownloadIcon}"
                                                  Background="White" BorderBrush="{StaticResource Gray300}"
                                                  Foreground="{StaticResource Gray600}" IconBrush="{StaticResource Gray600}"

@@ -12,9 +12,9 @@ using System.Windows.Navigation;
 
 namespace TestApp.Pages
 {
-    public partial class TestSmartButtonControl : Page
+    public partial class TestExtendedButtonControl : Page
     {
-        public TestSmartButtonControl()
+        public TestExtendedButtonControl()
         {
             this.InitializeComponent();
         }
