@@ -1,0 +1,694 @@
+﻿<Page
+    x:Class="TestApp.Pages.TestExtendedSwitch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OpenSilver.ControlsKit.Controls;assembly=OpenSilver.ControlsKit.Controls">
+
+    <Page.Resources>
+        <!-- Modern Color Palette with Natural False States -->
+        <!-- Primary Colors -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#4F46E5"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#4338CA"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#E0E7FF"/>
+        <SolidColorBrush x:Key="PrimaryFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Success Colors -->
+        <SolidColorBrush x:Key="SuccessBrush" Color="#10B981"/>
+        <SolidColorBrush x:Key="SuccessHoverBrush" Color="#059669"/>
+        <SolidColorBrush x:Key="SuccessLightBrush" Color="#D1FAE5"/>
+        <SolidColorBrush x:Key="SuccessFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Warning Colors -->
+        <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="WarningHoverBrush" Color="#D97706"/>
+        <SolidColorBrush x:Key="WarningLightBrush" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="WarningFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Info Colors -->
+        <SolidColorBrush x:Key="InfoBrush" Color="#06B6D4"/>
+        <SolidColorBrush x:Key="InfoHoverBrush" Color="#0891B2"/>
+        <SolidColorBrush x:Key="InfoLightBrush" Color="#CFFAFE"/>
+        <SolidColorBrush x:Key="InfoFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Secondary Colors -->
+        <SolidColorBrush x:Key="SecondaryBrush" Color="#8B5CF6"/>
+        <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#7C3AED"/>
+        <SolidColorBrush x:Key="SecondaryLightBrush" Color="#EDE9FE"/>
+        <SolidColorBrush x:Key="SecondaryFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Special Colors -->
+        <SolidColorBrush x:Key="RoseBrush" Color="#F43F5E"/>
+        <SolidColorBrush x:Key="RoseHoverBrush" Color="#E11D48"/>
+        <SolidColorBrush x:Key="RoseFalseBrush" Color="#D1D5DB"/>
+
+        <SolidColorBrush x:Key="EmeraldBrush" Color="#10B981"/>
+        <SolidColorBrush x:Key="EmeraldHoverBrush" Color="#059669"/>
+        <SolidColorBrush x:Key="EmeraldFalseBrush" Color="#D1D5DB"/>
+
+        <!-- Modern Sophisticated Color Palette - NEW -->
+        <!-- Sage Green Palette -->
+        <SolidColorBrush x:Key="SageBrush" Color="#8FA68E"/>
+        <SolidColorBrush x:Key="SageFalseBrush" Color="#C5D0C4"/>
+        <SolidColorBrush x:Key="SageHoverBrush" Color="#7A9179"/>
+
+        <!-- Ocean Blue Palette -->
+        <SolidColorBrush x:Key="OceanBrush" Color="#7B9BB8"/>
+        <SolidColorBrush x:Key="OceanFalseBrush" Color="#B8CCDD"/>
+        <SolidColorBrush x:Key="OceanHoverBrush" Color="#6A8AA6"/>
+
+        <!-- Terracotta Palette -->
+        <SolidColorBrush x:Key="TerraBrush" Color="#B8906B"/>
+        <SolidColorBrush x:Key="TerraFalseBrush" Color="#D4BFA3"/>
+        <SolidColorBrush x:Key="TerraHoverBrush" Color="#A67D5B"/>
+
+        <!-- Lavender Palette -->
+        <SolidColorBrush x:Key="LavenderBrush" Color="#A5A0C2"/>
+        <SolidColorBrush x:Key="LavenderFalseBrush" Color="#C8C4D9"/>
+        <SolidColorBrush x:Key="LavenderHoverBrush" Color="#9490B0"/>
+
+        <!-- Blush Rose Palette -->
+        <SolidColorBrush x:Key="BlushBrush" Color="#C29A9A"/>
+        <SolidColorBrush x:Key="BlushFalseBrush" Color="#D9C4C4"/>
+        <SolidColorBrush x:Key="BlushHoverBrush" Color="#B08888"/>
+
+        <!-- Stone Gray Palette -->
+        <SolidColorBrush x:Key="StoneBrush" Color="#9C9692"/>
+        <SolidColorBrush x:Key="StoneFalseBrush" Color="#C4BFB9"/>
+        <SolidColorBrush x:Key="StoneHoverBrush" Color="#8A8480"/>
+
+        <!-- Neutral Colors -->
+        <SolidColorBrush x:Key="Gray50" Color="#F9FAFB"/>
+        <SolidColorBrush x:Key="Gray100" Color="#F3F4F6"/>
+        <SolidColorBrush x:Key="Gray200" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="Gray300" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="Gray400" Color="#9CA3AF"/>
+        <SolidColorBrush x:Key="Gray500" Color="#6B7280"/>
+        <SolidColorBrush x:Key="Gray600" Color="#4B5563"/>
+        <SolidColorBrush x:Key="Gray700" Color="#374151"/>
+        <SolidColorBrush x:Key="Gray800" Color="#1F2937"/>
+        <SolidColorBrush x:Key="Gray900" Color="#111827"/>
+
+        <!-- Modern Section Styles -->
+        <Style x:Key="HeroTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="42"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray900}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray800}"/>
+            <Setter Property="Margin" Value="0,0,0,24"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray700}"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="ModernSectionStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="32"/>
+            <Setter Property="Margin" Value="0,0,0,32"/>
+        </Style>
+
+        <Style x:Key="FeatureCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+
+        <Style x:Key="CategoryBadgeStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="CategoryTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="DemoLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray700}"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+
+        <Style x:Key="SwitchDemoRowStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="GradientBackgroundStyle" TargetType="Border">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#F8FAFC" Offset="0"/>
+                        <GradientStop Color="#F1F5F9" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Border Style="{StaticResource GradientBackgroundStyle}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel Margin="32" MaxWidth="1400">
+
+                <!-- Hero Section -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,40,0,80">
+                    <TextBlock Text="ExtendedSwitch" Style="{StaticResource HeroTitleStyle}"/>
+                    <Border Background="{StaticResource PrimaryBrush}" 
+                           CornerRadius="25" Padding="20,10">
+                        <TextBlock Text="OpenSilver.ControlsKit" 
+                                  Foreground="White" FontWeight="Bold" FontSize="16"
+                                  HorizontalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Live Demo Grid -->
+                <Grid Margin="0,0,0,40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Quick Demo Card 1 -->
+                    <Border Grid.Column="0" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🎨 Colors" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch CheckedTrackBrush="{StaticResource PrimaryBrush}"
+                                                    TrackBrush="{StaticResource PrimaryFalseBrush}"
+                                                    HoverCheckedTrackBrush="{StaticResource PrimaryHoverBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SuccessBrush}"
+                                                    TrackBrush="{StaticResource SuccessFalseBrush}"
+                                                    HoverCheckedTrackBrush="{StaticResource SuccessHoverBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch CheckedTrackBrush="{StaticResource InfoBrush}"
+                                                    TrackBrush="{StaticResource InfoFalseBrush}"
+                                                    HoverCheckedTrackBrush="{StaticResource InfoHoverBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Demo Card 2 -->
+                    <Border Grid.Column="2" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="📏 Sizes" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch SwitchSize="Small" 
+                                                    CheckedTrackBrush="{StaticResource SecondaryBrush}"
+                                                    TrackBrush="{StaticResource SecondaryFalseBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch SwitchSize="Medium" 
+                                                    CheckedTrackBrush="{StaticResource SecondaryBrush}"
+                                                    TrackBrush="{StaticResource SecondaryFalseBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch SwitchSize="Large" 
+                                                    CheckedTrackBrush="{StaticResource SecondaryBrush}"
+                                                    TrackBrush="{StaticResource SecondaryFalseBrush}"
+                                                    AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Demo Card 3 -->
+                    <Border Grid.Column="4" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="✨ Animations" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch AnimationStyle="Linear" 
+                                                    CheckedTrackBrush="{StaticResource WarningBrush}"
+                                                    TrackBrush="{StaticResource WarningFalseBrush}"
+                                                    AnimationDuration="0:0:0.4"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch AnimationStyle="EaseInOut" 
+                                                    CheckedTrackBrush="{StaticResource WarningBrush}"
+                                                    TrackBrush="{StaticResource WarningFalseBrush}"
+                                                    AnimationDuration="0:0:0.3"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource SwitchDemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedSwitch AnimationStyle="Bounce" 
+                                                    CheckedTrackBrush="{StaticResource WarningBrush}"
+                                                    TrackBrush="{StaticResource WarningFalseBrush}"
+                                                    AnimationDuration="0:0:0.5"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Detailed Showcase Grid -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column -->
+                    <StackPanel Grid.Column="0">
+
+                        <!-- Modern Color Palette - IMPROVED SECTION -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="MODERN COLORS"/>
+                                </Border>
+                                <TextBlock Text="Sophisticated Color Collection" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌿 Sage"/>
+                                            <TextBlock Text="#8FA68E" FontSize="13" Foreground="{StaticResource SageBrush}" 
+                                                       FontFamily="Consolas" FontWeight="Medium"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SageBrush}"
+                                               TrackBrush="{StaticResource SageFalseBrush}"
+                                               HoverCheckedTrackBrush="{StaticResource SageHoverBrush}"
+                                               AnimationStyle="EaseInOut" IsChecked="True"
+                                               Margin="20,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌊 Ocean"/>
+                                            <TextBlock Text="#7B9BB8" FontSize="13" Foreground="{StaticResource OceanBrush}" 
+                                                       FontFamily="Consolas" FontWeight="Medium"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource OceanBrush}"
+                                               TrackBrush="{StaticResource OceanFalseBrush}"
+                                               HoverCheckedTrackBrush="{StaticResource OceanHoverBrush}"
+                                               AnimationStyle="EaseInOut"
+                                               Margin="20,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🏺 Terra"/>
+                                            <TextBlock Text="#B8906B" FontSize="13" Foreground="{StaticResource TerraBrush}" 
+                                                       FontFamily="Consolas" FontWeight="Medium"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource TerraBrush}"
+                                               TrackBrush="{StaticResource TerraFalseBrush}"
+                                               HoverCheckedTrackBrush="{StaticResource TerraHoverBrush}"
+                                               AnimationStyle="EaseInOut" IsChecked="True"
+                                               Margin="20,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌸 Lavender"/>
+                                            <TextBlock Text="#A5A0C2" FontSize="13" Foreground="{StaticResource LavenderBrush}" 
+                                                       FontFamily="Consolas" FontWeight="Medium"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource LavenderBrush}"
+                                               TrackBrush="{StaticResource LavenderFalseBrush}"
+                                               HoverCheckedTrackBrush="{StaticResource LavenderHoverBrush}"
+                                               AnimationStyle="EaseInOut"
+                                               Margin="20,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌹 Blush"/>
+                                            <TextBlock Text="#C29A9A" FontSize="13" Foreground="{StaticResource BlushBrush}" 
+                                                       FontFamily="Consolas" FontWeight="Medium"
+                                                       Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource BlushBrush}"
+                                               TrackBrush="{StaticResource BlushFalseBrush}"
+                                               HoverCheckedTrackBrush="{StaticResource BlushHoverBrush}"
+                                               AnimationStyle="EaseInOut" IsChecked="True"
+                                               Margin="20,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <StackPanel Orientation="Horizontal" MinWidth="200">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🗿 Stone"/>
+                                            <TextBlock Text="#9C9692" FontSize="13" Foreground="{StaticResource StoneBrush}" 
+                              FontFamily="Consolas" FontWeight="Medium"
+                              Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <local:ExtendedSwitch CheckedTrackBrush="{StaticResource StoneBrush}"
+                                    TrackBrush="{StaticResource StoneFalseBrush}"
+                                    HoverCheckedTrackBrush="{StaticResource StoneHoverBrush}"
+                                    AnimationStyle="EaseInOut"
+                                    Margin="20,0,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Size Variations -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="SIZE OPTIONS"/>
+                                </Border>
+                                <TextBlock Text="Flexible Size Options" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Small"/>
+                                        <local:ExtendedSwitch SwitchSize="Small" 
+                                                            CheckedTrackBrush="{StaticResource EmeraldBrush}"
+                                                            TrackBrush="{StaticResource EmeraldFalseBrush}"
+                                                            HoverCheckedTrackBrush="{StaticResource EmeraldHoverBrush}"
+                                                            AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Medium"/>
+                                        <local:ExtendedSwitch SwitchSize="Medium" 
+                                                            CheckedTrackBrush="{StaticResource EmeraldBrush}"
+                                                            TrackBrush="{StaticResource EmeraldFalseBrush}"
+                                                            HoverCheckedTrackBrush="{StaticResource EmeraldHoverBrush}"
+                                                            AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Large"/>
+                                        <local:ExtendedSwitch SwitchSize="Large" 
+                                                            CheckedTrackBrush="{StaticResource EmeraldBrush}"
+                                                            TrackBrush="{StaticResource EmeraldFalseBrush}"
+                                                            HoverCheckedTrackBrush="{StaticResource EmeraldHoverBrush}"
+                                                            AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Custom"/>
+                                        <local:ExtendedSwitch SwitchSize="Custom" 
+                                                            TrackWidth="80" TrackHeight="40" ThumbSize="36"
+                                                            CornerRadius="20"
+                                                            CheckedTrackBrush="{StaticResource EmeraldBrush}"
+                                                            TrackBrush="{StaticResource EmeraldFalseBrush}"
+                                                            HoverCheckedTrackBrush="{StaticResource EmeraldHoverBrush}"
+                                                            AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Right Column -->
+                    <StackPanel Grid.Column="2">
+
+                        <!-- Animation Styles -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="ANIMATIONS"/>
+                                </Border>
+                                <TextBlock Text="Smooth Motion Design" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Linear"/>
+                                        <local:ExtendedSwitch AnimationStyle="Linear" 
+                                                            CheckedTrackBrush="{StaticResource PrimaryBrush}"
+                                                            TrackBrush="{StaticResource PrimaryFalseBrush}"
+                                                            AnimationDuration="0:0:0.4"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Ease In Out"/>
+                                        <local:ExtendedSwitch AnimationStyle="EaseInOut" 
+                                                            CheckedTrackBrush="{StaticResource SuccessBrush}"
+                                                            TrackBrush="{StaticResource SuccessFalseBrush}"
+                                                            AnimationDuration="0:0:0.3" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Bounce"/>
+                                        <local:ExtendedSwitch AnimationStyle="Bounce" 
+                                                            CheckedTrackBrush="{StaticResource WarningBrush}"
+                                                            TrackBrush="{StaticResource WarningFalseBrush}"
+                                                            AnimationDuration="0:0:0.5"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="No Animation"/>
+                                        <local:ExtendedSwitch AnimationStyle="None" 
+                                                            CheckedTrackBrush="{StaticResource InfoBrush}"
+                                                            TrackBrush="{StaticResource InfoFalseBrush}" IsChecked="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Advanced Features -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="ADVANCED"/>
+                                </Border>
+                                <TextBlock Text="Premium Features" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="With Shadow"/>
+                                        <local:ExtendedSwitch HasShadow="True" 
+                                                            CheckedTrackBrush="{StaticResource PrimaryBrush}"
+                                                            TrackBrush="{StaticResource PrimaryFalseBrush}"
+                                                            AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Custom Border"/>
+                                        <local:ExtendedSwitch TrackBorderBrush="{StaticResource Gray400}" 
+                                                            TrackBorderThickness="2"
+                                                            CheckedTrackBrush="{StaticResource SecondaryLightBrush}"
+                                                            TrackBrush="{StaticResource Gray200}"
+                                                            ThumbBrush="{StaticResource SecondaryBrush}"
+                                                            AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Square Style"/>
+                                        <local:ExtendedSwitch CornerRadius="4" 
+                                               ThumbBorderBrush="Red" 
+                                               ThumbBorderThickness="2"
+                                               CheckedTrackBrush="{StaticResource InfoBrush}"
+                                               TrackBrush="{StaticResource InfoFalseBrush}"
+                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Custom Thumb"/>
+                                        <local:ExtendedSwitch ThumbMargin="6" 
+                                                            CheckedTrackBrush="{StaticResource RoseBrush}"
+                                                            TrackBrush="{StaticResource RoseFalseBrush}"
+                                                            ThumbBrush="#FFD700"
+                                                            AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Real World Examples -->
+                <Border Style="{StaticResource ModernSectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="REAL WORLD"/>
+                        </Border>
+                        <TextBlock Text="Production-Ready Examples" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <!-- Settings Panel -->
+                        <StackPanel Margin="0,0,0,32">
+                            <TextBlock Style="{StaticResource SubHeaderStyle}" Text="⚙️ Settings Panel"/>
+                            <Border Background="{StaticResource Gray100}" CornerRadius="16" Padding="24">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🔔 Notifications" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource PrimaryBrush}" 
+                                                                TrackBrush="{StaticResource PrimaryFalseBrush}"
+                                                                AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌙 Dark Mode" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource Gray800}" 
+                                                                TrackBrush="{StaticResource Gray300}"
+                                                                AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="💾 Auto-save" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SuccessBrush}" 
+                                                                TrackBrush="{StaticResource SuccessFalseBrush}"
+                                                                AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="📊 Analytics" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource InfoBrush}" 
+                                                                TrackBrush="{StaticResource InfoFalseBrush}"
+                                                                AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="📍 Location" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource WarningBrush}" 
+                                                                TrackBrush="{StaticResource WarningFalseBrush}"
+                                                                AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+
+                                        <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                            <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🔐 Two-Factor" Width="140"/>
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SecondaryBrush}" 
+                                                                TrackBrush="{StaticResource SecondaryFalseBrush}"
+                                                                AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Feature Toggle Cards -->
+                        <StackPanel Margin="0,0,0,32">
+                            <TextBlock Style="{StaticResource SubHeaderStyle}" Text="🚀 Feature Toggles"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Style="{StaticResource FeatureCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="⚡ Performance" FontWeight="Bold" FontSize="16" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Optimize app speed and responsiveness" FontSize="13" 
+                                                  Foreground="{StaticResource Gray600}" Margin="0,0,0,16" TextWrapping="Wrap"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SuccessBrush}" 
+                                                                TrackBrush="{StaticResource SuccessFalseBrush}"
+                                                                SwitchSize="Small" IsChecked="True" AnimationStyle="EaseInOut"/>
+                                            <TextBlock Text="Enabled" FontSize="12" Margin="12,0,0,0" 
+                                                      VerticalAlignment="Center" Foreground="{StaticResource SuccessBrush}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="1" Style="{StaticResource FeatureCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="🔒 Security" FontWeight="Bold" FontSize="16" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Enhanced protection and monitoring" FontSize="13" 
+                                                  Foreground="{StaticResource Gray600}" Margin="0,0,0,16" TextWrapping="Wrap"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource RoseBrush}" 
+                                                                TrackBrush="{StaticResource RoseFalseBrush}"
+                                                                SwitchSize="Small" AnimationStyle="EaseInOut"/>
+                                            <TextBlock Text="Disabled" FontSize="12" Margin="12,0,0,0" 
+                                                      VerticalAlignment="Center" Foreground="{StaticResource Gray500}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2" Style="{StaticResource FeatureCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="📈 Beta Features" FontWeight="Bold" FontSize="16" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Try experimental functionality" FontSize="13" 
+                                                  Foreground="{StaticResource Gray600}" Margin="0,0,0,16" TextWrapping="Wrap"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <local:ExtendedSwitch CheckedTrackBrush="{StaticResource SecondaryBrush}" 
+                                                                TrackBrush="{StaticResource SecondaryFalseBrush}"
+                                                                SwitchSize="Small" IsChecked="True" AnimationStyle="EaseInOut"/>
+                                            <TextBlock Text="Beta" FontSize="12" Margin="12,0,0,0" 
+                                                      VerticalAlignment="Center" Foreground="{StaticResource SecondaryBrush}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Mobile Style -->
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SubHeaderStyle}" Text="📱 Mobile App Style"/>
+                            <Border Background="{StaticResource Gray800}" CornerRadius="16" Padding="24" MaxWidth="400" HorizontalAlignment="Center">
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Text="🔔 Push Notifications" Foreground="White" FontSize="15" Width="180"/>
+                                        <local:ExtendedSwitch CheckedTrackBrush="#00D4AA" 
+                                                            TrackBrush="{StaticResource Gray600}"
+                                                            IsChecked="True" HasShadow="True" AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Text="📍 Location Services" Foreground="White" FontSize="15" Width="180"/>
+                                        <local:ExtendedSwitch CheckedTrackBrush="#FF6B6B" 
+                                                            TrackBrush="{StaticResource Gray600}"
+                                                            HasShadow="True" AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Text="🎵 Sound Effects" Foreground="White" FontSize="15" Width="180"/>
+                                        <local:ExtendedSwitch CheckedTrackBrush="#4ECDC4" 
+                                                            TrackBrush="{StaticResource Gray600}"
+                                                            IsChecked="True" HasShadow="True" AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource SwitchDemoRowStyle}">
+                                        <TextBlock Text="🌙 Do Not Disturb" Foreground="White" FontSize="15" Width="180"/>
+                                        <local:ExtendedSwitch CheckedTrackBrush="#A8E6CF" 
+                                                            TrackBrush="{StaticResource Gray600}"
+                                                            HasShadow="True" AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</Page>
