@@ -16,6 +16,7 @@ namespace FastControls.TestApp.Registry
                 new TreeItem("TestAnimatedSegmentedControl", "TestAnimatedSegmentedControl"),
                 new TreeItem("FlexPanel", "FlexPanel"),
                 new TreeItem("ExtendedButton", "TestExtendedButtonControl"),
+                new TreeItem("ExtendedSwitch", "TestExtendedSwitch"),
             };
         }
     }
