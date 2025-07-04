@@ -32,6 +32,12 @@
     <Page Include="Pages\TestExtendedButtonControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\TestExtendedCheckBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TestExtendedSlider.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\TestExtendedSwitch.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -48,6 +54,8 @@
     <Compile Include="Pages\FastCheckBox.xaml.cs" />
     <Compile Include="Pages\AdaptiveColumnsPanel.xaml.cs" />
     <Compile Include="Pages\TestExtendedButtonControl.xaml.cs" />
+    <Compile Include="Pages\TestExtendedCheckBox.xaml.cs" />
+    <Compile Include="Pages\TestExtendedSlider.xaml.cs" />
     <Compile Include="Pages\TestExtendedSwitch.xaml.cs" />
     <Compile Include="Pages\TestStaggeredPanel.xaml.cs" />
     <Compile Include="Registry\TestRegistry.cs" />
