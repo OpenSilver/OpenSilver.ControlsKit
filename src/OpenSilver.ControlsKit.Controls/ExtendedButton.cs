@@ -117,13 +117,6 @@ namespace OpenSilver.ControlsKit.Controls
         #region Dependency Properties
 
         /// <summary>
-        /// Identifies the <see cref="CornerRadius"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(ExtendedButton),
-                new PropertyMetadata(new CornerRadius(0), OnCornerRadiusChanged));
-
-        /// <summary>
         /// Identifies the <see cref="IconGeometry"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IconGeometryProperty =
@@ -294,16 +287,6 @@ namespace OpenSilver.ControlsKit.Controls
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the corner radius of the button.
-        /// </summary>
-        /// <value>The corner radius. Default is 0.</value>
-        public CornerRadius CornerRadius
-        {
-            get => (CornerRadius)GetValue(CornerRadiusProperty);
-            set => SetValue(CornerRadiusProperty, value);
-        }
 
         /// <summary>
         /// Gets or sets the geometry used for the icon.
@@ -549,6 +532,13 @@ namespace OpenSilver.ControlsKit.Controls
 
         #region Constructor
 
+        static ExtendedButton()
+        {
+            CornerRadiusProperty.OverrideMetadata(
+                typeof(ExtendedButton),
+                new FrameworkPropertyMetadata(new CornerRadius(0), OnCornerRadiusChanged));
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedButton"/> class.
         /// </summary>
@@ -651,7 +641,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <summary>
         /// Updates the layout of the button content based on current property values.
         /// </summary>
-        private void UpdateLayout()
+        private new void UpdateLayout()
         {
             if (_contentGrid == null) return;
 

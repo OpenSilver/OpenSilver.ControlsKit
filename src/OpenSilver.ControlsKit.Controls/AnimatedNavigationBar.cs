@@ -256,24 +256,6 @@ namespace OpenSilver.ControlsKit
                 new PropertyMetadata(300, OnAnimationDurationChanged));
 
         /// <summary>
-        /// Gets or sets the corner radius of the entire control.
-        /// </summary>
-        /// <value>The corner radius.</value>
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
-        }
-
-        /// <summary>
-        /// Identifies the <see cref="CornerRadius"/> dependency property.
-        /// </summary>
-        /// <returns>The identifier for the <see cref="CornerRadius"/> dependency property.</returns>
-        public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(AnimatedNavigationBar),
-                new PropertyMetadata(new CornerRadius(0)));
-
-        /// <summary>
         /// Gets or sets the padding for individual navigation items.
         /// </summary>
         /// <value>The item padding. Default is 20,10,20,10.</value>

@@ -129,7 +129,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <summary>
         /// Identifies the <see cref="CornerRadius"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CornerRadiusProperty =
+        public static readonly new DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius?), typeof(ExtendedSwitch),
                 new PropertyMetadata(null, OnCornerRadiusChanged));
 
@@ -287,7 +287,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// If null, automatically calculates based on track height for circular appearance.
         /// </summary>
         /// <value>The corner radius. If null, defaults to TrackHeight/2 for circular appearance.</value>
-        public CornerRadius? CornerRadius
+        public new CornerRadius? CornerRadius
         {
             get => (CornerRadius?)GetValue(CornerRadiusProperty);
             set => SetValue(CornerRadiusProperty, value);
@@ -645,7 +645,7 @@ namespace OpenSilver.ControlsKit.Controls
         /// <summary>
         /// Updates the layout of the switch components.
         /// </summary>
-        private void UpdateLayout()
+        private new void UpdateLayout()
         {
             if (_rootBorder == null) return;
 
