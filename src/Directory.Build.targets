@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <OpenSilverVersion Condition=" '$(OpenSilverVersion)' == '' ">3.2.0</OpenSilverVersion>
+    <OpenSilverVersion Condition=" '$(OpenSilverVersion)' == '' ">3.3.0</OpenSilverVersion>
     <EnableAdditionalMetadataAttributes>true</EnableAdditionalMetadataAttributes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

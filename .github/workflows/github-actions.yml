@@ -1,6 +1,6 @@
 name: OpenSilver.ControlsKit Build
 env:
-  next-release-version: '3.3.0'
+  next-release-version: '3.4.0'
   opensilver-package-source: 'https://www.myget.org/F/opensilver/api/v3/index.json'
   suffix: 'preview'
 on:
