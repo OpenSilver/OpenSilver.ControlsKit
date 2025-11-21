@@ -1,0 +1,540 @@
+﻿<Page
+    x:Class="TestApp.Pages.TestExtendedCheckBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OpenSilver.ControlsKit.Controls;assembly=OpenSilver.ControlsKit.Controls">
+
+    <Page.Resources>
+        <!-- Modern Color Palette -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#4F46E5"/>
+        <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#4338CA"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#E0E7FF"/>
+
+        <SolidColorBrush x:Key="SuccessBrush" Color="#10B981"/>
+        <SolidColorBrush x:Key="SuccessHoverBrush" Color="#059669"/>
+        <SolidColorBrush x:Key="SuccessLightBrush" Color="#D1FAE5"/>
+
+        <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="WarningHoverBrush" Color="#D97706"/>
+        <SolidColorBrush x:Key="WarningLightBrush" Color="#FEF3C7"/>
+
+        <SolidColorBrush x:Key="InfoBrush" Color="#06B6D4"/>
+        <SolidColorBrush x:Key="InfoHoverBrush" Color="#0891B2"/>
+        <SolidColorBrush x:Key="InfoLightBrush" Color="#CFFAFE"/>
+
+        <SolidColorBrush x:Key="SecondaryBrush" Color="#8B5CF6"/>
+        <SolidColorBrush x:Key="SecondaryHoverBrush" Color="#7C3AED"/>
+        <SolidColorBrush x:Key="SecondaryLightBrush" Color="#EDE9FE"/>
+
+        <SolidColorBrush x:Key="RoseBrush" Color="#F43F5E"/>
+        <SolidColorBrush x:Key="RoseHoverBrush" Color="#E11D48"/>
+
+        <!-- Sophisticated Colors -->
+        <SolidColorBrush x:Key="SageBrush" Color="#8FA68E"/>
+        <SolidColorBrush x:Key="OceanBrush" Color="#7B9BB8"/>
+        <SolidColorBrush x:Key="TerraBrush" Color="#B8906B"/>
+        <SolidColorBrush x:Key="LavenderBrush" Color="#A5A0C2"/>
+
+        <!-- Neutral Colors -->
+        <SolidColorBrush x:Key="Gray100" Color="#F3F4F6"/>
+        <SolidColorBrush x:Key="Gray200" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="Gray300" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="Gray600" Color="#4B5563"/>
+        <SolidColorBrush x:Key="Gray700" Color="#374151"/>
+        <SolidColorBrush x:Key="Gray800" Color="#1F2937"/>
+        <SolidColorBrush x:Key="Gray900" Color="#111827"/>
+
+        <!-- Modern Styles -->
+        <Style x:Key="HeroTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="42"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray900}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray800}"/>
+            <Setter Property="Margin" Value="0,0,0,24"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray700}"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="ModernSectionStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="32"/>
+            <Setter Property="Margin" Value="0,0,0,32"/>
+        </Style>
+
+        <Style x:Key="FeatureCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Gray200}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+
+        <Style x:Key="CategoryBadgeStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="16,6"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="CategoryTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="DemoLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{StaticResource Gray700}"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+
+        <Style x:Key="DemoRowStyle" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="GradientBackgroundStyle" TargetType="Border">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#F8FAFC" Offset="0"/>
+                        <GradientStop Color="#F1F5F9" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Border Style="{StaticResource GradientBackgroundStyle}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel Margin="32" MaxWidth="1400">
+
+                <!-- Hero Section -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,40,0,80">
+                    <TextBlock Text="ExtendedCheckBox" Style="{StaticResource HeroTitleStyle}"/>
+                    <Border Background="{StaticResource PrimaryBrush}" 
+                           CornerRadius="25" Padding="20,10">
+                        <TextBlock Text="OpenSilver.ControlsKit" 
+                                  Foreground="White" FontWeight="Bold" FontSize="16"
+                                  HorizontalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- Live Demo Grid -->
+                <Grid Margin="0,0,0,40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="32"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Quick Demo Card 1 - Colors -->
+                    <Border Grid.Column="0" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🎨 Modern Colors" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource PrimaryBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       Text="Primary" TextPosition="Right"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       Text="Success" TextPosition="Right"
+                                                       AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource WarningBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       Text="Warning" TextPosition="Right"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Demo Card 2 - Text Positions -->
+                    <Border Grid.Column="2" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="📝 Text Flow" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox Text="Right →" TextPosition="Right" CheckBoxSize="Small"
+                                                       CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox Text="← Left" TextPosition="Left" CheckBoxSize="Small"
+                                                       CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox Text="↑ Top" TextPosition="Top" CheckBoxSize="Small"
+                                                       CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Demo Card 3 - Shapes -->
+                    <Border Grid.Column="4" Style="{StaticResource FeatureCardStyle}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🔶 Shape Design" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CornerRadius="0" Text="Square"
+                                                       CheckedBoxBrush="{StaticResource InfoBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CornerRadius="6" Text="Rounded" 
+                                                       CheckedBoxBrush="{StaticResource InfoBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut"/>
+                            </StackPanel>
+                            <StackPanel Style="{StaticResource DemoRowStyle}" HorizontalAlignment="Center">
+                                <local:ExtendedCheckBox CornerRadius="12" Text="Circle"
+                                                       CheckedBoxBrush="{StaticResource InfoBrush}"
+                                                       BoxBrush="{StaticResource Gray200}"
+                                                       AnimationStyle="EaseInOut" IsChecked="True"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Main Features Grid -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column -->
+                    <StackPanel Grid.Column="0">
+
+                        <!-- Sophisticated Colors -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="SOPHISTICATED COLORS"/>
+                                </Border>
+                                <TextBlock Text="Premium Color Collection" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌿 Sage"/>
+                                        <TextBlock Text="#8FA68E" FontSize="13" Foreground="{StaticResource SageBrush}" 
+                                                   FontFamily="Consolas" FontWeight="Medium" Width="80"
+                                                   Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                        <local:ExtendedCheckBox Text="Natural vibes" TextPosition="Right"
+                                                               CheckedBoxBrush="{StaticResource SageBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌊 Ocean"/>
+                                        <TextBlock Text="#7B9BB8" FontSize="13" Foreground="{StaticResource OceanBrush}" 
+                                                   FontFamily="Consolas" FontWeight="Medium" Width="80"
+                                                   Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                        <local:ExtendedCheckBox Text="Deep blue" TextPosition="Right"
+                                                               CheckedBoxBrush="{StaticResource OceanBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🏺 Terra"/>
+                                        <TextBlock Text="#B8906B" FontSize="13" Foreground="{StaticResource TerraBrush}" 
+                                                   FontFamily="Consolas" FontWeight="Medium" Width="80"
+                                                   Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                        <local:ExtendedCheckBox Text="Earthy tone" TextPosition="Right"
+                                                               CheckedBoxBrush="{StaticResource TerraBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="🌸 Lavender"/>
+                                        <TextBlock Text="#A5A0C2" FontSize="13" Foreground="{StaticResource LavenderBrush}" 
+                                                   FontFamily="Consolas" FontWeight="Medium" Width="80"
+                                                   Margin="8,0,16,0" VerticalAlignment="Center"/>
+                                        <local:ExtendedCheckBox Text="Soft purple" TextPosition="Right"
+                                                               CheckedBoxBrush="{StaticResource LavenderBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Check Mark Styles -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="CHECK MARKS"/>
+                                </Border>
+                                <TextBlock Text="Flexible Check Options" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Material Design"/>
+                                        <local:ExtendedCheckBox Text="Modern check"
+                                                               CheckedBoxBrush="{StaticResource PrimaryBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Custom Star"/>
+                                        <local:ExtendedCheckBox CheckMarkStyle="Show" Text="Rating system"
+                                                               CheckMarkGeometry="M 6,2 L 8,8 L 14,8 L 9,12 L 11,18 L 6,14 L 1,18 L 3,12 L -2,8 L 4,8 Z"
+                                                               CheckedBoxBrush="{StaticResource WarningBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Custom Heart"/>
+                                        <local:ExtendedCheckBox CheckMarkStyle="Show" Text="Favorite item"
+                                                               CheckMarkGeometry="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"
+                                                               CheckedBoxBrush="{StaticResource RoseBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Color Only"/>
+                                        <local:ExtendedCheckBox CheckMarkStyle="None" Text="Minimalist style"
+                                                               CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Right Column -->
+                    <StackPanel Grid.Column="2">
+
+                        <!-- Text Positions -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="TEXT LAYOUT"/>
+                                </Border>
+                                <TextBlock Text="Flexible Text Positioning" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Right (Default)"/>
+                                        <local:ExtendedCheckBox Text="Email notifications" TextPosition="Right"
+                                                               CheckedBoxBrush="{StaticResource SuccessBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Left"/>
+                                        <local:ExtendedCheckBox Text="SMS alerts" TextPosition="Left"
+                                                               CheckedBoxBrush="{StaticResource InfoBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Top"/>
+                                        <local:ExtendedCheckBox Text="Push" TextPosition="Top"
+                                                               CheckedBoxBrush="{StaticResource WarningBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Bottom"/>
+                                        <local:ExtendedCheckBox Text="Analytics" TextPosition="Bottom"
+                                                               CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Animations & Effects -->
+                        <Border Style="{StaticResource ModernSectionStyle}">
+                            <StackPanel>
+                                <Border Style="{StaticResource CategoryBadgeStyle}">
+                                    <TextBlock Style="{StaticResource CategoryTextStyle}" Text="ANIMATIONS"/>
+                                </Border>
+                                <TextBlock Text="Smooth Motion Design" Style="{StaticResource SectionHeaderStyle}"/>
+
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Bounce"/>
+                                        <local:ExtendedCheckBox AnimationStyle="Bounce" Text="Playful motion"
+                                                               CheckedBoxBrush="{StaticResource PrimaryBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationDuration="0:0:0.5"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Ease In Out"/>
+                                        <local:ExtendedCheckBox AnimationStyle="EaseInOut" Text="Smooth curve"
+                                                               CheckedBoxBrush="{StaticResource SuccessBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationDuration="0:0:0.3" IsChecked="True"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="With Shadow"/>
+                                        <local:ExtendedCheckBox HasShadow="True" Text="Premium effect"
+                                                               CheckedBoxBrush="{StaticResource SecondaryBrush}"
+                                                               BoxBrush="{StaticResource Gray200}"
+                                                               AnimationStyle="EaseInOut"/>
+                                    </StackPanel>
+
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <TextBlock Style="{StaticResource DemoLabelStyle}" Text="Instant"/>
+                                        <local:ExtendedCheckBox AnimationStyle="None" Text="No animation"
+                                                               CheckedBoxBrush="{StaticResource WarningBrush}"
+                                                               BoxBrush="{StaticResource Gray200}" IsChecked="True"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Real World Examples -->
+                <Border Style="{StaticResource ModernSectionStyle}">
+                    <StackPanel>
+                        <Border Style="{StaticResource CategoryBadgeStyle}">
+                            <TextBlock Style="{StaticResource CategoryTextStyle}" Text="REAL WORLD"/>
+                        </Border>
+                        <TextBlock Text="Production-Ready Examples" Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <!-- Settings Panel -->
+                        <StackPanel Margin="0,0,0,32">
+                            <TextBlock Style="{StaticResource SubHeaderStyle}" Text="⚙️ App Settings"/>
+                            <Border Background="{StaticResource Gray100}" CornerRadius="16" Padding="24">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="📧 Email notifications"
+                                                                   AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource InfoBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="🌙 Dark mode"
+                                                                   AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource WarningBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="💾 Auto-save"
+                                                                   AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1">
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource PrimaryBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="📊 Analytics"
+                                                                   AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SecondaryBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="🔒 Two-factor auth"
+                                                                   AnimationStyle="EaseInOut" IsChecked="True"/>
+                                        </StackPanel>
+                                        <StackPanel Style="{StaticResource DemoRowStyle}">
+                                            <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource RoseBrush}" 
+                                                                   BoxBrush="{StaticResource Gray200}"
+                                                                   Text="📍 Location services"
+                                                                   AnimationStyle="EaseInOut"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Interactive Todo List -->
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SubHeaderStyle}" Text="✅ Interactive Todo List"/>
+                            <Border Background="White" BorderBrush="{StaticResource Gray200}" BorderThickness="1" 
+                                   CornerRadius="16" Padding="24" MaxWidth="500" HorizontalAlignment="Center">
+                                <StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}" 
+                                                               BoxBrush="White" BoxBorderBrush="{StaticResource Gray300}"
+                                                               CornerRadius="4" AnimationStyle="EaseInOut" IsChecked="True"
+                                                               Text="✨ Design new components" TextPosition="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}" 
+                                                               BoxBrush="White" BoxBorderBrush="{StaticResource Gray300}"
+                                                               CornerRadius="4" AnimationStyle="EaseInOut"
+                                                               Text="📞 Call client for feedback" TextPosition="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}" 
+                                                               BoxBrush="White" BoxBorderBrush="{StaticResource Gray300}"
+                                                               CornerRadius="4" AnimationStyle="EaseInOut" IsChecked="True"
+                                                               Text="📝 Update documentation" TextPosition="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Style="{StaticResource DemoRowStyle}">
+                                        <local:ExtendedCheckBox CheckedBoxBrush="{StaticResource SuccessBrush}" 
+                                                               BoxBrush="White" BoxBorderBrush="{StaticResource Gray300}"
+                                                               CornerRadius="4" AnimationStyle="EaseInOut"
+                                                               Text="🚀 Deploy to production" TextPosition="Right"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</Page>
+
+
