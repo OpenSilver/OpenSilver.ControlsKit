@@ -23,9 +23,6 @@
     <Page Include="Pages\TestAnimatedSegmentedControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\FastCheckBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Pages\AdaptiveColumnsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -45,7 +42,6 @@
     <Compile Include="MainPage.xaml.cs" />
     <Compile Include="Pages\FlexPanel.xaml.cs" />
     <Compile Include="Pages\TestAnimatedSegmentedControl.xaml.cs" />
-    <Compile Include="Pages\FastCheckBox.xaml.cs" />
     <Compile Include="Pages\AdaptiveColumnsPanel.xaml.cs" />
     <Compile Include="Pages\TestExtendedButtonControl.xaml.cs" />
     <Compile Include="Pages\TestExtendedSwitch.xaml.cs" />
@@ -55,7 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OpenSilver.ControlsKit.FastControls\OpenSilver.ControlsKit.FastControls.csproj" />
     <ProjectReference Include="..\..\OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj" />
   </ItemGroup>
 
@@ -65,10 +60,6 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="TestFastGridView.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\FastCheckBox.xaml" />
   </ItemGroup>
 
   <ItemGroup>

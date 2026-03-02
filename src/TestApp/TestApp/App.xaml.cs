@@ -16,7 +16,7 @@ namespace FastControls.TestApp
 
             // Enter construction logic here...
 
-            Window.Current.Content = new MainPage();
+            RootVisual = new MainPage();
         }
     }
 }

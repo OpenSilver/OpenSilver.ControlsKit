@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33103.184
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11520.95 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenSilver.ControlsKit.FastControls", "OpenSilver.ControlsKit.FastControls\OpenSilver.ControlsKit.FastControls.csproj", "{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApp", "TestApp", "{757990DC-A1AE-4E39-A086-A6C4FA59B250}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenSilver.ControlsKit.Controls", "OpenSilver.ControlsKit.Controls\OpenSilver.ControlsKit.Controls.csproj", "{EFAC9728-C7A6-431F-8780-5AE3531B3764}"
@@ -30,10 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8FAB0AB-A9EC-4FC6-B033-74ABBFE9DD9D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFAC9728-C7A6-431F-8780-5AE3531B3764}.Release|Any CPU.ActiveCfg = Release|Any CPU
