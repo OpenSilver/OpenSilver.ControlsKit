@@ -1,56 +1,73 @@
 name: OpenSilver.ControlsKit Build
+
 env:
-  next-release-version: '3.4.0'
-  opensilver-package-source: 'https://www.myget.org/F/opensilver/api/v3/index.json'
-  suffix: 'preview'
+  NEXT_RELEASE_VERSION: '3.4.0'
+
 on:
   push:
     branches:
       - master
   workflow_dispatch:
     inputs:
-      opensilver-version:
-        description: 'OpenSilver package version'
-        default: 'latest'
-        required: true
+        opensilver-version:
+            description: 'OpenSilver version'
+            required: true
+        version:
+            description: 'OpenSilver.ControlsKit package version'
+            required: false
+            default: ''
+        publish-myget:
+            description: 'Publish to MyGet.org'
+            required: false
+            type: boolean
+            default: true
+        publish-nuget-org:
+            description: 'Publish to NuGet.org'
+            required: false
+            type: boolean
+            default: false
+
 jobs:
   OpenSilver-ControlsKit-Build:
-    #We should not run these steps on the forks by default.
     if: github.repository_owner == 'OpenSilver'
     runs-on: windows-latest
     steps:
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1.3
+      - uses: microsoft/setup-msbuild@v1.1.3
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4.x
-      - name: Install DotNet
-        uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.102'
-      - name: Clone repo
+          dotnet-version: '10.x'
+          dotnet-quality: 'ga'
+
+      - name: Clone OpenSilver.ControlsKit repo
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - name: Fill vars
-        id: vars
+
+      - name: Format Package Version
+        id: version
+        shell: pwsh
         run: |
-          $version = "${{ github.event.inputs.opensilver-version }}"
-          $source = "${{ env.opensilver-package-source }}"
-          if ($version -eq "latest" -or $version -eq "") {
-            $version = nuget list -Source $source -Prerelease | ? { $_ -match "^OpenSilver\s+(.*)" } | ForEach { $_.split(" ")[1] }
+          $v = "${{ github.event.inputs.version }}"
+          if ([string]::IsNullOrWhiteSpace($v))
+          {
+            $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
+            $v = "$env:NEXT_RELEASE_VERSION-preview-$timestamp-$env:GITHUB_SHA_SHORT"
           }
-          echo "Version: $version"
-          echo "opensilver-version=$version" >> $env:GITHUB_OUTPUT
-          echo "package-version=${{ env.next-release-version }}-${{ env.suffix }}-$(date +'%Y-%m-%d-%H%M%S')-${{ env.GITHUB_SHA_SHORT }}" >> $env:GITHUB_OUTPUT
-      - name: Build OpenSilver.ControlsKit package
+          "value=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Build OpenSilver.ControlsKit NuGet package
         working-directory: src\build
         run: |
-          ./build-nuget-package.bat ${{ steps.vars.outputs.package-version }} ${{ steps.vars.outputs.opensilver-version }}
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ControlsKit
-          path: src\build\output\ControlsKit\*.nupkg
+          ./build-nuget-package.bat ${{ steps.version.outputs.value }} ${{ github.event.inputs.opensilver-version }}
+
       - name: Upload packages to MyGet
+        if: ${{ inputs['publish-myget'] }}
         run: |
-           dotnet nuget push "src\build\output\ControlsKit\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s ${{ secrets.MYGET_PUBLIC_FEED }}
+           dotnet nuget push "src\build\output\ControlsKit\*.nupkg" -k ${{ secrets.MYGET_TOKEN }} -s https://www.myget.org/F/opensilver/api/v2/package
+
+      - name: Upload packages to NuGet.org
+        if: ${{ inputs['publish-nuget-org'] }}
+        run: |
+          dotnet nuget push "src\build\output\ControlsKit\*.nupkg" -k ${{ secrets.NUGET_ORG_API_KEY }} -s https://api.nuget.org/v3/index.json
